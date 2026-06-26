@@ -1,0 +1,59 @@
+<main class="form-page">
+
+  <section class="form-card list-card">
+
+    <h1>Listar Produtos</h1>
+
+    <p class="description">
+      Veja abaixo os produtos cadastrados no sistema.
+    </p>
+
+    <div class="actions">
+      <a routerLink="/" class="btn btn-secondary">Voltar</a>
+
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="listar()"
+      >
+        Buscar produtos
+      </button>
+    </div>
+
+    <p
+      class="message"
+      [class.success]="tipoMensagem === 'sucesso'"
+      [class.error]="tipoMensagem === 'erro'"
+    >
+      {{ mensagem }}
+    </p>
+
+    <div class="table-container" *ngIf="produtos.length > 0">
+
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Ativo</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          
+          <tr *ngFor="let produto of produtos">
+            <td>{{ produto.id }}</td>
+            <td>{{ produto.nome }}</td>
+            <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+            <td>{{ produto.ativo ? 'Sim' : 'Não' }}</td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+    </div>
+
+  </section>
+
+</main>

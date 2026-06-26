@@ -1,0 +1,134 @@
+:host {
+  --clr-bg:        #F2F2F5;
+  --clr-surface:   #FFFFFF;
+  --clr-border:    #E4E4E8;
+  --clr-accent:    #B5253A;
+  --clr-accent-lt: #FAF0F2;
+  --clr-text:      #1A1A2E;
+  --clr-muted:     #6B6B80;
+  --radius-card:   10px;
+  --shadow-card:   0 1px 4px rgba(0,0,0,.07), 0 2px 10px rgba(0,0,0,.05);
+  --font: 'Inter', system-ui, sans-serif;
+
+  display: block;
+  min-height: 100vh;
+  background: var(--clr-bg);
+  font-family: var(--font);
+  color: var(--clr-text);
+  padding: 48px 24px;
+}
+
+.form-page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 28px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--clr-muted);
+  margin-bottom: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--clr-accent);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.checkbox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.checkbox input[type="checkbox"] {
+  width: auto;
+  height: auto;
+  margin: 0;
+  cursor: pointer;
+}   
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: var(--clr-accent);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--clr-accent-lt);
+  color: var(--clr-accent);
+}
+
+.warning {
+  background: var(--clr-accent-lt);
+  color: var(--clr-accent);
+  border: 1px solid rgba(181,37,58,.25);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.btn-danger {
+  background: var(--clr-accent);
+  color: white;
+}

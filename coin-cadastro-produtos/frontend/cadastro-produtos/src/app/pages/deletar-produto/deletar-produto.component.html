@@ -1,0 +1,30 @@
+<main class="form-page">
+
+  <section class="form-card">
+
+    <h1>Deletar Produto</h1>
+
+    <p class="description">
+      Informe o ID do produto que deseja deletar.
+    </p>
+
+    <form  (ngSubmit)="deletar()">
+
+      <div class="field">
+        <label for="id">ID do produto</label>
+        <input id="id" type="number" name = "id" placeholder="Ex: 1" [(ngModel)]="id" required>
+      </div>
+
+
+      <div class="actions">
+        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-danger">Deletar</button>
+      </div>
+
+    </form>
+
+        <p class="message">{{ mensagem }}</p>
+
+  </section>
+
+</main>
