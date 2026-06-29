@@ -20,7 +20,6 @@ O frontend consome essa API e oferece telas para cadastrar, alterar, deletar/des
 - Lombok
 - JUnit 5
 - Mockito
-- MockMvc
 
 ### Frontend
 
