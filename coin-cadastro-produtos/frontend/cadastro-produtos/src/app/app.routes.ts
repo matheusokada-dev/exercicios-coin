@@ -5,7 +5,6 @@ import { CadastrarProdutoComponent } from './pages/cadastrar-produto/cadastrar-p
 import { AlterarProdutoComponent } from './pages/alterar-produto/alterar-produto.component';
 import { DeletarProdutoComponent } from './pages/deletar-produto/deletar-produto.component';
 import { ListarProdutosComponent } from './pages/listar-produtos/listar-produtos.component';
-import { ListarProdutosInativosComponent } from './pages/listar-produtos-inativos/listar-produtos-inativos.component';
 
 export const routes: Routes = [
   {
@@ -23,13 +22,10 @@ export const routes: Routes = [
   {
     path: 'deletar-produto',
     component: DeletarProdutoComponent
-  },{
-    path: 'listar-produtos',
-    component: ListarProdutosComponent
   },
   {
-    path: 'listar-produtos-inativos',
-    component: ListarProdutosInativosComponent
+    path: 'listar-produtos',
+    component: ListarProdutosComponent
   },
   {
     path: '**',

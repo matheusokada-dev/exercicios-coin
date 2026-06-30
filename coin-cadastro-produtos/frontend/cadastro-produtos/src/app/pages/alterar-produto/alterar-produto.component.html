@@ -1,46 +1,133 @@
 <main class="form-page">
-
   <section class="form-card">
+    <div class="toolbar">
+      <a routerLink="/" class="btn btn-secondary">Voltar</a>
+    </div>
 
     <h1>Alterar Produto</h1>
 
     <p class="description">
-      Informe o ID do produto e os novos dados que deseja alterar.
+      Busque um produto, revise os dados carregados e confirme a alteracao antes de salvar.
     </p>
 
-    <form  (ngSubmit)="alterar()">
+    <div class="field">
+      <label for="busca">Buscar produto</label>
+      <input
+        id="busca"
+        type="text"
+        name="busca"
+        placeholder="Buscar por nome"
+        [(ngModel)]="busca"
+        (ngModelChange)="buscarProdutos()"
+      >
+    </div>
+
+    <div class="search-results" *ngIf="resultadosBusca.length > 0">
+      <button
+        type="button"
+        *ngFor="let produto of resultadosBusca"
+        (click)="selecionarProduto(produto)"
+      >
+        {{ produto.nome }} - #{{ produto.id }} - {{ produto.ativo ? 'Ativo' : 'Inativo' }}
+      </button>
+    </div>
+
+    <form *ngIf="produtoSelecionado" (ngSubmit)="alterar()">
+      <p class="selected-product">
+        Editando: {{ produtoSelecionado.nome }} - #{{ produtoSelecionado.id }}
+      </p>
 
       <div class="field">
-        <label for="id">ID do produto</label>
-        <input id="id" type="number" name="id" placeholder="Ex: 1" [(ngModel)]="id">
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" name="nome" [(ngModel)]="nome" required>
       </div>
 
       <div class="field">
-        <label for="nome">Novo nome</label>
-        <input id="nome" type="text" name="nome" placeholder="Ex: Mouse gamer"[(ngModel)]="nome">
+        <label for="preco">Preco</label>
+        <input
+          id="preco"
+          type="text"
+          name="preco"
+          [ngModel]="precoFormatado"
+          (ngModelChange)="aoDigitarPreco($event)"
+          inputmode="numeric"
+          placeholder="R$ 0,00"
+          required
+        >
       </div>
 
-      <div class="field">
-        <label for="preco">Novo preço</label>
-        <input id="preco" type="number" name="preco" placeholder="Ex: 89.90" [(ngModel)]="preco">
+      <div class="switch-field">
+        <span>Status do produto</span>
+
+        <label class="switch">
+          <input id="ativo" type="checkbox" name="ativo" [(ngModel)]="ativo">
+          <span class="slider"></span>
+        </label>
+
+        <strong>{{ ativo ? 'Ativo' : 'Inativo' }}</strong>
       </div>
 
-        <div class="checkbox">
-        <label for="ativo">Produto ativo</label>
-        <input id="ativo" type="checkbox" name="ativo" [(ngModel)]="ativo">
-
-      </div>
-
-      
       <div class="actions">
-        <a routerLink="/" class="btn btn-secondary">Voltar</a>
         <button type="submit" class="btn btn-primary">Alterar</button>
       </div>
-
     </form>
 
-    <p class="message">{{ mensagem }}</p>
-
+    <p
+      class="message"
+      [class.success]="tipoMensagem === 'sucesso'"
+      [class.error]="tipoMensagem === 'erro'"
+      *ngIf="mensagem"
+    >
+      {{ mensagem }}
+    </p>
   </section>
 
+  <div class="modal-backdrop" *ngIf="modalConfirmacaoAberto">
+    <section class="modal">
+      <h2>Confirmar alteracao do produto</h2>
+
+      <h3>Campos modificados</h3>
+      <table class="changes-table">
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Antes</th>
+            <th>Depois</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let campo of camposModificados">
+            <td>{{ campo.campo }}</td>
+            <td>{{ campo.antes }}</td>
+            <td>{{ campo.depois }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Dados finais</h3>
+      <dl class="review-list">
+        <dt>Codigo</dt>
+        <dd>#{{ id }}</dd>
+
+        <dt>Nome</dt>
+        <dd>{{ nome }}</dd>
+
+        <dt>Preco</dt>
+        <dd>{{ preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
+
+        <dt>Status</dt>
+        <dd>{{ ativo ? 'Ativo' : 'Inativo' }}</dd>
+      </dl>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="fecharModalConfirmacao()">
+          Voltar para editar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="confirmarAlteracao()">
+          Confirmar alteracao
+        </button>
+      </div>
+    </section>
+  </div>
 </main>

@@ -3,6 +3,7 @@ package br.com.coin.cadastroprodutos.services;
 import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
 import br.com.coin.cadastroprodutos.entities.Produto;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoDesativadoException;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoNaoEncontradoException;
@@ -13,6 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,9 +65,9 @@ class ProdutoServiceTest {
         produtoSalvo.setAtivo(true);
 
         ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L,
-                                                            "Arroz",
-                                                                BigDecimal.valueOf(25.90),
-                                                                true);
+                "Arroz",
+                BigDecimal.valueOf(25.90),
+                true);
 
         when(produtoMapper.toEntity(requestDTO)).thenReturn(produto);
         when(produtoRepository.save(produto)).thenReturn(produtoSalvo);
@@ -78,36 +87,22 @@ class ProdutoServiceTest {
     }
 
     @Test
-    void deveListarProdutosAtivosComSucesso() {
+    void deveListarProdutosComFiltrosEPaginacaoComSucesso() {
+        FiltroProdutoDTO filtro = new FiltroProdutoDTO("Arroz", "todos", null, null);
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("nome").ascending());
         Produto produto = criarProduto(1L, "Arroz", "25.90", true);
         ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L, "Arroz", new BigDecimal("25.90"), true);
+        Page<Produto> paginaProdutos = new PageImpl<>(List.of(produto), pageable, 1);
 
-        when(produtoRepository.findByAtivoTrue()).thenReturn(List.of(produto));
+        when(produtoRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(paginaProdutos);
         when(produtoMapper.toResponseDTO(produto)).thenReturn(responseDTO);
 
-        List<ProdutoResponseDTO> resultado = produtoService.listarAtivos();
+        Page<ProdutoResponseDTO> resultado = produtoService.listar(filtro, pageable);
 
-        assertEquals(1, resultado.size());
-        assertEquals(responseDTO, resultado.getFirst());
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(responseDTO, resultado.getContent().getFirst());
 
-        verify(produtoRepository, times(1)).findByAtivoTrue();
-        verify(produtoMapper, times(1)).toResponseDTO(produto);
-    }
-
-    @Test
-    void deveListarProdutosInativosComSucesso() {
-        Produto produto = criarProduto(1L, "Arroz", "25.90", false);
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L, "Arroz", new BigDecimal("25.90"), false);
-
-        when(produtoRepository.findByAtivoFalse()).thenReturn(List.of(produto));
-        when(produtoMapper.toResponseDTO(produto)).thenReturn(responseDTO);
-
-        List<ProdutoResponseDTO> resultado = produtoService.listarInativos();
-
-        assertEquals(1, resultado.size());
-        assertEquals(responseDTO, resultado.getFirst());
-
-        verify(produtoRepository, times(1)).findByAtivoFalse();
+        verify(produtoRepository, times(1)).findAll(any(Specification.class), eq(pageable));
         verify(produtoMapper, times(1)).toResponseDTO(produto);
     }
 

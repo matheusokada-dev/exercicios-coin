@@ -1,5 +1,6 @@
 package br.com.coin.cadastroprodutos.controllers;
 
+import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
@@ -9,11 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,33 +54,21 @@ class ProdutoControllerTest {
     }
 
     @Test
-    void testListarProdutosAtivos() {
+    void testListarProdutos() {
         // Arrange
-        List<ProdutoResponseDTO> produtos = new ArrayList<>();
-        when(produtoService.listarAtivos()).thenReturn(produtos);
+        FiltroProdutoDTO filtro = new FiltroProdutoDTO("Arroz", "todos", null, null);
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("nome").ascending());
+        ProdutoResponseDTO produto = new ProdutoResponseDTO(1L, "Arroz", BigDecimal.valueOf(10.00), true);
+        Page<ProdutoResponseDTO> produtos = new PageImpl<>(List.of(produto), pageable, 1);
+        when(produtoService.listar(filtro, pageable)).thenReturn(produtos);
 
         // Act
-        ResponseEntity<List<ProdutoResponseDTO>> response = produtoController.listarAtivos();
+        Page<ProdutoResponseDTO> response = produtoController.listar(filtro, pageable);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(produtos, response.getBody());
-        verify(produtoService, times(1)).listarAtivos();
-    }
-
-    @Test
-    void testListarProdutosInativos() {
-        // Arrange
-        List<ProdutoResponseDTO> produtos = new ArrayList<>();
-        when(produtoService.listarInativos()).thenReturn(produtos);
-
-        // Act
-        ResponseEntity<List<ProdutoResponseDTO>> response = produtoController.listarInativos();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(produtos, response.getBody());
-        verify(produtoService, times(1)).listarInativos();
+        assertEquals(produtos, response);
+        assertEquals(1, response.getTotalElements());
+        verify(produtoService, times(1)).listar(filtro, pageable);
     }
 
     @Test

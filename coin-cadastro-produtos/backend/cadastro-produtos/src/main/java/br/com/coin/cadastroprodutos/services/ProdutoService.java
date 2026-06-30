@@ -1,6 +1,7 @@
 package br.com.coin.cadastroprodutos.services;
 
 
+import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
 import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
@@ -9,11 +10,12 @@ import br.com.coin.cadastroprodutos.exceptions.ProdutoDesativadoException;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoNaoEncontradoException;
 import br.com.coin.cadastroprodutos.mappers.ProdutoMapper;
 import br.com.coin.cadastroprodutos.repositories.ProdutoRepository;
+import br.com.coin.cadastroprodutos.specifications.ProdutoSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +31,13 @@ public class ProdutoService {
         return produtoMapper.toResponseDTO(produtoSalvo);
     }
 
-    @Transactional
-    public List<ProdutoResponseDTO> listarAtivos() {
-        return produtoRepository.findByAtivoTrue()
-                .stream()
-                .map(produtoMapper::toResponseDTO)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<ProdutoResponseDTO> listar(FiltroProdutoDTO filtro, Pageable pageable) {
+        return produtoRepository
+                .findAll(ProdutoSpecification.comFiltros(filtro), pageable)
+                .map(produtoMapper::toResponseDTO);
     }
 
-    public List<ProdutoResponseDTO> listarInativos() {
-        return produtoRepository.findByAtivoFalse()
-                .stream()
-                .map(produtoMapper::toResponseDTO)
-                .toList();
-    }
 
     @Transactional
     public ProdutoResponseDTO buscarPorId(Long id) {

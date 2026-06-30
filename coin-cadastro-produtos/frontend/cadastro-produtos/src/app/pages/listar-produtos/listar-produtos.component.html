@@ -1,6 +1,8 @@
-<main class="form-page">
-
+<main class="form-page form-page--wide">
   <section class="form-card list-card">
+    <div class="toolbar">
+      <a routerLink="/" class="btn btn-secondary">Voltar</a>
+    </div>
 
     <h1>Listar Produtos</h1>
 
@@ -8,52 +10,201 @@
       Veja abaixo os produtos cadastrados no sistema.
     </p>
 
-    <div class="actions">
-      <a routerLink="/" class="btn btn-secondary">Voltar</a>
+    <section class="filters">
+      <div class="field">
+        <label for="busca">Buscar</label>
+        <input
+          id="busca"
+          type="text"
+          name="busca"
+          placeholder="Buscar por nome"
+          [(ngModel)]="busca"
+          (ngModelChange)="aplicarFiltros()"
+        >
+      </div>
 
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="listar()"
-      >
-        Buscar produtos
-      </button>
-    </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status" [(ngModel)]="filtroStatus" (ngModelChange)="aplicarFiltros()">
+          <option value="todos">Todos</option>
+          <option value="ativos">Ativos</option>
+          <option value="inativos">Inativos</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="precoMinimo">Preco minimo</label>
+        <input
+          id="precoMinimo"
+          type="text"
+          name="precoMinimo"
+          inputmode="numeric"
+          placeholder="R$ 0,00"
+          [ngModel]="precoMinimoFormatado"
+          (ngModelChange)="aoDigitarPrecoMinimo($event)"
+          (blur)="aplicarFiltros()"
+        >
+      </div>
+
+      <div class="field">
+        <label for="precoMaximo">Preco maximo</label>
+        <input
+          id="precoMaximo"
+          type="text"
+          name="precoMaximo"
+          inputmode="numeric"
+          placeholder="R$ 0,00"
+          [ngModel]="precoMaximoFormatado"
+          (ngModelChange)="aoDigitarPrecoMaximo($event)"
+          (blur)="aplicarFiltros()"
+        >
+      </div>
+
+      <div class="field">
+        <label for="ordenacao">Ordenar por</label>
+        <select id="ordenacao" name="ordenacao" [(ngModel)]="ordenacao" (ngModelChange)="aplicarFiltros()">
+          <option value="nome,asc">Nome A-Z</option>
+          <option value="nome,desc">Nome Z-A</option>
+          <option value="id,asc">Codigo crescente</option>
+          <option value="id,desc">Codigo decrescente</option>
+          <option value="preco,asc">Menor preco</option>
+          <option value="preco,desc">Maior preco</option>
+          <option value="ativo,desc">Ativos primeiro</option>
+          <option value="ativo,asc">Inativos primeiro</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="tamanhoPagina">Resultados</label>
+        <select
+          id="tamanhoPagina"
+          name="tamanhoPagina"
+          [(ngModel)]="tamanhoPagina"
+          (ngModelChange)="aplicarFiltros()"
+        >
+          <option *ngFor="let opcao of opcoesTamanhoPagina" [ngValue]="opcao">
+            {{ opcao }} por pagina
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
+        <button type="button" class="btn btn-secondary" (click)="limparFiltros()">Limpar filtros</button>
+      </div>
+    </section>
 
     <p
       class="message"
       [class.success]="tipoMensagem === 'sucesso'"
       [class.error]="tipoMensagem === 'erro'"
+      *ngIf="mensagem"
     >
       {{ mensagem }}
     </p>
 
-    <div class="table-container" *ngIf="produtos.length > 0">
-
+    <div class="table-container" *ngIf="produtos.length > 0; else vazio">
       <table class="product-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Codigo</th>
             <th>Nome</th>
-            <th>Preço</th>
-            <th>Ativo</th>
+            <th>Preco</th>
+            <th>Status</th>
+            <th>Acoes</th>
           </tr>
         </thead>
 
         <tbody>
-          
           <tr *ngFor="let produto of produtos">
-            <td>{{ produto.id }}</td>
+            <td>#{{ produto.id }}</td>
             <td>{{ produto.nome }}</td>
             <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-            <td>{{ produto.ativo ? 'Sim' : 'Não' }}</td>
+            <td>
+              <span
+                class="status"
+                [class.status-active]="produto.ativo"
+                [class.status-inactive]="!produto.ativo"
+              >
+                {{ produto.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button type="button" class="btn btn-secondary" (click)="alterarProduto(produto)">
+                  Alterar
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  [disabled]="!produto.ativo"
+                  (click)="abrirModalExclusao(produto)"
+                >
+                  Excluir
+                </button>
+              </div>
+            </td>
           </tr>
-          
         </tbody>
       </table>
-
     </div>
 
+    <ng-template #vazio>
+      <p class="empty-state">Nenhum produto encontrado.</p>
+    </ng-template>
+
+    <div class="pagination" *ngIf="totalPaginas > 0">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        [disabled]="paginaAtual === 0"
+        (click)="irParaPagina(paginaAtual - 1)"
+      >
+        Anterior
+      </button>
+
+      <span>Pagina {{ paginaAtual + 1 }} de {{ totalPaginas }}</span>
+      <span>{{ totalElementos }} produtos encontrados</span>
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        [disabled]="paginaAtual + 1 >= totalPaginas"
+        (click)="irParaPagina(paginaAtual + 1)"
+      >
+        Proxima
+      </button>
+    </div>
   </section>
 
+  <div class="modal-backdrop" *ngIf="modalExclusaoAberto && produtoParaExcluir">
+    <section class="modal">
+      <h2>Confirmar exclusao do produto</h2>
+
+      <p>Este produto sera marcado como inativo.</p>
+
+      <dl class="review-list">
+        <dt>Produto</dt>
+        <dd>{{ produtoParaExcluir.nome }}</dd>
+
+        <dt>Codigo</dt>
+        <dd>#{{ produtoParaExcluir.id }}</dd>
+
+        <dt>Preco</dt>
+        <dd>{{ produtoParaExcluir.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
+
+        <dt>Status atual</dt>
+        <dd>{{ produtoParaExcluir.ativo ? 'Ativo' : 'Inativo' }}</dd>
+
+        <dt>Status apos exclusao</dt>
+        <dd>Inativo</dd>
+      </dl>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="fecharModalExclusao()">Cancelar</button>
+        <button type="button" class="btn btn-danger" (click)="confirmarExclusao()">Confirmar exclusao</button>
+      </div>
+    </section>
+  </div>
 </main>

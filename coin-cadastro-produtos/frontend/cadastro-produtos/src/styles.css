@@ -1,1 +1,255 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #F2F2F5;
+  color: #1A1A2E;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+:root {
+  --clr-bg: #F2F2F5;
+  --clr-surface: #FFFFFF;
+  --clr-border: #E4E4E8;
+  --clr-accent: #B5253A;
+  --clr-accent-lt: #FAF0F2;
+  --clr-text: #1A1A2E;
+  --clr-muted: #6B6B80;
+  --clr-success: #267A3E;
+  --clr-success-bg: #EAF7EF;
+  --radius-card: 10px;
+  --shadow-card: 0 1px 4px rgba(0, 0, 0, .07), 0 2px 10px rgba(0, 0, 0, .05);
+}
+
+a {
+  color: inherit;
+}
+
+.form-page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.form-page--wide {
+  max-width: 980px;
+}
+
+.form-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 28px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0 0 8px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.description {
+  color: var(--clr-muted);
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+input,
+select {
+  width: 100%;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  color: var(--clr-text);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--clr-accent);
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-block;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 11px 18px;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.btn-primary,
+.btn-danger {
+  background: var(--clr-accent);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--clr-accent-lt);
+  color: var(--clr-accent);
+}
+
+.message {
+  font-size: 14px;
+  margin: 18px 0 0;
+}
+
+.message.success {
+  color: var(--clr-success);
+}
+
+.message.error {
+  color: var(--clr-accent);
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: -8px 0 18px;
+}
+
+.search-results button {
+  width: 100%;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  color: var(--clr-text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.search-results button:hover {
+  background: var(--clr-accent-lt);
+  border-color: var(--clr-accent);
+}
+
+.selected-product {
+  background: var(--clr-accent-lt);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  color: var(--clr-accent);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 26, 46, .45);
+  padding: 24px;
+}
+
+.modal {
+  width: 100%;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: var(--clr-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+}
+
+.modal h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.modal h3 {
+  font-size: 15px;
+  margin: 18px 0 10px;
+}
+
+.review-list {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px 12px;
+  margin: 18px 0;
+}
+
+.review-list dt {
+  color: var(--clr-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-list dd {
+  font-size: 13px;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .form-page {
+    padding: 32px 16px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions .btn {
+    text-align: center;
+    width: 100%;
+  }
+
+  .review-list {
+    grid-template-columns: 1fr;
+  }
+}
