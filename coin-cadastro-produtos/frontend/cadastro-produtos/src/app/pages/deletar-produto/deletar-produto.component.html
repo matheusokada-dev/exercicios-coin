@@ -1,14 +1,27 @@
 <main class="form-page">
   <section class="form-card">
-    <div class="toolbar">
-      <a routerLink="/" class="btn btn-secondary">Voltar</a>
-    </div>
 
-    <h1>Deletar Produto</h1>
+    <header class="page-header">
 
-    <p class="description">
-      Busque um produto ativo e confirme a delecao para marca-lo como inativo.
-    </p>
+      <div class="page-title-area">
+        <nav class="breadcrumb" aria-label="Navegacao">
+          <a routerLink="/">Menu</a>
+          <span>/</span>
+          <span>Deletar Produto</span>
+        </nav>
+        <h1>Deletar Produto</h1>
+
+        <p class="description">
+          Busque um produto ativo e confirme a deleção para marcá-lo como inativo.
+        </p>
+
+      </div>
+
+      <div class="toolbar">
+        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+      </div>
+
+    </header>
 
     <div class="field">
       <label for="busca">Buscar produto</label>
@@ -38,13 +51,13 @@
       </p>
 
       <dl class="review-list">
-        <dt>Codigo</dt>
+        <dt>Código</dt>
         <dd>#{{ id }}</dd>
 
         <dt>Nome</dt>
         <dd>{{ nome }}</dd>
 
-        <dt>Preco</dt>
+        <dt>Preço</dt>
         <dd>{{ preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
 
         <dt>Status</dt>
@@ -68,24 +81,24 @@
 
   <div class="modal-backdrop" *ngIf="modalConfirmacaoAberto">
     <section class="modal">
-      <h2>Confirmar delecao do produto</h2>
+      <h2>Confirmar deleção do produto</h2>
 
-      <p>Este produto sera marcado como inativo.</p>
+      <p>Este produto será marcado como inativo.</p>
 
       <dl class="review-list">
-        <dt>Codigo</dt>
+        <dt>Código</dt>
         <dd>#{{ id }}</dd>
 
         <dt>Nome</dt>
         <dd>{{ nome }}</dd>
 
-        <dt>Preco</dt>
+        <dt>Preço</dt>
         <dd>{{ preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
 
         <dt>Status atual</dt>
         <dd>{{ ativo ? 'Ativo' : 'Inativo' }}</dd>
 
-        <dt>Status apos delecao</dt>
+        <dt>Status após deleção</dt>
         <dd>Inativo</dd>
       </dl>
 

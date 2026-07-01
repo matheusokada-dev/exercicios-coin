@@ -143,7 +143,10 @@ export class ListarProdutosComponent implements OnInit {
 
   alterarProduto(produto: ProdutoResponseDTO): void {
     this.router.navigate(['/alterar-produto'], {
-      queryParams: { id: produto.id }
+      queryParams: {
+        id: produto.id,
+        origem: 'listagem'
+      }
     });
   }
 

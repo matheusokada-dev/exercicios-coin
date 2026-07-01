@@ -1,15 +1,26 @@
 <main class="form-page form-page--wide">
   <section class="form-card list-card">
-    <div class="toolbar">
-      <a routerLink="/" class="btn btn-secondary">Voltar</a>
-    </div>
 
-    <h1>Listar Produtos</h1>
+    <header class="page-header">
 
-    <p class="description">
-      Veja abaixo os produtos cadastrados no sistema.
-    </p>
 
+      <div class="page-title-area">
+        <nav class="breadcrumb" aria-label="Navegacao">
+          <a routerLink="/">Menu</a>
+          <span>/</span>
+          <span>Listar Produtos</span>
+        </nav>
+        <h1>Listar Produtos</h1>
+        <p class="description">
+          Veja abaixo os produtos cadastrados no sistema.
+        </p>
+      </div>
+
+      <div class="toolbar">
+        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+      </div>
+
+    </header>
     <section class="filters">
       <div class="field">
         <label for="busca">Buscar</label>
@@ -33,7 +44,7 @@
       </div>
 
       <div class="field">
-        <label for="precoMinimo">Preco minimo</label>
+        <label for="precoMinimo">Preço mínimo</label>
         <input
           id="precoMinimo"
           type="text"
@@ -47,7 +58,7 @@
       </div>
 
       <div class="field">
-        <label for="precoMaximo">Preco maximo</label>
+        <label for="precoMaximo">Preço máximo</label>
         <input
           id="precoMaximo"
           type="text"
@@ -65,10 +76,10 @@
         <select id="ordenacao" name="ordenacao" [(ngModel)]="ordenacao" (ngModelChange)="aplicarFiltros()">
           <option value="nome,asc">Nome A-Z</option>
           <option value="nome,desc">Nome Z-A</option>
-          <option value="id,asc">Codigo crescente</option>
-          <option value="id,desc">Codigo decrescente</option>
-          <option value="preco,asc">Menor preco</option>
-          <option value="preco,desc">Maior preco</option>
+          <option value="id,asc">Código crescente</option>
+          <option value="id,desc">Código decrescente</option>
+          <option value="preco,asc">Menor preço</option>
+          <option value="preco,desc">Maior preço</option>
           <option value="ativo,desc">Ativos primeiro</option>
           <option value="ativo,asc">Inativos primeiro</option>
         </select>
@@ -83,7 +94,7 @@
           (ngModelChange)="aplicarFiltros()"
         >
           <option *ngFor="let opcao of opcoesTamanhoPagina" [ngValue]="opcao">
-            {{ opcao }} por pagina
+            {{ opcao }} por página
           </option>
         </select>
       </div>
@@ -106,21 +117,21 @@
     <div class="table-container" *ngIf="produtos.length > 0; else vazio">
       <table class="product-table">
         <thead>
-          <tr>
-            <th>Codigo</th>
-            <th>Nome</th>
-            <th>Preco</th>
-            <th>Status</th>
-            <th>Acoes</th>
-          </tr>
+        <tr>
+          <th>Código</th>
+          <th>Nome</th>
+          <th>Preço</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let produto of produtos">
-            <td>#{{ produto.id }}</td>
-            <td>{{ produto.nome }}</td>
-            <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-            <td>
+        <tr *ngFor="let produto of produtos">
+          <td>#{{ produto.id }}</td>
+          <td>{{ produto.nome }}</td>
+          <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+          <td>
               <span
                 class="status"
                 [class.status-active]="produto.ativo"
@@ -128,24 +139,24 @@
               >
                 {{ produto.ativo ? 'Ativo' : 'Inativo' }}
               </span>
-            </td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="btn btn-secondary" (click)="alterarProduto(produto)">
-                  Alterar
-                </button>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button type="button" class="btn btn-secondary" (click)="alterarProduto(produto)">
+                Alterar
+              </button>
 
-                <button
-                  type="button"
-                  class="btn btn-danger"
-                  [disabled]="!produto.ativo"
-                  (click)="abrirModalExclusao(produto)"
-                >
-                  Excluir
-                </button>
-              </div>
-            </td>
-          </tr>
+              <button
+                type="button"
+                class="btn btn-danger"
+                [disabled]="!produto.ativo"
+                (click)="abrirModalExclusao(produto)"
+              >
+                Excluir
+              </button>
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -164,7 +175,7 @@
         Anterior
       </button>
 
-      <span>Pagina {{ paginaAtual + 1 }} de {{ totalPaginas }}</span>
+      <span>Página {{ paginaAtual + 1 }} de {{ totalPaginas }}</span>
       <span>{{ totalElementos }} produtos encontrados</span>
 
       <button
@@ -180,24 +191,24 @@
 
   <div class="modal-backdrop" *ngIf="modalExclusaoAberto && produtoParaExcluir">
     <section class="modal">
-      <h2>Confirmar exclusao do produto</h2>
+      <h2>Confirmar exclusão do produto</h2>
 
-      <p>Este produto sera marcado como inativo.</p>
+      <p>Este produto será marcado como inativo.</p>
 
       <dl class="review-list">
         <dt>Produto</dt>
         <dd>{{ produtoParaExcluir.nome }}</dd>
 
-        <dt>Codigo</dt>
+        <dt>Código</dt>
         <dd>#{{ produtoParaExcluir.id }}</dd>
 
-        <dt>Preco</dt>
+        <dt>Preço</dt>
         <dd>{{ produtoParaExcluir.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
 
         <dt>Status atual</dt>
         <dd>{{ produtoParaExcluir.ativo ? 'Ativo' : 'Inativo' }}</dd>
 
-        <dt>Status apos exclusao</dt>
+        <dt>Status após exclusão</dt>
         <dd>Inativo</dd>
       </dl>
 

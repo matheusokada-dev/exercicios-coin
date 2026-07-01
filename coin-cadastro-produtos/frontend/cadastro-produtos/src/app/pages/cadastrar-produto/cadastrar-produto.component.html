@@ -1,14 +1,27 @@
 <main class="form-page">
   <section class="form-card">
-    <div class="toolbar">
-      <a routerLink="/" class="btn btn-secondary">Voltar</a>
-    </div>
 
-    <h1>Cadastrar Produto</h1>
+    <header class="page-header">
 
-    <p class="description">
-      Preencha os dados abaixo para cadastrar um novo produto.
-    </p>
+      <div class="page-title-area">
+        <nav class="breadcrumb" aria-label="Navegacao">
+          <a routerLink="/">Menu</a>
+          <span>/</span>
+          <span>Cadastrar Produto</span>
+        </nav>
+
+        <h1>Cadastrar Produto</h1>
+        <p class="description">
+          Preencha os dados abaixo para cadastrar um novo produto.
+        </p>
+      </div>
+
+      <div class="toolbar">
+        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+      </div>
+
+    </header>
+
 
     <form (ngSubmit)="cadastrar()">
       <div class="field">
@@ -17,7 +30,7 @@
       </div>
 
       <div class="field">
-        <label for="preco">Preco</label>
+        <label for="preco">Preço</label>
         <input
           id="preco"
           type="text"
@@ -55,7 +68,7 @@
         <dt>Nome</dt>
         <dd>{{ nomePadronizado }}</dd>
 
-        <dt>Preco</dt>
+        <dt>Preço</dt>
         <dd>{{ preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
 
         <dt>Status inicial</dt>

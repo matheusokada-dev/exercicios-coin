@@ -1,31 +1,31 @@
 # Coin Cadastro de Produtos
 
-Aplicacao full stack para cadastro, listagem, alteracao e exclusao logica de produtos.
+Aplicação full stack para cadastro, listagem, alteração e exclusão lógica de produtos.
 
-O projeto possui um backend em Spring Boot e um frontend em Angular. O backend expoe uma API REST para produtos, usa MySQL como banco de dados e Flyway para criar/popular a tabela inicial. O frontend consome essa API e oferece fluxos com busca, filtros, paginacao, ordenacao e modais de confirmacao.
+O projeto possui um backend em Spring Boot e um frontend em Angular. O backend expõe uma API REST para produtos, usa MySQL como banco de dados e Flyway para criar/popular a tabela inicial. O frontend consome essa API e oferece fluxos com busca, filtros, paginação, ordenação e modais de confirmação.
 
 ## Tecnologias
 
 ### Backend
 
-- Java 21
-- Spring Boot 3.5.0
-- Spring Web
-- Spring Data JPA
-- Bean Validation
-- MySQL
-- Flyway
-- Lombok
-- JUnit 5
-- Mockito
+* Java 21
+* Spring Boot 3.5.0
+* Spring Web
+* Spring Data JPA
+* Bean Validation
+* MySQL
+* Flyway
+* Lombok
+* JUnit 5
+* Mockito
 
 ### Frontend
 
-- Angular 19
-- TypeScript
-- Angular Router
-- Angular Forms
-- HttpClient
+* Angular 19
+* TypeScript
+* Angular Router
+* Angular Forms
+* HttpClient
 
 ## Estrutura do Projeto
 
@@ -58,20 +58,19 @@ coin-cadastro-produtos/
 
 ## Funcionalidades
 
-- Cadastrar produto com modal de confirmacao.
-- Criar produto como ativo por padrao.
-- Listar todos os produtos, ativos e inativos.
-- Filtrar por nome, status e faixa de preco.
-- Ordenar por nome, codigo, preco e status.
-- Paginar resultados com 5, 10, 20 ou 50 itens por pagina.
-- Alterar produto a partir de busca ou da listagem.
-- Alterar status do produto com switch Ativo/Inativo.
-- Confirmar alteracoes em modal com campos modificados e dados finais.
-- Excluir produto com modal de confirmacao.
-- Manter produto excluido como inativo, sem remove-lo do banco.
-- Padronizar nomes de produtos, preservando siglas conhecidas como HDMI e USB.
+* Cadastrar produto com modal de confirmação.
+* Criar produto como ativo por padrão.
+* Listar todos os produtos, ativos e inativos.
+* Filtrar por nome, status e faixa de preço.
+* Ordenar por nome, código, preço e status.
+* Paginar resultados com 5, 10, 20 ou 50 itens por página.
+* Alterar produto a partir de busca ou da listagem.
+* Alterar status do produto com switch Ativo/Inativo.
+* Confirmar alterações em modal com campos modificados e dados finais.
+* Excluir produto com modal de confirmação.
+* Manter produto excluído como inativo, sem removê-lo do banco.
 
-Observacao: a operacao de excluir nao remove o produto do banco. Ela faz uma exclusao logica, alterando o campo `ativo` para `false`.
+Observação: a operação de excluir não remove o produto do banco. Ela faz uma exclusão lógica, alterando o campo `ativo` para `false`.
 
 ## Banco de Dados
 
@@ -87,13 +86,13 @@ Crie o banco antes de iniciar o backend:
 CREATE DATABASE coin_cadastro_produtos;
 ```
 
-As configuracoes atuais ficam em:
+As configurações atuais ficam em:
 
 ```text
 backend/cadastro-produtos/src/main/resources/application.properties
 ```
 
-Configuracao usada pelo projeto:
+Configuração usada pelo projeto:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/coin_cadastro_produtos
@@ -110,8 +109,8 @@ backend/cadastro-produtos/src/main/resources/db/migration
 
 Migrations atuais:
 
-- `V1__criar_tabela_produtos.sql`: cria a tabela `produtos`
-- `V2__insert_produtos.sql`: insere produtos iniciais
+* `V1__criar_tabela_produtos.sql`: cria a tabela `produtos`
+* `V2__insert_produtos.sql`: insere produtos iniciais
 
 ## Endpoints da API
 
@@ -155,17 +154,17 @@ GET /produtos
 
 Retorna produtos ativos e inativos em formato paginado.
 
-Parametros aceitos:
+Parâmetros aceitos:
 
-| Parametro | Exemplo | Descricao |
-|---|---:|---|
-| `page` | `0` | Pagina solicitada. A primeira pagina e `0`. |
-| `size` | `5` | Quantidade de itens por pagina. |
-| `sort` | `nome,asc` | Campo e direcao da ordenacao. |
-| `busca` | `cabo` | Busca por nome do produto. |
-| `status` | `ativos` | Aceita `todos`, `ativos` ou `inativos`. |
-| `precoMinimo` | `10.00` | Preco minimo, inclusivo. |
-| `precoMaximo` | `100.00` | Preco maximo, inclusivo. |
+| Parâmetro     |    Exemplo | Descrição                                   |
+| ------------- | ---------: | ------------------------------------------- |
+| `page`        |        `0` | Página solicitada. A primeira página é `0`. |
+| `size`        |        `5` | Quantidade de itens por página.             |
+| `sort`        | `nome,asc` | Campo e direção da ordenação.               |
+| `busca`       |     `cabo` | Busca por nome do produto.                  |
+| `status`      |   `ativos` | Aceita `todos`, `ativos` ou `inativos`.     |
+| `precoMinimo` |    `10.00` | Preço mínimo, inclusivo.                    |
+| `precoMaximo` |   `100.00` | Preço máximo, inclusivo.                    |
 
 Exemplo:
 
@@ -192,16 +191,16 @@ Resposta esperada:
 }
 ```
 
-Ordenacoes usadas pelo frontend:
+Ordenações usadas pelo frontend:
 
-- `nome,asc`
-- `nome,desc`
-- `id,asc`
-- `id,desc`
-- `preco,asc`
-- `preco,desc`
-- `ativo,desc`
-- `ativo,asc`
+* `nome,asc`
+* `nome,desc`
+* `id,asc`
+* `id,desc`
+* `preco,asc`
+* `preco,desc`
+* `ativo,desc`
+* `ativo,asc`
 
 ### Buscar Produto por ID
 
@@ -248,56 +247,56 @@ Resposta esperada:
 204 No Content
 ```
 
-Observacao: o endpoint marca o produto como inativo. Se o produto ja estiver inativo, a API retorna erro tratado.
+Observação: o endpoint marca o produto como inativo. Se o produto já estiver inativo, a API retorna erro tratado.
 
 ## Fluxos do Frontend
 
 ### Cadastro
 
-1. Usuario preenche nome e preco.
-2. Sistema padroniza o nome para revisao.
-3. Modal mostra nome, preco e status inicial `Ativo`.
-4. Usuario confirma o cadastro.
-5. Sistema exibe mensagem de sucesso ou erro.
+1. O usuário preenche nome e preço.
+2. O sistema padroniza o nome para revisão.
+3. O modal mostra nome, preço e status inicial `Ativo`.
+4. O usuário confirma o cadastro.
+5. O sistema exibe mensagem de sucesso ou erro.
 
 ### Listagem
 
-1. Tela carrega automaticamente com 5 produtos por pagina.
-2. Usuario pode buscar por nome.
-3. Usuario pode filtrar por status e faixa de preco.
-4. Usuario pode ordenar por nome, codigo, preco ou status.
-5. Qualquer filtro, ordenacao ou mudanca de tamanho volta para a pagina 1.
-6. Acoes por linha permitem alterar ou excluir.
-7. Produtos inativos continuam visiveis, mas nao podem ser excluidos novamente.
+1. A tela carrega automaticamente com 5 produtos por página.
+2. O usuário pode buscar por nome.
+3. O usuário pode filtrar por status e faixa de preço.
+4. O usuário pode ordenar por nome, código, preço ou status.
+5. Qualquer filtro, ordenação ou mudança de tamanho volta para a página 1.
+6. Ações por linha permitem alterar ou excluir.
+7. Produtos inativos continuam visíveis, mas não podem ser excluídos novamente.
 
-### Alteracao
+### Alteração
 
-1. Usuario busca um produto pelo nome ou abre a alteracao pela listagem.
-2. Formulario e preenchido automaticamente.
-3. Usuario altera nome, preco ou status.
-4. Modal mostra os campos modificados com antes/depois.
-5. Modal tambem mostra todos os dados finais.
-6. Usuario confirma ou volta para editar.
+1. O usuário busca um produto pelo nome ou abre a alteração pela listagem.
+2. O formulário é preenchido automaticamente.
+3. O usuário altera nome, preço ou status.
+4. O modal mostra os campos modificados com antes/depois.
+5. O modal também mostra todos os dados finais.
+6. O usuário confirma ou volta para editar.
 
-### Exclusao
+### Exclusão
 
-1. Usuario busca um produto ativo ou usa o botao da listagem.
-2. Sistema mostra os dados do produto.
-3. Modal informa que o produto sera marcado como inativo.
-4. Usuario confirma.
-5. Produto passa a aparecer como `Inativo`.
+1. O usuário busca um produto ativo ou usa o botão da listagem.
+2. O sistema mostra os dados do produto.
+3. O modal informa que o produto será marcado como inativo.
+4. O usuário confirma.
+5. O produto passa a aparecer como `Inativo`.
 
-## Padronizacao de Nomes
+## Padronização de Nomes
 
-O backend padroniza o nome no cadastro e na alteracao.
+O backend padroniza o nome no cadastro e na alteração.
 
 Exemplos:
 
-| Entrada | Saida |
-|---|---|
-| `aRRoZ` | `Arroz` |
-| `arroz branco` | `Arroz Branco` |
-| `cabo hdmi` | `Cabo HDMI` |
+| Entrada         | Saída           |
+| --------------- | --------------- |
+| `aRRoZ`         | `Arroz`         |
+| `arroz branco`  | `Arroz Branco`  |
+| `cabo hdmi`     | `Cabo HDMI`     |
 | `adaptador usb` | `Adaptador USB` |
 
 Siglas conhecidas preservadas:
@@ -306,28 +305,28 @@ Siglas conhecidas preservadas:
 HDMI, USB, LED, LCD, SSD, HD, CPU, GPU, RAM, TV, DVD, CD, VGA, RGB
 ```
 
-## Validacoes
+## Validações
 
 No cadastro:
 
-- `nome` e obrigatorio
-- `preco` e obrigatorio
-- `preco` deve ser maior que zero
-- produto nasce ativo por padrao
+* `nome` é obrigatório.
+* `preco` é obrigatório.
+* `preco` deve ser maior que zero.
+* O produto nasce ativo por padrão.
 
-Na alteracao:
+Na alteração:
 
-- `nome` e obrigatorio
-- `nome` deve ter no maximo 120 caracteres
-- `preco` e obrigatorio
-- `preco` deve ser maior que zero
-- `ativo` e obrigatorio
+* `nome` é obrigatório.
+* `nome` deve ter no máximo 120 caracteres.
+* `preco` é obrigatório.
+* `preco` deve ser maior que zero.
+* `ativo` é obrigatório.
 
 Na listagem:
 
-- `precoMinimo` nao pode ser negativo
-- `precoMaximo` nao pode ser negativo
-- no frontend, `precoMinimo` nao pode ser maior que `precoMaximo`
+* `precoMinimo` não pode ser negativo.
+* `precoMaximo` não pode ser negativo.
+* No frontend, `precoMinimo` não pode ser maior que `precoMaximo`.
 
 ## Formato de Erro
 
@@ -336,16 +335,16 @@ Quando ocorre erro, a API retorna um objeto no formato:
 ```json
 {
   "codError": 1000,
-  "msgError": "Produto nao existente."
+  "msgError": "Produto não existente."
 }
 ```
 
 Exemplos de erros tratados:
 
-- Produto inexistente
-- Produto ja desativado
-- Request invalido
-- Erro generico
+* Produto inexistente.
+* Produto já desativado.
+* Request inválido.
+* Erro genérico.
 
 ## Como Executar
 
@@ -371,7 +370,7 @@ npm install
 npm start
 ```
 
-Por padrao, o Angular roda em:
+Por padrão, o Angular roda em:
 
 ```text
 http://localhost:4200
@@ -393,10 +392,10 @@ cd backend/cadastro-produtos
 mvnw.cmd test
 ```
 
-## Observacoes
+## Observações
 
-- O frontend consome a API em `http://localhost:8080/produtos`.
-- O backend libera CORS para `http://localhost:4200`.
-- O backend usa `spring.jpa.hibernate.ddl-auto=validate`, entao a estrutura do banco precisa estar de acordo com as migrations do Flyway.
-- Se o banco nao existir ou as credenciais estiverem incorretas, o backend nao inicia corretamente.
-- Depois de alterar regras no backend, reinicie a aplicacao para garantir que a versao nova esteja em execucao.
+* O frontend consome a API em `http://localhost:8080/produtos`.
+* O backend libera CORS para `http://localhost:4200`.
+* O backend usa `spring.jpa.hibernate.ddl-auto=validate`, então a estrutura do banco precisa estar de acordo com as migrations do Flyway.
+* Se o banco não existir ou as credenciais estiverem incorretas, o backend não inicia corretamente.
+* Depois de alterar regras no backend, reinicie a aplicação para garantir que a versão nova esteja em execução.

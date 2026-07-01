@@ -253,3 +253,42 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  color: var(--clr-muted);
+  font-size: 13px;
+}
+
+.breadcrumb a {
+  color: var(--clr-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb span {
+  color: var(--clr-muted);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+}
+
+.page-header::after {
+margin-bottom: 4px;
+}

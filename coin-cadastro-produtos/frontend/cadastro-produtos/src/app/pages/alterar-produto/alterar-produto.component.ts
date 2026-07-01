@@ -28,6 +28,8 @@ export class AlterarProdutoComponent implements OnInit {
   ativo = true;
 
   busca = '';
+  origem = '';
+
   resultadosBusca: ProdutoResponseDTO[] = [];
   produtoSelecionado: ProdutoResponseDTO | null = null;
   produtoOriginal: ProdutoResponseDTO | null = null;
@@ -44,19 +46,20 @@ export class AlterarProdutoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const id = Number(params['id']);
+this.route.queryParams.subscribe((params) => {
+  const id = Number(params['id']);
+  this.origem = params['origem'] || '';
 
-      if (id) {
-        this.produtoService.buscarPorId(id).subscribe({
-          next: (produto) => this.selecionarProduto(produto),
-          error: () => {
-            this.mensagem = 'Produto nao encontrado.';
-            this.tipoMensagem = 'erro';
-          }
-        });
+  if (id) {
+    this.produtoService.buscarPorId(id).subscribe({
+      next: (produto) => this.selecionarProduto(produto),
+      error: () => {
+        this.mensagem = 'Produto nao encontrado.';
+        this.tipoMensagem = 'erro';
       }
     });
+  }
+});
   }
 
   buscarProdutos(): void {
@@ -208,4 +211,8 @@ export class AlterarProdutoComponent implements OnInit {
     const palavraMinuscula = palavra.toLowerCase();
     return palavraMinuscula.charAt(0).toUpperCase() + palavraMinuscula.slice(1);
   }
+  
+  get rotaVoltar(): string {
+  return this.origem === 'listagem' ? '/listar-produtos' : '/';
+}
 }
