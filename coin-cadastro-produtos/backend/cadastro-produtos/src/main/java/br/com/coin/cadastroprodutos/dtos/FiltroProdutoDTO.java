@@ -8,10 +8,10 @@ public record FiltroProdutoDTO(
         String busca,
         String status,
 
-        @DecimalMin(value = "0.00", message = "Preco minimo nao pode ser negativo")
+        @DecimalMin(value = "0.00", message = "Preço mínimo não pode ser negativo")
         BigDecimal precoMinimo,
 
-        @DecimalMin(value = "0.00", message = "Preco maximo nao pode ser negativo")
+        @DecimalMin(value = "0.00", message = "Preço máximo não pode ser negativo")
         BigDecimal precoMaximo
 ) {
 }

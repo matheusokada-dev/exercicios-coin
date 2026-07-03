@@ -2,17 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ProdutoRequestDTO } from '../../models/ProdutoRequestDTO';
-import { ProdutoService } from '../../services/produto.service';
+import { delay, dematerialize, finalize, materialize } from 'rxjs';
+import { LoadingComponent } from '../../loading/loading.component';
+import { ProdutoRequestDTO } from '../../../models/ProdutoRequestDTO';
+import { ApiErrorService } from '../../../services/api-error.service';
+import { NotificationService } from '../../../services/notification.service';
+import { ProdutoService } from '../../../services/produto.service';
 
 @Component({
   selector: 'app-cadastrar-produto',
   standalone: true,
-  imports: [RouterLink, FormsModule, CommonModule],
+  imports: [RouterLink, FormsModule, CommonModule, LoadingComponent],
   templateUrl: './cadastrar-produto.component.html',
   styleUrl: './cadastrar-produto.component.css'
 })
 export class CadastrarProdutoComponent {
+  private readonly tempoLoadingMs = 1000;
   private readonly siglas = ['HDMI', 'USB', 'LED', 'LCD', 'SSD', 'HD', 'CPU', 'GPU', 'RAM', 'TV', 'DVD', 'CD', 'VGA', 'RGB'];
 
   nome = '';
@@ -20,16 +25,22 @@ export class CadastrarProdutoComponent {
   precoFormatado = '';
 
   modalConfirmacaoAberto = false;
+  processando = false;
 
   mensagem = '';
   tipoMensagem = 'sucesso';
 
-  constructor(private produtoService: ProdutoService) {}
+  constructor(
+    private produtoService: ProdutoService,
+    private notificationService: NotificationService,
+    private apiErrorService: ApiErrorService
+  ) {}
 
   cadastrar(): void {
     if (!this.nome.trim() || this.preco <= 0) {
-      this.mensagem = 'Preencha nome e preco antes de cadastrar.';
+      this.mensagem = 'Preencha nome e preço antes de cadastrar.';
       this.tipoMensagem = 'erro';
+      this.notificationService.error(this.mensagem);
       return;
     }
 
@@ -38,28 +49,44 @@ export class CadastrarProdutoComponent {
   }
 
   confirmarCadastro(): void {
+    if (this.processando) {
+      return;
+    }
+
     const produto: ProdutoRequestDTO = {
       nome: this.nomePadronizado,
       preco: this.preco,
     };
 
-    this.produtoService.cadastrar(produto).subscribe({
+    this.processando = true;
+    this.produtoService.cadastrar(produto).pipe(
+      materialize(),
+      delay(this.tempoLoadingMs),
+      dematerialize(),
+      finalize(() => this.processando = false)
+    ).subscribe({
       next: () => {
         this.mensagem = 'Produto cadastrado com sucesso.';
         this.tipoMensagem = 'sucesso';
+        this.notificationService.success(this.mensagem);
         this.modalConfirmacaoAberto = false;
         this.limparFormulario();
       },
       error: (erro) => {
         console.error(erro);
         this.tipoMensagem = 'erro';
-        this.mensagem = erro.error?.msgError || 'Erro ao cadastrar produto.';
+        this.mensagem = this.apiErrorService.obterMensagem(erro, 'Erro ao cadastrar produto.');
+        this.notificationService.error(this.mensagem);
         this.modalConfirmacaoAberto = false;
       }
     });
   }
 
   fecharModalConfirmacao(): void {
+    if (this.processando) {
+      return;
+    }
+
     this.modalConfirmacaoAberto = false;
   }
 

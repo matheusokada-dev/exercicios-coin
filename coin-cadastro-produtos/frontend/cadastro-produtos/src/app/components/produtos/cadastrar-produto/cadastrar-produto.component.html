@@ -1,10 +1,8 @@
 <main class="form-page">
   <section class="form-card">
-
     <header class="page-header">
-
       <div class="page-title-area">
-        <nav class="breadcrumb" aria-label="Navegacao">
+        <nav class="breadcrumb" aria-label="Navegação">
           <a routerLink="/">Menu</a>
           <span>/</span>
           <span>Cadastrar Produto</span>
@@ -19,9 +17,7 @@
       <div class="toolbar">
         <a routerLink="/" class="btn btn-secondary">Voltar</a>
       </div>
-
     </header>
-
 
     <form (ngSubmit)="cadastrar()">
       <div class="field">
@@ -75,11 +71,13 @@
         <dd>Ativo</dd>
       </dl>
 
+      <app-loading *ngIf="processando" mensagem="Cadastrando produto..."></app-loading>
+
       <div class="actions">
-        <button type="button" class="btn btn-secondary" (click)="fecharModalConfirmacao()">
+        <button type="button" class="btn btn-secondary" [disabled]="processando" (click)="fecharModalConfirmacao()">
           Voltar para editar
         </button>
-        <button type="button" class="btn btn-primary" (click)="confirmarCadastro()">
+        <button type="button" class="btn btn-primary" [disabled]="processando" (click)="confirmarCadastro()">
           Confirmar cadastro
         </button>
       </div>

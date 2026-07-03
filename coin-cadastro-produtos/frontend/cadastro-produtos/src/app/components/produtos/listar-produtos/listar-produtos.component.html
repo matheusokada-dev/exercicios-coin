@@ -1,11 +1,8 @@
 <main class="form-page form-page--wide">
   <section class="form-card list-card">
-
     <header class="page-header">
-
-
       <div class="page-title-area">
-        <nav class="breadcrumb" aria-label="Navegacao">
+        <nav class="breadcrumb" aria-label="Navegação">
           <a routerLink="/">Menu</a>
           <span>/</span>
           <span>Listar Produtos</span>
@@ -19,8 +16,8 @@
       <div class="toolbar">
         <a routerLink="/" class="btn btn-secondary">Voltar</a>
       </div>
-
     </header>
+
     <section class="filters">
       <div class="field">
         <label for="busca">Buscar</label>
@@ -100,8 +97,8 @@
       </div>
 
       <div class="filter-actions">
-        <button type="button" class="btn btn-primary" (click)="aplicarFiltros()">Filtrar</button>
-        <button type="button" class="btn btn-secondary" (click)="limparFiltros()">Limpar filtros</button>
+        <button type="button" class="btn btn-primary" [disabled]="carregando" (click)="aplicarFiltros()">Filtrar</button>
+        <button type="button" class="btn btn-secondary" [disabled]="carregando" (click)="limparFiltros()">Limpar filtros</button>
       </div>
     </section>
 
@@ -114,7 +111,9 @@
       {{ mensagem }}
     </p>
 
-    <div class="table-container" *ngIf="produtos.length > 0; else vazio">
+    <app-loading *ngIf="carregando" mensagem="Buscando produtos..."></app-loading>
+
+    <div class="table-container" *ngIf="!carregando && produtos.length > 0; else vazio">
       <table class="product-table">
         <thead>
         <tr>
@@ -162,10 +161,12 @@
     </div>
 
     <ng-template #vazio>
-      <p class="empty-state">Nenhum produto encontrado.</p>
+      <p class="empty-state" *ngIf="!carregando">
+        {{ mensagemResultado || 'Nenhum produto encontrado.' }}
+      </p>
     </ng-template>
 
-    <div class="pagination" *ngIf="totalPaginas > 0">
+    <div class="pagination" *ngIf="!carregando && totalPaginas > 0">
       <button
         type="button"
         class="btn btn-secondary"
@@ -212,9 +213,11 @@
         <dd>Inativo</dd>
       </dl>
 
+      <app-loading *ngIf="processando" mensagem="Excluindo produto..."></app-loading>
+
       <div class="actions">
-        <button type="button" class="btn btn-secondary" (click)="fecharModalExclusao()">Cancelar</button>
-        <button type="button" class="btn btn-danger" (click)="confirmarExclusao()">Confirmar exclusao</button>
+        <button type="button" class="btn btn-secondary" [disabled]="processando" (click)="fecharModalExclusao()">Cancelar</button>
+        <button type="button" class="btn btn-danger" [disabled]="processando" (click)="confirmarExclusao()">Confirmar exclusão</button>
       </div>
     </section>
   </div>

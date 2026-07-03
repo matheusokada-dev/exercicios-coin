@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
 
-import { MenuPrincipalComponent } from './pages/menu-principal/menu-principal.component';
-import { CadastrarProdutoComponent } from './pages/cadastrar-produto/cadastrar-produto.component';
-import { AlterarProdutoComponent } from './pages/alterar-produto/alterar-produto.component';
-import { DeletarProdutoComponent } from './pages/deletar-produto/deletar-produto.component';
-import { ListarProdutosComponent } from './pages/listar-produtos/listar-produtos.component';
+import { MenuPrincipalComponent } from './components/menu-principal';
+import { CadastrarProdutoComponent } from './components/produtos/cadastrar-produto';
+import { AlterarProdutoComponent } from './components/produtos/alterar-produto';
+import { DeletarProdutoComponent } from './components/produtos/deletar-produto';
+import { ListarProdutosComponent } from './components/produtos/listar-produtos';
+import { PaginaErroComponent } from './components/pagina-erro';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: ''
+    component: PaginaErroComponent
   }
 ];

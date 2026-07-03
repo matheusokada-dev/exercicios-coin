@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorEnum {
     ERRO_GENERICO(500, 1, "Algo deu errado, tente novamente mais tarde."),
+    BANCO_INDISPONIVEL(503, 2, "Falha temporária ao acessar o banco de dados."),
     PRODUTO_NAO_EXISTENTE(404, 1000, "Produto não existente."),
     PRODUTO_DESATIVADO(404, 1001, "Produto já desativado.");
 

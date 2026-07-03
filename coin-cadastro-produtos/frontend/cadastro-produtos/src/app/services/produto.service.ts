@@ -42,7 +42,7 @@ export class ProdutoService {
     let params = new HttpParams()
       .set('page', filtros.page)
       .set('size', filtros.size)
-      .set('sort', filtros.sort || 'nome,asc');
+      .set('sort', filtros.sort || 'id,asc');
 
     if (filtros.busca) {
       params = params.set('busca', filtros.busca);

@@ -2,9 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProdutoAlterarDTO } from '../../models/ProdutoAlterarDTO';
-import { ProdutoResponseDTO } from '../../models/ProdutoResponseDTO';
-import { ProdutoService } from '../../services/produto.service';
+import { delay, dematerialize, finalize, materialize } from 'rxjs';
+import { LoadingComponent } from '../../loading/loading.component';
+import { ProdutoAlterarDTO } from '../../../models/ProdutoAlterarDTO';
+import { ProdutoResponseDTO } from '../../../models/ProdutoResponseDTO';
+import { ApiErrorService } from '../../../services/api-error.service';
+import { NotificationService } from '../../../services/notification.service';
+import { ProdutoService } from '../../../services/produto.service';
 
 type CampoModificado = {
   campo: string;
@@ -14,11 +18,13 @@ type CampoModificado = {
 
 @Component({
   selector: 'app-alterar-produto',
-  imports: [RouterLink, FormsModule, CommonModule],
+  standalone: true,
+  imports: [RouterLink, FormsModule, CommonModule, LoadingComponent],
   templateUrl: './alterar-produto.component.html',
   styleUrl: './alterar-produto.component.css'
 })
 export class AlterarProdutoComponent implements OnInit {
+  private readonly tempoLoadingMs = 1000;
   private readonly siglas = ['HDMI', 'USB', 'LED', 'LCD', 'SSD', 'HD', 'CPU', 'GPU', 'RAM', 'TV', 'DVD', 'CD', 'VGA', 'RGB'];
 
   id = 0;
@@ -35,6 +41,7 @@ export class AlterarProdutoComponent implements OnInit {
   produtoOriginal: ProdutoResponseDTO | null = null;
 
   modalConfirmacaoAberto = false;
+  processando = false;
   camposModificados: CampoModificado[] = [];
 
   mensagem = '';
@@ -42,24 +49,27 @@ export class AlterarProdutoComponent implements OnInit {
 
   constructor(
     private produtoService: ProdutoService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notificationService: NotificationService,
+    private apiErrorService: ApiErrorService
   ) {}
 
   ngOnInit(): void {
-this.route.queryParams.subscribe((params) => {
-  const id = Number(params['id']);
-  this.origem = params['origem'] || '';
+    this.route.queryParams.subscribe((params) => {
+      const id = Number(params['id']);
+      this.origem = params['origem'] || '';
 
-  if (id) {
-    this.produtoService.buscarPorId(id).subscribe({
-      next: (produto) => this.selecionarProduto(produto),
-      error: () => {
-        this.mensagem = 'Produto nao encontrado.';
-        this.tipoMensagem = 'erro';
+      if (id) {
+        this.produtoService.buscarPorId(id).subscribe({
+          next: (produto) => this.selecionarProduto(produto),
+          error: () => {
+            this.mensagem = 'Produto não encontrado.';
+            this.tipoMensagem = 'erro';
+            this.notificationService.error(this.mensagem);
+          }
+        });
       }
     });
-  }
-});
   }
 
   buscarProdutos(): void {
@@ -75,7 +85,7 @@ this.route.queryParams.subscribe((params) => {
       size: 5,
       busca: termo,
       status: 'todos',
-      sort: 'nome,asc'
+      sort: 'id,asc'
     }).subscribe({
       next: (resposta) => {
         this.resultadosBusca = resposta.content;
@@ -83,6 +93,7 @@ this.route.queryParams.subscribe((params) => {
       error: () => {
         this.mensagem = 'Erro ao buscar produtos.';
         this.tipoMensagem = 'erro';
+        this.notificationService.error(this.mensagem);
       }
     });
   }
@@ -104,14 +115,16 @@ this.route.queryParams.subscribe((params) => {
     if (!this.produtoOriginal) {
       this.mensagem = 'Selecione um produto para alterar.';
       this.tipoMensagem = 'erro';
+      this.notificationService.error(this.mensagem);
       return;
     }
 
     this.camposModificados = this.obterCamposModificados();
 
     if (this.camposModificados.length === 0) {
-      this.mensagem = 'Nenhuma alteracao foi feita.';
+      this.mensagem = 'Nenhuma alteração foi feita.';
       this.tipoMensagem = 'erro';
+      this.notificationService.error(this.mensagem);
       return;
     }
 
@@ -131,7 +144,7 @@ this.route.queryParams.subscribe((params) => {
 
     if (this.produtoOriginal.preco !== this.preco) {
       alteracoes.push({
-        campo: 'Preco',
+        campo: 'Preço',
         antes: this.formatarMoeda(this.produtoOriginal.preco),
         depois: this.formatarMoeda(this.preco)
       });
@@ -149,28 +162,44 @@ this.route.queryParams.subscribe((params) => {
   }
 
   confirmarAlteracao(): void {
+    if (this.processando) {
+      return;
+    }
+
     const produto: ProdutoAlterarDTO = {
       nome: this.padronizarNome(this.nome),
       preco: this.preco,
       ativo: this.ativo
     };
 
-    this.produtoService.alterar(this.id, produto).subscribe({
+    this.processando = true;
+    this.produtoService.alterar(this.id, produto).pipe(
+      materialize(),
+      delay(this.tempoLoadingMs),
+      dematerialize(),
+      finalize(() => this.processando = false)
+    ).subscribe({
       next: (produtoAtualizado) => {
         this.mensagem = 'Produto alterado com sucesso.';
         this.tipoMensagem = 'sucesso';
+        this.notificationService.success(this.mensagem);
         this.modalConfirmacaoAberto = false;
         this.selecionarProduto(produtoAtualizado);
       },
       error: (erro) => {
-        this.mensagem = erro.error?.msgError || 'Nao foi possivel alterar o produto.';
+        this.mensagem = this.apiErrorService.obterMensagem(erro, 'Não foi possível alterar o produto.');
         this.tipoMensagem = 'erro';
+        this.notificationService.error(this.mensagem);
         this.modalConfirmacaoAberto = false;
       }
     });
   }
 
   fecharModalConfirmacao(): void {
+    if (this.processando) {
+      return;
+    }
+
     this.modalConfirmacaoAberto = false;
   }
 
@@ -187,6 +216,10 @@ this.route.queryParams.subscribe((params) => {
 
     this.preco = valorEmCentavos / 100;
     this.precoFormatado = this.formatarMoeda(this.preco);
+  }
+
+  get rotaVoltar(): string {
+    return this.origem === 'listagem' ? '/listar-produtos' : '/';
   }
 
   private padronizarNome(nome: string): string {
@@ -211,8 +244,4 @@ this.route.queryParams.subscribe((params) => {
     const palavraMinuscula = palavra.toLowerCase();
     return palavraMinuscula.charAt(0).toUpperCase() + palavraMinuscula.slice(1);
   }
-  
-  get rotaVoltar(): string {
-  return this.origem === 'listagem' ? '/listar-produtos' : '/';
-}
 }

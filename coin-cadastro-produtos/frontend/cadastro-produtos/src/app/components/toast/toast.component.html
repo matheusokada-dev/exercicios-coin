@@ -1,0 +1,10 @@
+<div
+  class="toast"
+  [class.toast--success]="notification.type === 'success'"
+  [class.toast--error]="notification.type === 'error'"
+  *ngIf="notification$ | async as notification"
+  role="status"
+  aria-live="polite"
+>
+  {{ notification.text }}
+</div>

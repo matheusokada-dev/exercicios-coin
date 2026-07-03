@@ -1,12 +1,9 @@
 <main class="form-page">
   <section class="form-card">
-
     <header class="page-header">
-
-
       <div class="page-title-area">
         <div class="page-breadcrumb">
-          <nav class="breadcrumb" aria-label="Navegacao">
+          <nav class="breadcrumb" aria-label="Navegação">
             <a routerLink="/">Menu</a>
 
             <ng-container *ngIf="origem === 'listagem'">
@@ -18,18 +15,16 @@
             <span>Alterar Produto</span>
           </nav>
         </div>
-        
+
         <h1>Alterar Produto</h1>
         <p class="description">
           Busque um produto, revise os dados carregados e confirme a alteração antes de salvar.
         </p>
       </div>
 
-
-
       <div class="toolbar">
-        <a [routerLink]="rotaVoltar" class="btn btn-secondary">Voltar</a></div>
-
+        <a [routerLink]="rotaVoltar" class="btn btn-secondary">Voltar</a>
+      </div>
     </header>
 
     <div class="field">
@@ -142,11 +137,13 @@
         <dd>{{ ativo ? 'Ativo' : 'Inativo' }}</dd>
       </dl>
 
+      <app-loading *ngIf="processando" mensagem="Salvando alteração..."></app-loading>
+
       <div class="actions">
-        <button type="button" class="btn btn-secondary" (click)="fecharModalConfirmacao()">
+        <button type="button" class="btn btn-secondary" [disabled]="processando" (click)="fecharModalConfirmacao()">
           Voltar para editar
         </button>
-        <button type="button" class="btn btn-primary" (click)="confirmarAlteracao()">
+        <button type="button" class="btn btn-primary" [disabled]="processando" (click)="confirmarAlteracao()">
           Confirmar
         </button>
       </div>

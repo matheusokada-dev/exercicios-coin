@@ -7,6 +7,7 @@ import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
 import br.com.coin.cadastroprodutos.services.ProdutoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,12 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/produtos")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+@Slf4j
 public class ProdutoController {
 
     private final ProdutoService produtoService;
 
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> criar(@Valid @RequestBody ProdutoRequestDTO dto) {
+        log.info("Recebida solicitacao para criar produto");
         ProdutoResponseDTO produtoCriado = produtoService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoCriado);
     }
@@ -40,14 +43,17 @@ public class ProdutoController {
     @GetMapping
     public Page<ProdutoResponseDTO> listar(
             @Valid FiltroProdutoDTO filtro,
-            @PageableDefault(size = 5, sort = "nome", direction = Sort.Direction.ASC)
+            @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
+        log.info("Recebida solicitacao para listar produtos. pagina={}, tamanho={}, ordenacao={}",
+                pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
         return produtoService.listar(filtro, pageable);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
+        log.info("Recebida solicitacao para buscar produto por id={}", id);
         return ResponseEntity.ok(produtoService.buscarPorId(id));
     }
 
@@ -56,11 +62,13 @@ public class ProdutoController {
             @PathVariable Long id,
             @Valid @RequestBody ProdutoUpdateDTO dto
     ) {
+        log.info("Recebida solicitacao para atualizar produto id={}", id);
         return ResponseEntity.ok(produtoService.atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
+        log.info("Recebida solicitacao para desativar produto id={}", id);
         produtoService.desativar(id);
         return ResponseEntity.noContent().build();
     }

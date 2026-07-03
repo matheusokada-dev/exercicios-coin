@@ -12,6 +12,7 @@ import br.com.coin.cadastroprodutos.mappers.ProdutoMapper;
 import br.com.coin.cadastroprodutos.repositories.ProdutoRepository;
 import br.com.coin.cadastroprodutos.specifications.ProdutoSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
@@ -28,14 +30,18 @@ public class ProdutoService {
     public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
         Produto produto = produtoMapper.toEntity(dto);
         Produto produtoSalvo = produtoRepository.save(produto);
+        log.info("Produto criado com id={}", produtoSalvo.getId());
         return produtoMapper.toResponseDTO(produtoSalvo);
     }
 
     @Transactional(readOnly = true)
     public Page<ProdutoResponseDTO> listar(FiltroProdutoDTO filtro, Pageable pageable) {
-        return produtoRepository
+        Page<ProdutoResponseDTO> produtos = produtoRepository
                 .findAll(ProdutoSpecification.comFiltros(filtro), pageable)
                 .map(produtoMapper::toResponseDTO);
+        log.info("Listagem de produtos retornou {} registros de um total de {}",
+                produtos.getNumberOfElements(), produtos.getTotalElements());
+        return produtos;
     }
 
 
@@ -50,6 +56,7 @@ public class ProdutoService {
         Produto produto = buscarProdutoPorId(id);
         produtoMapper.updateEntity(produto, dto);
         Produto produtoAtualizado = produtoRepository.save(produto);
+        log.info("Produto atualizado com id={}", produtoAtualizado.getId());
         return produtoMapper.toResponseDTO(produtoAtualizado);
     }
 
@@ -59,6 +66,7 @@ public class ProdutoService {
         verificarSeProdutoDesativado(produto);
         produto.setAtivo(false);
         produtoRepository.save(produto);
+        log.info("Produto desativado com id={}", id);
     }
 
     private Produto buscarProdutoPorId(Long id) {
