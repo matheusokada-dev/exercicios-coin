@@ -10,7 +10,7 @@ import { ProdutoResponseDTO } from '../models/ProdutoResponseDTO';
   providedIn: 'root'
 })
 export class ProdutoService {
-  private readonly apiUrl = 'http://localhost:8080/produtos';
+  private readonly apiUrl = 'http://localhost:8081/api/bff/produtos';
 
   constructor(private http: HttpClient) {}
 

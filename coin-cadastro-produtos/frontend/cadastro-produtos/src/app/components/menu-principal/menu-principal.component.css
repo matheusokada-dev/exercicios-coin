@@ -32,7 +32,7 @@
 
 .container {
   width: 100%;
-  max-width: 860px;
+  max-width: 1200px;
   flex: 1;
   flex-shrink: 0;
 }

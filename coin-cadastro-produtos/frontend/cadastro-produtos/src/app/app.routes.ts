@@ -29,6 +29,10 @@ export const routes: Routes = [
     component: ListarProdutosComponent
   },
   {
+  path: 'erro',
+  component: PaginaErroComponent
+  },
+  {
     path: '**',
     component: PaginaErroComponent
   }

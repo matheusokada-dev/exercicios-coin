@@ -15,28 +15,23 @@
       </div>
 
       <div class="toolbar">
-        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+        <a routerLink="/" class="btn btn-secondary btn-icon-text">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Voltar
+        </a>
       </div>
     </header>
 
     <div class="field">
       <label for="busca">Buscar produto</label>
-      <input
-        id="busca"
-        type="text"
-        name="busca"
-        placeholder="Buscar por nome"
-        [(ngModel)]="busca"
-        (ngModelChange)="buscarProdutos()"
-      >
+      <input id="busca" type="text" name="busca" placeholder="Buscar por nome" [(ngModel)]="busca" (ngModelChange)="buscarProdutos()">
     </div>
 
     <div class="search-results" *ngIf="resultadosBusca.length > 0">
-      <button
-        type="button"
-        *ngFor="let produto of resultadosBusca"
-        (click)="selecionarProduto(produto)"
-      >
+      <button type="button" *ngFor="let produto of resultadosBusca" (click)="selecionarProduto(produto)">
         {{ produto.nome }} - #{{ produto.id }} - {{ produto.ativo ? 'Ativo' : 'Inativo' }}
       </button>
     </div>
@@ -65,12 +60,7 @@
       </div>
     </form>
 
-    <p
-      class="message"
-      [class.success]="tipoMensagem === 'sucesso'"
-      [class.error]="tipoMensagem === 'erro'"
-      *ngIf="mensagem"
-    >
+    <p class="message" [class.success]="tipoMensagem === 'sucesso'" [class.error]="tipoMensagem === 'erro'" *ngIf="mensagem">
       {{ mensagem }}
     </p>
   </section>
@@ -101,12 +91,8 @@
       <app-loading *ngIf="processando" mensagem="Excluindo produto..."></app-loading>
 
       <div class="actions">
-        <button type="button" class="btn btn-secondary" [disabled]="processando" (click)="fecharModalConfirmacao()">
-          Cancelar
-        </button>
-        <button type="button" class="btn btn-danger" [disabled]="processando" (click)="confirmarDelecao()">
-          Excluir
-        </button>
+        <button type="button" class="btn btn-secondary" [disabled]="processando" (click)="fecharModalConfirmacao()">Cancelar</button>
+        <button type="button" class="btn btn-danger" [disabled]="processando" (click)="confirmarDelecao()">Excluir</button>
       </div>
     </section>
   </div>

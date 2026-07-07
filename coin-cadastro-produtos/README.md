@@ -1,39 +1,69 @@
 # Coin Cadastro de Produtos
 
-Aplicação full stack para cadastro, listagem, alteração e exclusão lógica de produtos.
+Aplicacao full stack para cadastro, listagem, alteracao e exclusao logica de produtos.
 
-O projeto possui um backend em Spring Boot e um frontend em Angular. O backend expõe uma API REST para produtos, usa MySQL como banco de dados e Flyway para criar/popular a tabela inicial. O frontend consome essa API e oferece fluxos com busca, filtros, paginação, ordenação e modais de confirmação.
+O projeto possui:
+
+- Backend de dominio em Spring Boot, responsavel por regras de produto, persistencia, validacoes e banco de dados.
+- BFF em Spring Boot, responsavel por expor um contrato especifico para o frontend e integrar com o backend de produtos.
+- Frontend em Angular, responsavel pela experiencia de uso.
+
+Arquitetura atual:
+
+```text
+Angular :4200
+  -> BFF Cadastro Produtos :8081
+      -> Backend Cadastro Produtos :8080
+          -> MySQL :3306
+```
 
 ## Tecnologias
 
-### Backend
+### Backend de Produtos
 
-* Java 21
-* Spring Boot 3.5.0
-* Spring Web
-* Spring Data JPA
-* Bean Validation
-* MySQL
-* Flyway
-* Lombok
-* JUnit 5
-* Mockito
+- Java 21
+- Spring Boot 3.5.0
+- Spring Web
+- Spring Data JPA
+- Bean Validation
+- MySQL
+- Flyway
+- Lombok
+- Springdoc OpenAPI / Swagger
+- JUnit 5
+- Mockito
+
+### BFF
+
+- Java 21
+- Spring Boot 3.5.0
+- Spring Web
+- Bean Validation
+- Spring Boot Actuator
+- RestClient
+- MapStruct
+- Lombok
+- Springdoc OpenAPI / Swagger
+- JUnit 5
+- Mockito
 
 ### Frontend
 
-* Angular 19
-* TypeScript
-* Angular Router
-* Angular Forms
-* HttpClient
+- Angular 19
+- TypeScript
+- Angular Router
+- Angular Forms
+- HttpClient
+- RxJS
 
-## Estrutura do Projeto
+## Estrutura Do Projeto
 
 ```text
 coin-cadastro-produtos/
   backend/
     cadastro-produtos/
       src/main/java/br/com/coin/cadastroprodutos/
+        config/
         controllers/
         dtos/
         entities/
@@ -48,33 +78,55 @@ coin-cadastro-produtos/
         application.properties
         db/migration/
       src/test/java/
+
+    bff-cadastro-produtos/
+      src/main/java/br/com/coin/bffcadastroprodutos/
+        clients/
+        config/
+        controllers/
+        dtos/
+          backend/
+          bff/
+        enums/
+        exceptions/
+        handlers/
+        mappers/
+        services/
+      src/main/resources/
+        application.properties
+      src/test/java/
+
   frontend/
     cadastro-produtos/
       src/app/
+        components/
+        interceptors/
         models/
-        pages/
         services/
 ```
 
 ## Funcionalidades
 
-* Cadastrar produto com modal de confirmação.
-* Criar produto como ativo por padrão.
-* Listar todos os produtos, ativos e inativos.
-* Filtrar por nome, status e faixa de preço.
-* Ordenar por nome, código, preço e status.
-* Paginar resultados com 5, 10, 20 ou 50 itens por página.
-* Alterar produto a partir de busca ou da listagem.
-* Alterar status do produto com switch Ativo/Inativo.
-* Confirmar alterações em modal com campos modificados e dados finais.
-* Excluir produto com modal de confirmação.
-* Manter produto excluído como inativo, sem removê-lo do banco.
+- Cadastrar produto com modal de confirmacao.
+- Criar produto como ativo por padrao.
+- Listar produtos ativos e inativos.
+- Filtrar por nome, status e faixa de preco.
+- Aplicar filtros somente ao clicar no botao `Filtrar`.
+- Alterar quantidade de itens por pagina diretamente, mantendo os filtros ja aplicados.
+- Ordenar por nome, codigo, preco e status.
+- Paginar resultados com 5, 10, 20 ou 50 itens por pagina.
+- Alterar produto a partir da listagem ou de busca.
+- Alterar status do produto entre ativo e inativo.
+- Confirmar alteracoes em modal com campos modificados.
+- Excluir produto por exclusao logica.
+- Exibir tela de erro para falhas de infraestrutura.
+- Disponibilizar Swagger para backend e BFF.
 
-Observação: a operação de excluir não remove o produto do banco. Ela faz uma exclusão lógica, alterando o campo `ativo` para `false`.
+Observacao: excluir produto nao remove o registro do banco. A operacao altera o campo `ativo` para `false`.
 
-## Banco de Dados
+## Banco De Dados
 
-O projeto espera um banco MySQL local com o nome:
+O backend de produtos espera um banco MySQL local com o nome:
 
 ```sql
 coin_cadastro_produtos
@@ -86,13 +138,11 @@ Crie o banco antes de iniciar o backend:
 CREATE DATABASE coin_cadastro_produtos;
 ```
 
-As configurações atuais ficam em:
+Configuracao atual:
 
 ```text
 backend/cadastro-produtos/src/main/resources/application.properties
 ```
-
-Configuração usada pelo projeto:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/coin_cadastro_produtos
@@ -109,10 +159,10 @@ backend/cadastro-produtos/src/main/resources/db/migration
 
 Migrations atuais:
 
-* `V1__criar_tabela_produtos.sql`: cria a tabela `produtos`
-* `V2__insert_produtos.sql`: insere produtos iniciais
+- `V1__criar_tabela_produtos.sql`: cria a tabela `produtos`
+- `V2__insert_produtos.sql`: insere produtos iniciais
 
-## Endpoints da API
+## Backend De Produtos
 
 Base URL:
 
@@ -120,56 +170,89 @@ Base URL:
 http://localhost:8080/produtos
 ```
 
-### Criar Produto
+Endpoints:
 
-```http
-POST /produtos
+```text
+POST   /produtos
+GET    /produtos
+GET    /produtos/{id}
+PUT    /produtos/{id}
+DELETE /produtos/{id}
 ```
 
-Body:
+O backend e dono das regras de dominio:
 
-```json
-{
-  "nome": "cabo hdmi",
-  "preco": 89.90
-}
+- Persistencia com JPA.
+- Validacoes de dados.
+- Padronizacao final do nome do produto.
+- Exclusao logica.
+- Regras de produto inexistente ou ja desativado.
+
+## BFF Cadastro Produtos
+
+Base URL:
+
+```text
+http://localhost:8081/api/bff/produtos
 ```
 
-Resposta esperada:
+Endpoints:
 
-```json
-{
-  "id": 1,
-  "nome": "Cabo HDMI",
-  "preco": 89.90,
-  "ativo": true
-}
+```text
+POST   /api/bff/produtos
+GET    /api/bff/produtos
+GET    /api/bff/produtos/{id}
+PUT    /api/bff/produtos/{id}
+DELETE /api/bff/produtos/{id}
 ```
 
-### Listar Produtos
+A BFF integra com o backend atual:
 
-```http
-GET /produtos
+```text
+BFF POST   /api/bff/produtos      -> Backend POST   /produtos
+BFF GET    /api/bff/produtos      -> Backend GET    /produtos
+BFF GET    /api/bff/produtos/{id} -> Backend GET    /produtos/{id}
+BFF PUT    /api/bff/produtos/{id} -> Backend PUT    /produtos/{id}
+BFF DELETE /api/bff/produtos/{id} -> Backend DELETE /produtos/{id}
 ```
 
-Retorna produtos ativos e inativos em formato paginado.
+Responsabilidades da BFF:
 
-Parâmetros aceitos:
+- Encapsular a URL do backend.
+- Expor contrato orientado ao frontend.
+- Validar filtros superficiais.
+- Definir defaults de listagem.
+- Converter erros de infraestrutura em respostas apropriadas.
+- Preservar erros de negocio do backend quando aplicavel.
 
-| Parâmetro     |    Exemplo | Descrição                                   |
-| ------------- | ---------: | ------------------------------------------- |
-| `page`        |        `0` | Página solicitada. A primeira página é `0`. |
-| `size`        |        `5` | Quantidade de itens por página.             |
-| `sort`        | `nome,asc` | Campo e direção da ordenação.               |
-| `busca`       |     `cabo` | Busca por nome do produto.                  |
-| `status`      |   `ativos` | Aceita `todos`, `ativos` ou `inativos`.     |
-| `precoMinimo` |    `10.00` | Preço mínimo, inclusivo.                    |
-| `precoMaximo` |   `100.00` | Preço máximo, inclusivo.                    |
+Tratamento de erros na BFF:
+
+```text
+Backend fora do ar       -> 503
+Timeout                  -> 504
+Erro 5xx do backend      -> 503
+Erro 4xx do backend      -> preservado
+Erro generico da BFF     -> 500
+```
+
+## Parametros De Listagem
+
+Parametros aceitos na listagem:
+
+| Parametro     | Exemplo    | Descricao                                  |
+| ------------- | ---------- | ------------------------------------------ |
+| `page`        | `0`        | Pagina solicitada. A primeira pagina e `0` |
+| `size`        | `5`        | Quantidade de itens por pagina             |
+| `sort`        | `nome,asc` | Campo e direcao da ordenacao               |
+| `busca`       | `cabo`     | Busca por nome do produto                  |
+| `status`      | `ativos`   | Aceita `todos`, `ativos` ou `inativos`     |
+| `precoMinimo` | `10.00`    | Preco minimo, inclusivo                    |
+| `precoMaximo` | `100.00`   | Preco maximo, inclusivo                    |
 
 Exemplo:
 
 ```http
-GET /produtos?page=0&size=5&sort=nome,asc&status=todos&busca=cabo
+GET /api/bff/produtos?page=0&size=5&sort=nome,asc&status=todos&busca=cabo
 ```
 
 Resposta esperada:
@@ -191,108 +274,80 @@ Resposta esperada:
 }
 ```
 
-Ordenações usadas pelo frontend:
+Ordenacoes usadas pelo frontend:
 
-* `nome,asc`
-* `nome,desc`
-* `id,asc`
-* `id,desc`
-* `preco,asc`
-* `preco,desc`
-* `ativo,desc`
-* `ativo,asc`
+- `nome,asc`
+- `nome,desc`
+- `id,asc`
+- `id,desc`
+- `preco,asc`
+- `preco,desc`
+- `ativo,desc`
+- `ativo,asc`
 
-### Buscar Produto por ID
-
-```http
-GET /produtos/{id}
-```
-
-### Alterar Produto
-
-```http
-PUT /produtos/{id}
-```
-
-Body:
-
-```json
-{
-  "nome": "cabo hdmi atualizado",
-  "preco": 99.90,
-  "ativo": true
-}
-```
-
-Resposta esperada:
-
-```json
-{
-  "id": 1,
-  "nome": "Cabo HDMI Atualizado",
-  "preco": 99.90,
-  "ativo": true
-}
-```
-
-### Excluir Produto
-
-```http
-DELETE /produtos/{id}
-```
-
-Resposta esperada:
-
-```text
-204 No Content
-```
-
-Observação: o endpoint marca o produto como inativo. Se o produto já estiver inativo, a API retorna erro tratado.
-
-## Fluxos do Frontend
+## Fluxos Do Frontend
 
 ### Cadastro
 
-1. O usuário preenche nome e preço.
-2. O sistema padroniza o nome para revisão.
-3. O modal mostra nome, preço e status inicial `Ativo`.
-4. O usuário confirma o cadastro.
-5. O sistema exibe mensagem de sucesso ou erro.
+1. Usuario preenche nome e preco.
+2. Sistema mostra os dados para confirmacao.
+3. Usuario confirma.
+4. Frontend chama a BFF.
+5. BFF chama o backend.
+6. Backend padroniza nome, salva e retorna o produto.
+7. Sistema exibe mensagem de sucesso ou erro.
 
 ### Listagem
 
-1. A tela carrega automaticamente com 5 produtos por página.
-2. O usuário pode buscar por nome.
-3. O usuário pode filtrar por status e faixa de preço.
-4. O usuário pode ordenar por nome, código, preço ou status.
-5. Qualquer filtro, ordenação ou mudança de tamanho volta para a página 1.
-6. Ações por linha permitem alterar ou excluir.
-7. Produtos inativos continuam visíveis, mas não podem ser excluídos novamente.
+1. Tela carrega automaticamente com 5 produtos por pagina.
+2. Usuario altera busca, status, ordenacao ou faixa de preco.
+3. Filtros so sao aplicados ao clicar em `Filtrar`.
+4. Sistema valida busca e faixa de preco.
+5. Sistema busca produtos pela BFF.
+6. Usuario pode alterar a quantidade de itens por pagina sem clicar em `Filtrar`.
+7. Ao mudar itens por pagina, os filtros ja aplicados sao preservados.
+8. Acoes por linha permitem alterar ou excluir.
+9. Produtos inativos continuam visiveis, mas nao podem ser excluidos novamente.
 
-### Alteração
+### Alteracao
 
-1. O usuário busca um produto pelo nome ou abre a alteração pela listagem.
-2. O formulário é preenchido automaticamente.
-3. O usuário altera nome, preço ou status.
-4. O modal mostra os campos modificados com antes/depois.
-5. O modal também mostra todos os dados finais.
-6. O usuário confirma ou volta para editar.
+1. Usuario busca um produto ou abre a alteracao pela listagem.
+2. Formulario e preenchido automaticamente.
+3. Usuario altera nome, preco ou status.
+4. Modal mostra campos modificados com antes/depois.
+5. Usuario confirma ou volta para editar.
 
-### Exclusão
+### Exclusao
 
-1. O usuário busca um produto ativo ou usa o botão da listagem.
-2. O sistema mostra os dados do produto.
-3. O modal informa que o produto será marcado como inativo.
-4. O usuário confirma.
-5. O produto passa a aparecer como `Inativo`.
+1. Usuario busca um produto ativo ou usa o botao da listagem.
+2. Sistema mostra os dados do produto.
+3. Modal informa que o produto sera marcado como inativo.
+4. Usuario confirma.
+5. Produto passa a aparecer como `Inativo`.
 
-## Padronização de Nomes
+### Erro De Infraestrutura
 
-O backend padroniza o nome no cadastro e na alteração.
+Quando a BFF, o backend ou o banco ficam indisponiveis, o frontend:
+
+1. Mantem loading por alguns segundos.
+2. Redireciona para `/erro?tipo=infra`.
+3. Exibe uma mensagem de erro de conexao.
+
+Erros tratados pelo interceptor:
+
+```text
+status 0
+status 503
+status 504
+```
+
+## Padronizacao De Nomes
+
+O backend padroniza o nome no cadastro e na alteracao.
 
 Exemplos:
 
-| Entrada         | Saída           |
+| Entrada         | Saida           |
 | --------------- | --------------- |
 | `aRRoZ`         | `Arroz`         |
 | `arroz branco`  | `Arroz Branco`  |
@@ -305,72 +360,159 @@ Siglas conhecidas preservadas:
 HDMI, USB, LED, LCD, SSD, HD, CPU, GPU, RAM, TV, DVD, CD, VGA, RGB
 ```
 
-## Validações
+## Validacoes
 
-No cadastro:
+### Cadastro
 
-* `nome` é obrigatório.
-* `preco` é obrigatório.
-* `preco` deve ser maior que zero.
-* O produto nasce ativo por padrão.
+- `nome` e obrigatorio.
+- `preco` e obrigatorio.
+- `preco` deve ser maior que zero.
+- Produto nasce ativo por padrao.
 
-Na alteração:
+### Alteracao
 
-* `nome` é obrigatório.
-* `nome` deve ter no máximo 120 caracteres.
-* `preco` é obrigatório.
-* `preco` deve ser maior que zero.
-* `ativo` é obrigatório.
+- `nome` e obrigatorio.
+- `nome` deve ter no maximo 120 caracteres.
+- `preco` e obrigatorio.
+- `preco` deve ser maior que zero.
+- `ativo` e obrigatorio.
 
-Na listagem:
+### Listagem
 
-* `precoMinimo` não pode ser negativo.
-* `precoMaximo` não pode ser negativo.
-* No frontend, `precoMinimo` não pode ser maior que `precoMaximo`.
+- `busca` deve ter no maximo 120 caracteres no frontend.
+- `precoMinimo` nao pode ser negativo.
+- `precoMaximo` nao pode ser negativo.
+- `precoMinimo` nao pode ser maior que `precoMaximo`.
+- `size` permitido na BFF: `5`, `10`, `20`, `50`.
+- `page` nao pode ser negativa.
 
-## Formato de Erro
+## Formato De Erro
 
-Quando ocorre erro, a API retorna um objeto no formato:
+Formato usado pelas APIs:
 
 ```json
 {
   "codError": 1000,
-  "msgError": "Produto não existente."
+  "msgError": "Produto nao existente."
 }
 ```
 
 Exemplos de erros tratados:
 
-* Produto inexistente.
-* Produto já desativado.
-* Request inválido.
-* Erro genérico.
+- Produto inexistente.
+- Produto ja desativado.
+- Request invalido.
+- Servico de produtos indisponivel.
+- Timeout na integracao.
+- Erro generico.
+
+## Swagger / OpenAPI
+
+A documentacao Swagger foi implementada usando interfaces separadas dos controllers.
+
+Backend:
+
+```text
+ProdutoApi
+ProdutoController implements ProdutoApi
+```
+
+BFF:
+
+```text
+ProdutoBffApi
+ProdutoBffController implements ProdutoBffApi
+```
+
+Acessos:
+
+```text
+Backend:
+http://localhost:8080/swagger-ui.html
+
+BFF:
+http://localhost:8081/swagger-ui.html
+```
+
+JSON OpenAPI:
+
+```text
+http://localhost:8080/v3/api-docs
+http://localhost:8081/v3/api-docs
+```
+
+## Mappers
+
+### Backend Atual
+
+O backend usa `ProdutoMapper` como classe Spring:
+
+```java
+@Component
+public class ProdutoMapper
+```
+
+Ele foi mantido assim porque contem regra customizada de padronizacao de nome.
+
+### BFF
+
+A BFF usa MapStruct:
+
+```java
+@Mapper(componentModel = "spring")
+public interface ProdutoBffMapper
+```
+
+MapStruct gera os metodos simples de conversao entre DTOs. O metodo que converte pagina continua como `default`, pois possui logica manual para mapear o conteudo paginado.
 
 ## Como Executar
 
-### Backend
+### 1. Subir MySQL
 
-```bash
-cd backend/cadastro-produtos
-./mvnw spring-boot:run
+Garanta que o MySQL esta rodando e que o banco existe:
+
+```sql
+CREATE DATABASE coin_cadastro_produtos;
 ```
 
-No Windows:
+### 2. Subir Backend De Produtos
 
-```bash
+Windows / PowerShell:
+
+```powershell
 cd backend/cadastro-produtos
-mvnw.cmd spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
-### Frontend
+URL:
 
-```bash
+```text
+http://localhost:8080
+```
+
+### 3. Subir BFF
+
+Em outro terminal, a partir da raiz do projeto:
+
+```powershell
+.\backend\cadastro-produtos\mvnw.cmd -f backend\bff-cadastro-produtos\pom.xml spring-boot:run
+```
+
+URL:
+
+```text
+http://localhost:8081
+```
+
+### 4. Subir Frontend
+
+```powershell
 cd frontend/cadastro-produtos
 npm install
 npm start
 ```
 
-Por padrão, o Angular roda em:
+URL:
 
 ```text
 http://localhost:4200
@@ -378,24 +520,54 @@ http://localhost:4200
 
 ## Testes
 
-O backend possui testes para service e controller.
+### Backend
 
-```bash
+```powershell
 cd backend/cadastro-produtos
-./mvnw test
+.\mvnw.cmd test
 ```
 
-No Windows:
+Cobertura atual:
 
-```bash
-cd backend/cadastro-produtos
-mvnw.cmd test
+```text
+17 testes
 ```
 
-## Observações
+### BFF
 
-* O frontend consome a API em `http://localhost:8080/produtos`.
-* O backend libera CORS para `http://localhost:4200`.
-* O backend usa `spring.jpa.hibernate.ddl-auto=validate`, então a estrutura do banco precisa estar de acordo com as migrations do Flyway.
-* Se o banco não existir ou as credenciais estiverem incorretas, o backend não inicia corretamente.
-* Depois de alterar regras no backend, reinicie a aplicação para garantir que a versão nova esteja em execução.
+A BFF nao possui wrapper Maven proprio. Use o wrapper do backend:
+
+```powershell
+.\backend\cadastro-produtos\mvnw.cmd -f backend\bff-cadastro-produtos\pom.xml test
+```
+
+Cobertura atual:
+
+```text
+23 testes
+```
+
+### Frontend
+
+Validacao TypeScript:
+
+```powershell
+cd frontend/cadastro-produtos
+npx tsc -p tsconfig.app.json --noEmit
+```
+
+Observacao:
+
+```text
+npm test nao roda atualmente porque nao existem arquivos .spec.ts no frontend.
+```
+
+## Observacoes
+
+- O frontend consome a BFF em `http://localhost:8081/api/bff/produtos`.
+- A BFF consome o backend em `http://localhost:8080/produtos`.
+- O backend usa `spring.jpa.hibernate.ddl-auto=validate`.
+- A estrutura do banco precisa estar de acordo com as migrations do Flyway.
+- Se o banco nao existir ou as credenciais estiverem incorretas, o backend nao inicia corretamente.
+- Depois de alterar dependencias Maven, recarregue o projeto Maven na IDE.
+- No PowerShell, use `.\mvnw.cmd`, nao apenas `mvnw.cmd`.

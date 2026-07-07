@@ -17,7 +17,7 @@ import { ProdutoService } from '../../../services/produto.service';
   styleUrl: './listar-produtos.component.css'
 })
 export class ListarProdutosComponent implements OnInit {
-  private readonly tempoLoadingMs = 1500;
+  private readonly tempoLoadingMs = 3000;
   private buscaAtual = 0;
   private primeiraBusca = true;
 
@@ -43,9 +43,19 @@ export class ListarProdutosComponent implements OnInit {
   mensagemResultado = '';
   carregando = false;
   processando = false;
+  menuAcoesAbertoId: number | null = null;
 
   produtoParaExcluir: ProdutoResponseDTO | null = null;
   modalExclusaoAberto = false;
+
+    filtrosAplicados = {
+  busca: '',
+  status: 'todos',
+  ordenacao: 'id,asc',
+  precoMinimo: null as number | null,
+  precoMaximo: null as number | null,
+  tamanhoPagina: 5
+};
 
   constructor(
     private produtoService: ProdutoService,
@@ -60,9 +70,7 @@ export class ListarProdutosComponent implements OnInit {
   }
 
   listar(simularLoading = false): void {
-    if (!this.validarFiltrosDePreco()) {
-      return;
-    }
+
 
     const deveSimularLoading = simularLoading || this.primeiraBusca;
     this.primeiraBusca = false;
@@ -70,15 +78,18 @@ export class ListarProdutosComponent implements OnInit {
     this.mensagemResultado = '';
     const buscaId = ++this.buscaAtual;
 
-    this.produtoService.listar({
-      page: this.paginaAtual,
-      size: this.tamanhoPagina,
-      busca: this.busca,
-      status: this.filtroStatus,
-      precoMinimo: this.precoMinimo,
-      precoMaximo: this.precoMaximo,
-      sort: this.ordenacao
-    }).pipe(
+    
+
+
+this.produtoService.listar({
+  page: this.paginaAtual,
+  size: this.filtrosAplicados.tamanhoPagina,
+  busca: this.filtrosAplicados.busca,
+  status: this.filtrosAplicados.status,
+  precoMinimo: this.filtrosAplicados.precoMinimo,
+  precoMaximo: this.filtrosAplicados.precoMaximo,
+  sort: this.filtrosAplicados.ordenacao
+}).pipe(
       materialize(),
       delay(deveSimularLoading ? this.tempoLoadingMs : 0),
       dematerialize(),
@@ -119,9 +130,50 @@ export class ListarProdutosComponent implements OnInit {
     });
   }
 
-  aplicarFiltros(): void {
-    this.paginaAtual = 0;
-    this.listar(true);
+ aplicarFiltros(): void {
+  if (!this.validarBusca() || !this.validarFiltrosDePreco()) {
+    return;
+  }
+
+  this.filtrosAplicados = {
+    busca: this.busca.trim(),
+    status: this.filtroStatus,
+    ordenacao: this.ordenacao,
+    precoMinimo: this.precoMinimo,
+    precoMaximo: this.precoMaximo,
+    tamanhoPagina: this.tamanhoPagina
+  };
+
+  this.paginaAtual = 0;
+  this.menuAcoesAbertoId = null;
+  this.listar(true);
+}
+
+private validarBusca(): boolean {
+  if (this.busca.trim().length > 120) {
+    this.mensagem = 'A busca deve ter no máximo 120 caracteres.';
+    this.tipoMensagem = 'erro';
+    this.notificationService.error(this.mensagem);
+    return false;
+  }
+
+  return true;
+}
+
+  ordenarPorCampo(campo: 'id' | 'nome' | 'ativo' | 'preco'): void {
+    const [campoAtual, direcaoAtual] = this.ordenacao.split(',');
+    const novaDirecao = campoAtual === campo && direcaoAtual === 'asc' ? 'desc' : 'asc';
+
+    this.ordenacao = `${campo},${novaDirecao}`;
+    this.aplicarFiltros();
+  }
+
+  campoOrdenado(campo: string): boolean {
+    return this.ordenacao.split(',')[0] === campo;
+  }
+
+  direcaoOrdenacao(): string {
+    return this.ordenacao.split(',')[1] || 'asc';
   }
 
   irParaPagina(pagina: number): void {
@@ -130,6 +182,26 @@ export class ListarProdutosComponent implements OnInit {
     }
 
     this.paginaAtual = pagina;
+    this.menuAcoesAbertoId = null;
+    this.listar(false);
+  }
+
+  irParaPrimeiraPagina(): void {
+    this.irParaPagina(0);
+  }
+
+  irParaUltimaPagina(): void {
+    this.irParaPagina(this.totalPaginas - 1);
+  }
+
+  alterarTamanhoPagina(tamanho: number): void {
+    this.tamanhoPagina = tamanho;
+    this.filtrosAplicados = {
+      ...this.filtrosAplicados,
+      tamanhoPagina: tamanho
+    };
+    this.paginaAtual = 0;
+    this.menuAcoesAbertoId = null;
     this.listar(false);
   }
 
@@ -156,7 +228,12 @@ export class ListarProdutosComponent implements OnInit {
     this.precoMaximoFormatado = this.precoMaximo === null ? '' : this.formatarMoeda(this.precoMaximo);
   }
 
+  alternarMenuAcoes(produtoId: number): void {
+    this.menuAcoesAbertoId = this.menuAcoesAbertoId === produtoId ? null : produtoId;
+  }
+
   alterarProduto(produto: ProdutoResponseDTO): void {
+    this.menuAcoesAbertoId = null;
     this.router.navigate(['/alterar-produto'], {
       queryParams: {
         id: produto.id,
@@ -170,6 +247,7 @@ export class ListarProdutosComponent implements OnInit {
       return;
     }
 
+    this.menuAcoesAbertoId = null;
     this.produtoParaExcluir = produto;
     this.modalExclusaoAberto = true;
   }
@@ -184,11 +262,7 @@ export class ListarProdutosComponent implements OnInit {
   }
 
   confirmarExclusao(): void {
-    if (this.processando) {
-      return;
-    }
-
-    if (!this.produtoParaExcluir) {
+    if (this.processando || !this.produtoParaExcluir) {
       return;
     }
 
@@ -215,6 +289,18 @@ export class ListarProdutosComponent implements OnInit {
         this.modalExclusaoAberto = false;
       }
     });
+  }
+
+  get primeiroItemExibido(): number {
+    if (this.totalElementos === 0) {
+      return 0;
+    }
+
+return this.paginaAtual * this.filtrosAplicados.tamanhoPagina + 1;
+  }
+
+  get ultimoItemExibido(): number {
+return Math.min((this.paginaAtual + 1) * this.filtrosAplicados.tamanhoPagina, this.totalElementos);
   }
 
   private converterTextoParaPreco(valorDigitado: string): number | null {

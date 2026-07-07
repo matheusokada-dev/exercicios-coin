@@ -1,4 +1,4 @@
-<main class="form-page form-page--wide">
+<main class="form-page">
   <section class="form-card list-card">
     <header class="page-header">
       <div class="page-title-area">
@@ -14,7 +14,13 @@
       </div>
 
       <div class="toolbar">
-        <a routerLink="/" class="btn btn-secondary">Voltar</a>
+        <a routerLink="/" class="btn btn-secondary btn-icon-text">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5"></path>
+            <path d="m12 19-7-7 7-7"></path>
+          </svg>
+          Voltar
+        </a>
       </div>
     </header>
 
@@ -27,16 +33,29 @@
           name="busca"
           placeholder="Buscar por nome"
           [(ngModel)]="busca"
-          (ngModelChange)="aplicarFiltros()"
-        >
+               />
       </div>
 
       <div class="field">
         <label for="status">Status</label>
-        <select id="status" name="status" [(ngModel)]="filtroStatus" (ngModelChange)="aplicarFiltros()">
+        <select id="status" name="status" [(ngModel)]="filtroStatus">
           <option value="todos">Todos</option>
           <option value="ativos">Ativos</option>
           <option value="inativos">Inativos</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ordenacao">Ordenar por</label>
+        <select id="ordenacao" name="ordenacao" [(ngModel)]="ordenacao">
+          <option value="nome,asc">Nome A-Z</option>
+          <option value="nome,desc">Nome Z-A</option>
+          <option value="id,asc">Código crescente</option>
+          <option value="id,desc">Código decrescente</option>
+          <option value="preco,asc">Menor preço</option>
+          <option value="preco,desc">Maior preço</option>
+          <option value="ativo,desc">Ativos primeiro</option>
+          <option value="ativo,asc">Inativos primeiro</option>
         </select>
       </div>
 
@@ -50,7 +69,7 @@
           placeholder="R$ 0,00"
           [ngModel]="precoMinimoFormatado"
           (ngModelChange)="aoDigitarPrecoMinimo($event)"
-          (blur)="aplicarFiltros()"
+          
         >
       </div>
 
@@ -64,41 +83,37 @@
           placeholder="R$ 0,00"
           [ngModel]="precoMaximoFormatado"
           (ngModelChange)="aoDigitarPrecoMaximo($event)"
-          (blur)="aplicarFiltros()"
         >
-      </div>
-
-      <div class="field">
-        <label for="ordenacao">Ordenar por</label>
-        <select id="ordenacao" name="ordenacao" [(ngModel)]="ordenacao" (ngModelChange)="aplicarFiltros()">
-          <option value="nome,asc">Nome A-Z</option>
-          <option value="nome,desc">Nome Z-A</option>
-          <option value="id,asc">Código crescente</option>
-          <option value="id,desc">Código decrescente</option>
-          <option value="preco,asc">Menor preço</option>
-          <option value="preco,desc">Maior preço</option>
-          <option value="ativo,desc">Ativos primeiro</option>
-          <option value="ativo,asc">Inativos primeiro</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="tamanhoPagina">Resultados</label>
-        <select
-          id="tamanhoPagina"
-          name="tamanhoPagina"
-          [(ngModel)]="tamanhoPagina"
-          (ngModelChange)="aplicarFiltros()"
-        >
-          <option *ngFor="let opcao of opcoesTamanhoPagina" [ngValue]="opcao">
-            {{ opcao }} por página
-          </option>
-        </select>
       </div>
 
       <div class="filter-actions">
-        <button type="button" class="btn btn-primary" [disabled]="carregando" (click)="aplicarFiltros()">Filtrar</button>
-        <button type="button" class="btn btn-secondary" [disabled]="carregando" (click)="limparFiltros()">Limpar filtros</button>
+        <button type="button" class="btn btn-primary btn-icon-text" [disabled]="carregando" (click)="aplicarFiltros()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path>
+          </svg>
+          Filtrar
+        </button>
+        <button type="button" class="btn btn-secondary btn-icon-text" [disabled]="carregando" (click)="limparFiltros()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0-2.34 5.66"></path>
+            <path d="M20 4v7h-7"></path>
+          </svg>
+          Limpar filtros
+        </button>
+      </div>
+    </section>
+
+    <section class="results-summary" *ngIf="!carregando">
+      <span class="summary-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 8.5 12 3 3 8.5l9 5.5 9-5.5z"></path>
+          <path d="M3 8.5V16l9 5 9-5V8.5"></path>
+          <path d="M12 14v7"></path>
+        </svg>
+      </span>
+      <div>
+        <strong>{{ totalElementos }} produtos encontrados</strong>
+        <span>Exibindo {{ primeiroItemExibido }} a {{ ultimoItemExibido }} de {{ totalElementos }} produtos.</span>
       </div>
     </section>
 
@@ -117,42 +132,87 @@
       <table class="product-table">
         <thead>
         <tr>
-          <th>Código</th>
-          <th>Nome</th>
-          <th>Preço</th>
-          <th>Status</th>
-          <th>Ações</th>
+          <th class="col-code">
+            <button type="button" class="sort-header sort-header--center" (click)="ordenarPorCampo('id')">
+              Código
+              <span class="sort-icon" [class.sort-icon--active]="campoOrdenado('id')" [class.sort-icon--desc]="campoOrdenado('id') && direcaoOrdenacao() === 'desc'">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 10 4-4 4 4"></path>
+                  <path d="m16 14-4 4-4-4"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th>
+            <button type="button" class="sort-header" (click)="ordenarPorCampo('nome')">
+              Nome
+              <span class="sort-icon" [class.sort-icon--active]="campoOrdenado('nome')" [class.sort-icon--desc]="campoOrdenado('nome') && direcaoOrdenacao() === 'desc'">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 10 4-4 4 4"></path>
+                  <path d="m16 14-4 4-4-4"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th>
+            <button type="button" class="sort-header" (click)="ordenarPorCampo('ativo')">
+              Status
+              <span class="sort-icon" [class.sort-icon--active]="campoOrdenado('ativo')" [class.sort-icon--desc]="campoOrdenado('ativo') && direcaoOrdenacao() === 'desc'">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 10 4-4 4 4"></path>
+                  <path d="m16 14-4 4-4-4"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th>
+            <button type="button" class="sort-header" (click)="ordenarPorCampo('preco')">
+              Preço
+              <span class="sort-icon" [class.sort-icon--active]="campoOrdenado('preco')" [class.sort-icon--desc]="campoOrdenado('preco') && direcaoOrdenacao() === 'desc'">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m8 10 4-4 4 4"></path>
+                  <path d="m16 14-4 4-4-4"></path>
+                </svg>
+              </span>
+            </button>
+          </th>
+          <th class="col-actions" aria-label="Ações"></th>
         </tr>
         </thead>
 
         <tbody>
         <tr *ngFor="let produto of produtos">
-          <td>#{{ produto.id }}</td>
+          <td class="col-code">{{ produto.id }}</td>
           <td>{{ produto.nome }}</td>
-          <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
           <td>
-              <span
-                class="status"
-                [class.status-active]="produto.ativo"
-                [class.status-inactive]="!produto.ativo"
-              >
-                {{ produto.ativo ? 'Ativo' : 'Inativo' }}
-              </span>
+            <span
+              class="status"
+              [class.status-active]="produto.ativo"
+              [class.status-inactive]="!produto.ativo"
+            >
+              {{ produto.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
           </td>
-          <td>
-            <div class="row-actions">
-              <button type="button" class="btn btn-secondary" (click)="alterarProduto(produto)">
-                Alterar
-              </button>
-
+          <td>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+          <td class="col-actions">
+            <div class="actions-menu">
               <button
                 type="button"
-                class="btn btn-danger"
-                [disabled]="!produto.ativo"
-                (click)="abrirModalExclusao(produto)"
+                class="actions-menu__trigger"
+                (click)="alternarMenuAcoes(produto.id)"
+                aria-label="Abrir ações do produto"
               >
-                Excluir
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="5" r="1.5"></circle>
+                  <circle cx="12" cy="12" r="1.5"></circle>
+                  <circle cx="12" cy="19" r="1.5"></circle>
+                </svg>
               </button>
+
+              <div class="actions-menu__content" *ngIf="menuAcoesAbertoId === produto.id">
+                <button type="button" (click)="alterarProduto(produto)">Alterar</button>
+                <button type="button" [disabled]="!produto.ativo" (click)="abrirModalExclusao(produto)">Excluir</button>
+              </div>
             </div>
           </td>
         </tr>
@@ -166,28 +226,51 @@
       </p>
     </ng-template>
 
-    <div class="pagination" *ngIf="!carregando && totalPaginas > 0">
-      <button
-        type="button"
-        class="btn btn-secondary"
-        [disabled]="paginaAtual === 0"
-        (click)="irParaPagina(paginaAtual - 1)"
-      >
-        Anterior
-      </button>
+    <footer class="table-footer" *ngIf="!carregando && totalPaginas > 0">
+      <div class="page-size">
+        <label for="tamanhoPagina">Itens por página</label>
+        <select
+          id="tamanhoPagina"
+          name="tamanhoPagina"
+          [(ngModel)]="tamanhoPagina"
+          (ngModelChange)="alterarTamanhoPagina($event)"
+         >
+          <option *ngFor="let opcao of opcoesTamanhoPagina" [ngValue]="opcao">
+            {{ opcao }}
+          </option>
+        </select>
+      </div>
 
-      <span>Página {{ paginaAtual + 1 }} de {{ totalPaginas }}</span>
-      <span>{{ totalElementos }} produtos encontrados</span>
+      <nav class="pagination" aria-label="Paginação">
+        <button type="button" class="page-button" [disabled]="paginaAtual === 0" (click)="irParaPrimeiraPagina()" aria-label="Primeira página">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m11 17-5-5 5-5"></path>
+            <path d="m18 17-5-5 5-5"></path>
+          </svg>
+        </button>
 
-      <button
-        type="button"
-        class="btn btn-secondary"
-        [disabled]="paginaAtual + 1 >= totalPaginas"
-        (click)="irParaPagina(paginaAtual + 1)"
-      >
-        Próxima
-      </button>
-    </div>
+        <button type="button" class="page-button" [disabled]="paginaAtual === 0" (click)="irParaPagina(paginaAtual - 1)" aria-label="Página anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m15 18-6-6 6-6"></path>
+          </svg>
+        </button>
+
+        <span class="page-current">{{ paginaAtual + 1 }}</span>
+
+        <button type="button" class="page-button" [disabled]="paginaAtual + 1 >= totalPaginas" (click)="irParaPagina(paginaAtual + 1)" aria-label="Próxima página">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </button>
+
+        <button type="button" class="page-button" [disabled]="paginaAtual + 1 >= totalPaginas" (click)="irParaUltimaPagina()" aria-label="Última página">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 17 5-5-5-5"></path>
+            <path d="m13 17 5-5-5-5"></path>
+          </svg>
+        </button>
+      </nav>
+    </footer>
   </section>
 
   <div class="modal-backdrop" *ngIf="modalExclusaoAberto && produtoParaExcluir">
@@ -201,7 +284,7 @@
         <dd>{{ produtoParaExcluir.nome }}</dd>
 
         <dt>Código</dt>
-        <dd>#{{ produtoParaExcluir.id }}</dd>
+        <dd>{{ produtoParaExcluir.id }}</dd>
 
         <dt>Preço</dt>
         <dd>{{ produtoParaExcluir.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</dd>
