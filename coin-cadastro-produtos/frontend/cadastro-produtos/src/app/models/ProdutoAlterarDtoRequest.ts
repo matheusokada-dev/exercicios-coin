@@ -1,4 +1,4 @@
-export interface ProdutoAlterarDTO {
+export interface ProdutoAlterarDtoRequest {
   nome: string;
   preco: number;
   ativo: boolean

@@ -1,9 +1,9 @@
 package br.com.coin.cadastroprodutos.services;
 
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
 import br.com.coin.cadastroprodutos.entities.Produto;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoDesativadoException;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoNaoEncontradoException;
@@ -51,7 +51,7 @@ class ProdutoServiceTest {
 
     @Test
     void deveCriarProdutoComSucesso() {
-        ProdutoRequestDTO requestDTO = new ProdutoRequestDTO("Arroz", BigDecimal.valueOf(25.90));
+        ProdutoDtoRequest requestDTO = new ProdutoDtoRequest("Arroz", BigDecimal.valueOf(25.90));
 
         Produto produto = new Produto();
         produto.setNome("Arroz");
@@ -64,16 +64,16 @@ class ProdutoServiceTest {
         produtoSalvo.setPreco(new BigDecimal("25.90"));
         produtoSalvo.setAtivo(true);
 
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L,
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,
                 "Arroz",
                 BigDecimal.valueOf(25.90),
                 true);
 
         when(produtoMapper.toEntity(requestDTO)).thenReturn(produto);
         when(produtoRepository.save(produto)).thenReturn(produtoSalvo);
-        when(produtoMapper.toResponseDTO(produtoSalvo)).thenReturn(responseDTO);
+        when(produtoMapper.toDtoResponse(produtoSalvo)).thenReturn(responseDTO);
 
-        ProdutoResponseDTO resultado = produtoService.criar(requestDTO);
+        ProdutoDtoResponse resultado = produtoService.criar(requestDTO);
 
         assertNotNull(resultado);
         assertEquals(1L, resultado.id());
@@ -83,43 +83,43 @@ class ProdutoServiceTest {
 
         verify(produtoMapper, times(1)).toEntity(requestDTO);
         verify(produtoRepository, times(1)).save(produto);
-        verify(produtoMapper, times(1)).toResponseDTO(produtoSalvo);
+        verify(produtoMapper, times(1)).toDtoResponse(produtoSalvo);
     }
 
     @Test
     void deveListarProdutosComFiltrosEPaginacaoComSucesso() {
-        FiltroProdutoDTO filtro = new FiltroProdutoDTO("Arroz", "todos", null, null);
+        ProdutoFiltroDtoRequest filtro = new ProdutoFiltroDtoRequest("Arroz", "todos", null, null);
         Pageable pageable = PageRequest.of(0, 5, Sort.by("nome").ascending());
         Produto produto = criarProduto(1L, "Arroz", "25.90", true);
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L, "Arroz", new BigDecimal("25.90"), true);
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L, "Arroz", new BigDecimal("25.90"), true);
         Page<Produto> paginaProdutos = new PageImpl<>(List.of(produto), pageable, 1);
 
         when(produtoRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(paginaProdutos);
-        when(produtoMapper.toResponseDTO(produto)).thenReturn(responseDTO);
+        when(produtoMapper.toDtoResponse(produto)).thenReturn(responseDTO);
 
-        Page<ProdutoResponseDTO> resultado = produtoService.listar(filtro, pageable);
+        Page<ProdutoDtoResponse> resultado = produtoService.listar(filtro, pageable);
 
         assertEquals(1, resultado.getTotalElements());
         assertEquals(responseDTO, resultado.getContent().getFirst());
 
         verify(produtoRepository, times(1)).findAll(any(Specification.class), eq(pageable));
-        verify(produtoMapper, times(1)).toResponseDTO(produto);
+        verify(produtoMapper, times(1)).toDtoResponse(produto);
     }
 
     @Test
     void deveBuscarProdutoPorIdComSucesso() {
         Produto produto = criarProduto(1L, "Arroz", "25.90", true);
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L, "Arroz", new BigDecimal("25.90"), true);
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L, "Arroz", new BigDecimal("25.90"), true);
 
         when(produtoRepository.findById(1L)).thenReturn(Optional.of(produto));
-        when(produtoMapper.toResponseDTO(produto)).thenReturn(responseDTO);
+        when(produtoMapper.toDtoResponse(produto)).thenReturn(responseDTO);
 
-        ProdutoResponseDTO resultado = produtoService.buscarPorId(1L);
+        ProdutoDtoResponse resultado = produtoService.buscarPorId(1L);
 
         assertEquals(responseDTO, resultado);
 
         verify(produtoRepository, times(1)).findById(1L);
-        verify(produtoMapper, times(1)).toResponseDTO(produto);
+        verify(produtoMapper, times(1)).toDtoResponse(produto);
     }
 
     @Test
@@ -134,23 +134,23 @@ class ProdutoServiceTest {
 
     @Test
     void deveAtualizarProdutoComSucesso() {
-        ProdutoUpdateDTO updateDTO = new ProdutoUpdateDTO("Feijao", new BigDecimal("12.50"), true);
+        ProdutoUpdateDtoRequest updateDTO = new ProdutoUpdateDtoRequest("Feijao", new BigDecimal("12.50"), true);
         Produto produto = criarProduto(1L, "Arroz", "25.90", true);
         Produto produtoAtualizado = criarProduto(1L, "Feijao", "12.50", true);
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L, "Feijao", new BigDecimal("12.50"), true);
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L, "Feijao", new BigDecimal("12.50"), true);
 
         when(produtoRepository.findById(1L)).thenReturn(Optional.of(produto));
         when(produtoRepository.save(produto)).thenReturn(produtoAtualizado);
-        when(produtoMapper.toResponseDTO(produtoAtualizado)).thenReturn(responseDTO);
+        when(produtoMapper.toDtoResponse(produtoAtualizado)).thenReturn(responseDTO);
 
-        ProdutoResponseDTO resultado = produtoService.atualizar(1L, updateDTO);
+        ProdutoDtoResponse resultado = produtoService.atualizar(1L, updateDTO);
 
         assertEquals(responseDTO, resultado);
 
         verify(produtoRepository, times(1)).findById(1L);
         verify(produtoMapper, times(1)).updateEntity(produto, updateDTO);
         verify(produtoRepository, times(1)).save(produto);
-        verify(produtoMapper, times(1)).toResponseDTO(produtoAtualizado);
+        verify(produtoMapper, times(1)).toDtoResponse(produtoAtualizado);
     }
 
     @Test

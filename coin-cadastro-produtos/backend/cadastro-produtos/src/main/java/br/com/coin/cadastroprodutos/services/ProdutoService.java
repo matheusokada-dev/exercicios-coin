@@ -1,10 +1,10 @@
 package br.com.coin.cadastroprodutos.services;
 
 
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
 import br.com.coin.cadastroprodutos.entities.Produto;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoDesativadoException;
 import br.com.coin.cadastroprodutos.exceptions.ProdutoNaoEncontradoException;
@@ -27,18 +27,18 @@ public class ProdutoService {
     private final ProdutoMapper produtoMapper;
 
     @Transactional
-    public ProdutoResponseDTO criar(ProdutoRequestDTO dto) {
+    public ProdutoDtoResponse criar(ProdutoDtoRequest dto) {
         Produto produto = produtoMapper.toEntity(dto);
         Produto produtoSalvo = produtoRepository.save(produto);
         log.info("Produto criado com id={}", produtoSalvo.getId());
-        return produtoMapper.toResponseDTO(produtoSalvo);
+        return produtoMapper.toDtoResponse(produtoSalvo);
     }
 
     @Transactional(readOnly = true)
-    public Page<ProdutoResponseDTO> listar(FiltroProdutoDTO filtro, Pageable pageable) {
-        Page<ProdutoResponseDTO> produtos = produtoRepository
+    public Page<ProdutoDtoResponse> listar(ProdutoFiltroDtoRequest filtro, Pageable pageable) {
+        Page<ProdutoDtoResponse> produtos = produtoRepository
                 .findAll(ProdutoSpecification.comFiltros(filtro), pageable)
-                .map(produtoMapper::toResponseDTO);
+                .map(produtoMapper::toDtoResponse);
         log.info("Listagem de produtos retornou {} registros de um total de {}",
                 produtos.getNumberOfElements(), produtos.getTotalElements());
         return produtos;
@@ -46,18 +46,18 @@ public class ProdutoService {
 
 
     @Transactional
-    public ProdutoResponseDTO buscarPorId(Long id) {
+    public ProdutoDtoResponse buscarPorId(Long id) {
         Produto produto = buscarProdutoPorId(id);
-        return produtoMapper.toResponseDTO(produto);
+        return produtoMapper.toDtoResponse(produto);
     }
 
     @Transactional
-    public ProdutoResponseDTO atualizar(Long id, ProdutoUpdateDTO dto) {
+    public ProdutoDtoResponse atualizar(Long id, ProdutoUpdateDtoRequest dto) {
         Produto produto = buscarProdutoPorId(id);
         produtoMapper.updateEntity(produto, dto);
         Produto produtoAtualizado = produtoRepository.save(produto);
         log.info("Produto atualizado com id={}", produtoAtualizado.getId());
-        return produtoMapper.toResponseDTO(produtoAtualizado);
+        return produtoMapper.toDtoResponse(produtoAtualizado);
     }
 
     @Transactional

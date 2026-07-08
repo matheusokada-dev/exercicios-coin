@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.clients;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendRequestDTO;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoRequest;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendIndisponivelException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendResponseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class ProdutoBackendClientTest {
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        var resultado = client.criar(new ProdutoBackendRequestDTO("Mouse", new BigDecimal("59.90")));
+        var resultado = client.criar(new ProdutoBackendDtoRequest("Mouse", new BigDecimal("59.90")));
 
         assertEquals(1L, resultado.id());
         assertEquals("Mouse", resultado.nome());

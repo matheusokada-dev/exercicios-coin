@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.dtos.backend;
 
-public record ProdutoBackendErrorDTO(
+public record ProdutoBackendErrorDtoResponse(
         Integer codError,
         String msgError
 ) {

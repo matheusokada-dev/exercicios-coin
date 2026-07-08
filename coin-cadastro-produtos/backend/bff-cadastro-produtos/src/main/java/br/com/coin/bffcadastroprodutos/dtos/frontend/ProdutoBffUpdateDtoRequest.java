@@ -1,4 +1,4 @@
-package br.com.coin.bffcadastroprodutos.dtos.bff;
+package br.com.coin.bffcadastroprodutos.dtos.frontend;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
-public record ProdutoBffUpdateDTO(
+public record ProdutoBffUpdateDtoRequest(
         @NotBlank(message = "Nome é obrigatório")
         @Size(max = 120, message = "Nome deve ter no máximo 120 caracteres")
         String nome,

@@ -1,13 +1,13 @@
 package br.com.coin.bffcadastroprodutos.mappers;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendUpdateDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -15,21 +15,21 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProdutoBffMapper {
 
-    ProdutoBackendRequestDTO toBackendRequest(ProdutoBffRequestDTO dto);
+    ProdutoBackendDtoRequest toBackendRequest(ProdutoBffDtoRequest dto);
 
-    ProdutoBackendUpdateDTO toBackendUpdate(ProdutoBffUpdateDTO dto);
+    ProdutoBackendUpdateDtoRequest toBackendUpdate(ProdutoBffUpdateDtoRequest dto);
 
-    ProdutoBffResponseDTO toBffResponse(ProdutoBackendResponseDTO dto);
+    ProdutoBffDtoResponse toBffResponse(ProdutoBackendDtoResponse dto);
 
-    default ProdutoBffPageResponseDTO<ProdutoBffResponseDTO> toBffPage(
-            ProdutoBackendPageResponseDTO<ProdutoBackendResponseDTO> page
+    default ProdutoBffPageDtoResponse<ProdutoBffDtoResponse> toBffPage(
+            ProdutoBackendPageDtoResponse<ProdutoBackendDtoResponse> page
     ) {
-        List<ProdutoBffResponseDTO> content = page.content()
+        List<ProdutoBffDtoResponse> content = page.content()
                 .stream()
                 .map(this::toBffResponse)
                 .toList();
 
-        return new ProdutoBffPageResponseDTO<>(
+        return new ProdutoBffPageDtoResponse<>(
                 content,
                 page.totalElements(),
                 page.totalPages(),

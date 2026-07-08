@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PageResponse } from '../models/PageResponse';
-import { ProdutoAlterarDTO } from '../models/ProdutoAlterarDTO';
-import { ProdutoRequestDTO } from '../models/ProdutoRequestDTO';
-import { ProdutoResponseDTO } from '../models/ProdutoResponseDTO';
+import { ProdutoAlterarDtoRequest } from '../models/ProdutoAlterarDtoRequest';
+import { ProdutoDtoRequest } from '../models/ProdutoDtoRequest';
+import { ProdutoDtoResponse } from '../models/ProdutoDtoResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -14,20 +14,20 @@ export class ProdutoService {
 
   constructor(private http: HttpClient) {}
 
-  cadastrar(produto: ProdutoRequestDTO): Observable<ProdutoResponseDTO> {
-    return this.http.post<ProdutoResponseDTO>(this.apiUrl, produto);
+  cadastrar(produto: ProdutoDtoRequest): Observable<ProdutoDtoResponse> {
+    return this.http.post<ProdutoDtoResponse>(this.apiUrl, produto);
   }
 
-  alterar(id: number, produto: ProdutoAlterarDTO): Observable<ProdutoResponseDTO> {
-    return this.http.put<ProdutoResponseDTO>(`${this.apiUrl}/${id}`, produto);
+  alterar(id: number, produto: ProdutoAlterarDtoRequest): Observable<ProdutoDtoResponse> {
+    return this.http.put<ProdutoDtoResponse>(`${this.apiUrl}/${id}`, produto);
   }
 
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  buscarPorId(id: number): Observable<ProdutoResponseDTO> {
-    return this.http.get<ProdutoResponseDTO>(`${this.apiUrl}/${id}`);
+  buscarPorId(id: number): Observable<ProdutoDtoResponse> {
+    return this.http.get<ProdutoDtoResponse>(`${this.apiUrl}/${id}`);
   }
 
   listar(filtros: {
@@ -38,7 +38,7 @@ export class ProdutoService {
     precoMinimo?: number | null;
     precoMaximo?: number | null;
     sort?: string;
-  }): Observable<PageResponse<ProdutoResponseDTO>> {
+  }): Observable<PageResponse<ProdutoDtoResponse>> {
     let params = new HttpParams()
       .set('page', filtros.page)
       .set('size', filtros.size)
@@ -60,6 +60,6 @@ export class ProdutoService {
       params = params.set('precoMaximo', filtros.precoMaximo);
     }
 
-    return this.http.get<PageResponse<ProdutoResponseDTO>>(this.apiUrl, { params });
+    return this.http.get<PageResponse<ProdutoDtoResponse>>(this.apiUrl, { params });
   }
 }

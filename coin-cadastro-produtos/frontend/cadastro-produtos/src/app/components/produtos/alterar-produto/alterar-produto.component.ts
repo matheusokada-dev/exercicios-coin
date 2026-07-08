@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { delay, dematerialize, finalize, materialize } from 'rxjs';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ProdutoAlterarDTO } from '../../../models/ProdutoAlterarDTO';
-import { ProdutoResponseDTO } from '../../../models/ProdutoResponseDTO';
+import { ProdutoAlterarDtoRequest } from '../../../models/ProdutoAlterarDtoRequest';
+import { ProdutoDtoResponse } from '../../../models/ProdutoDtoResponse';
 import { ApiErrorService } from '../../../services/api-error.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ProdutoService } from '../../../services/produto.service';
@@ -36,9 +36,9 @@ export class AlterarProdutoComponent implements OnInit {
   busca = '';
   origem = '';
 
-  resultadosBusca: ProdutoResponseDTO[] = [];
-  produtoSelecionado: ProdutoResponseDTO | null = null;
-  produtoOriginal: ProdutoResponseDTO | null = null;
+  resultadosBusca: ProdutoDtoResponse[] = [];
+  produtoSelecionado: ProdutoDtoResponse | null = null;
+  produtoOriginal: ProdutoDtoResponse | null = null;
 
   modalConfirmacaoAberto = false;
   processando = false;
@@ -98,7 +98,7 @@ export class AlterarProdutoComponent implements OnInit {
     });
   }
 
-  selecionarProduto(produto: ProdutoResponseDTO): void {
+  selecionarProduto(produto: ProdutoDtoResponse): void {
     this.produtoSelecionado = produto;
     this.produtoOriginal = { ...produto };
     this.id = produto.id;
@@ -166,7 +166,7 @@ export class AlterarProdutoComponent implements OnInit {
       return;
     }
 
-    const produto: ProdutoAlterarDTO = {
+    const produto: ProdutoAlterarDtoRequest = {
       nome: this.padronizarNome(this.nome),
       preco: this.preco,
       ativo: this.ativo

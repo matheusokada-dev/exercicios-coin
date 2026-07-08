@@ -1,8 +1,8 @@
-package br.com.coin.bffcadastroprodutos.dtos.bff;
+package br.com.coin.bffcadastroprodutos.dtos.backend;
 
 import java.math.BigDecimal;
 
-public record ProdutoBffResponseDTO(
+public record ProdutoBackendDtoResponse(
         Long id,
         String nome,
         BigDecimal preco,

@@ -1,13 +1,13 @@
 package br.com.coin.bffcadastroprodutos.services;
 
 import br.com.coin.bffcadastroprodutos.clients.ProdutoBackendClient;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffFiltroDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
 import br.com.coin.bffcadastroprodutos.exceptions.ProdutoBffValidationException;
 import br.com.coin.bffcadastroprodutos.mappers.ProdutoBffMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,14 @@ public class ProdutoBffService {
     private final ProdutoBackendClient produtoBackendClient;
     private final ProdutoBffMapper produtoBffMapper;
 
-    public ProdutoBffResponseDTO criar(ProdutoBffRequestDTO dto) {
+    public ProdutoBffDtoResponse criar(ProdutoBffDtoRequest dto) {
         var backendRequest = produtoBffMapper.toBackendRequest(dto);
         var backendResponse = produtoBackendClient.criar(backendRequest);
 
         return produtoBffMapper.toBffResponse(backendResponse);
     }
 
-    public ProdutoBffPageResponseDTO<ProdutoBffResponseDTO> listar(ProdutoBffFiltroDTO filtro) {
+    public ProdutoBffPageDtoResponse<ProdutoBffDtoResponse> listar(ProdutoBffFiltroDtoRequest filtro) {
         validarFiltro(filtro);
 
         Integer page = filtro.page() == null ? 0 : filtro.page();
@@ -39,7 +39,7 @@ public class ProdutoBffService {
         String sort = filtro.sort() == null || filtro.sort().isBlank() ? "id,asc" : filtro.sort();
         String status = filtro.status() == null || filtro.status().isBlank() ? "todos" : filtro.status();
 
-        ProdutoBackendPageResponseDTO<ProdutoBackendResponseDTO> backendPage =
+        ProdutoBackendPageDtoResponse<ProdutoBackendDtoResponse> backendPage =
                 produtoBackendClient.listar(
                         page,
                         size,
@@ -53,12 +53,12 @@ public class ProdutoBffService {
         return produtoBffMapper.toBffPage(backendPage);
     }
 
-    public ProdutoBffResponseDTO buscarPorId(Long id) {
+    public ProdutoBffDtoResponse buscarPorId(Long id) {
         var backendResponse = produtoBackendClient.buscarPorId(id);
         return produtoBffMapper.toBffResponse(backendResponse);
     }
 
-    public ProdutoBffResponseDTO atualizar(Long id, ProdutoBffUpdateDTO dto) {
+    public ProdutoBffDtoResponse atualizar(Long id, ProdutoBffUpdateDtoRequest dto) {
         var backendRequest = produtoBffMapper.toBackendUpdate(dto);
         var backendResponse = produtoBackendClient.atualizar(id, backendRequest);
 
@@ -69,7 +69,7 @@ public class ProdutoBffService {
         produtoBackendClient.desativar(id);
     }
 
-    private void validarFiltro(ProdutoBffFiltroDTO filtro) {
+    private void validarFiltro(ProdutoBffFiltroDtoRequest filtro) {
         if (filtro.page() != null && filtro.page() < 0) {
             throw new ProdutoBffValidationException("Página não pode ser negativa.");
         }

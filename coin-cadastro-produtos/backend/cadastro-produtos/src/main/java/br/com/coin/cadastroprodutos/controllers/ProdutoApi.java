@@ -1,9 +1,9 @@
 package br.com.coin.cadastroprodutos.controllers;
 
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
 import br.com.coin.cadastroprodutos.exceptions.ErrorObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +38,7 @@ public interface ProdutoApi {
             content = @Content(schema = @Schema(implementation = ErrorObject.class))
     )
     @PostMapping
-    ResponseEntity<ProdutoResponseDTO> criar(@Valid @RequestBody ProdutoRequestDTO dto);
+    ResponseEntity<ProdutoDtoResponse> criar(@Valid @RequestBody ProdutoDtoRequest dto);
 
     @Operation(
             summary = "Listar produtos",
@@ -51,9 +51,9 @@ public interface ProdutoApi {
             content = @Content(schema = @Schema(implementation = ErrorObject.class))
     )
     @GetMapping
-    Page<ProdutoResponseDTO> listar(
+    Page<ProdutoDtoResponse> listar(
             @Parameter(description = "Filtros de produto")
-            @Valid @ModelAttribute FiltroProdutoDTO filtro,
+            @Valid @ModelAttribute ProdutoFiltroDtoRequest filtro,
             @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC)
             Pageable pageable
     );
@@ -66,7 +66,7 @@ public interface ProdutoApi {
             content = @Content(schema = @Schema(implementation = ErrorObject.class))
     )
     @GetMapping("/{id}")
-    ResponseEntity<ProdutoResponseDTO> buscarPorId(
+    ResponseEntity<ProdutoDtoResponse> buscarPorId(
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id
     );
@@ -84,10 +84,10 @@ public interface ProdutoApi {
             content = @Content(schema = @Schema(implementation = ErrorObject.class))
     )
     @PutMapping("/{id}")
-    ResponseEntity<ProdutoResponseDTO> atualizar(
+    ResponseEntity<ProdutoDtoResponse> atualizar(
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id,
-            @Valid @RequestBody ProdutoUpdateDTO dto
+            @Valid @RequestBody ProdutoUpdateDtoRequest dto
     );
 
     @Operation(

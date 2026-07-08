@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.handlers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.BffErrorDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
 import br.com.coin.bffcadastroprodutos.enums.BffErrorEnum;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendResponseException;
 import br.com.coin.bffcadastroprodutos.exceptions.BffException;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class BaseExceptionHandler {
 
     @ExceptionHandler(BffException.class)
-    public ResponseEntity<BffErrorDTO> handleBffException(BffException ex) {
+    public ResponseEntity<BffErrorDtoResponse> handleBffException(BffException ex) {
         log.error("Um erro controlado aconteceu na BFF: {}", ex.getMessage());
 
         final BffErrorEnum errorEnum = ex.getErrorEnum();
-        final BffErrorDTO error = new BffErrorDTO(
+        final BffErrorDtoResponse error = new BffErrorDtoResponse(
                 errorEnum.getErrorCode(),
                 ex.getMessage()
         );
@@ -32,11 +32,11 @@ public class BaseExceptionHandler {
     }
 
     @ExceptionHandler(BackendResponseException.class)
-    public ResponseEntity<BffErrorDTO> handleBackendResponseException(BackendResponseException ex) {
+    public ResponseEntity<BffErrorDtoResponse> handleBackendResponseException(BackendResponseException ex) {
         log.error("Backend de produtos respondeu com erro: {}", ex.getMessage());
 
         return ResponseEntity
                 .status(ex.getStatus())
-                .body(new BffErrorDTO(ex.getCodError(), ex.getMessage()));
+                .body(new BffErrorDtoResponse(ex.getCodError(), ex.getMessage()));
     }
 }

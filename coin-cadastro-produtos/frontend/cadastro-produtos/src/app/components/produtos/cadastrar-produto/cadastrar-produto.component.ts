@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { delay, dematerialize, finalize, materialize } from 'rxjs';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ProdutoRequestDTO } from '../../../models/ProdutoRequestDTO';
+import { ProdutoDtoRequest } from '../../../models/ProdutoDtoRequest';
 import { ApiErrorService } from '../../../services/api-error.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ProdutoService } from '../../../services/produto.service';
@@ -53,7 +53,7 @@ export class CadastrarProdutoComponent {
       return;
     }
 
-    const produto: ProdutoRequestDTO = {
+    const produto: ProdutoDtoRequest = {
       nome: this.nomePadronizado,
       preco: this.preco,
     };

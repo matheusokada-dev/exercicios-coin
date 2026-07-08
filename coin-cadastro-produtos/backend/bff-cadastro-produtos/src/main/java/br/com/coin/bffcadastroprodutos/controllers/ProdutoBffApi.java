@@ -1,11 +1,11 @@
 package br.com.coin.bffcadastroprodutos.controllers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.BffErrorDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffFiltroDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,15 +35,15 @@ public interface ProdutoBffApi {
     @ApiResponse(
             responseCode = "400",
             description = "Dados inválidos",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @ApiResponse(
             responseCode = "503",
             description = "Serviço de produtos indisponível",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @PostMapping
-    ResponseEntity<ProdutoBffResponseDTO> criar(@Valid @RequestBody ProdutoBffRequestDTO dto);
+    ResponseEntity<ProdutoBffDtoResponse> criar(@Valid @RequestBody ProdutoBffDtoRequest dto);
 
     @Operation(
             summary = "Listar produtos",
@@ -53,17 +53,17 @@ public interface ProdutoBffApi {
     @ApiResponse(
             responseCode = "400",
             description = "Filtro inválido",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @ApiResponse(
             responseCode = "503",
             description = "Serviço de produtos indisponível",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @GetMapping
-    ResponseEntity<ProdutoBffPageResponseDTO<ProdutoBffResponseDTO>> listar(
+    ResponseEntity<ProdutoBffPageDtoResponse<ProdutoBffDtoResponse>> listar(
             @Parameter(description = "Filtros de listagem de produtos")
-            @Valid @ModelAttribute ProdutoBffFiltroDTO filtro
+            @Valid @ModelAttribute ProdutoBffFiltroDtoRequest filtro
     );
 
     @Operation(summary = "Buscar produto por ID")
@@ -71,10 +71,10 @@ public interface ProdutoBffApi {
     @ApiResponse(
             responseCode = "404",
             description = "Produto não encontrado",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @GetMapping("/{id}")
-    ResponseEntity<ProdutoBffResponseDTO> buscarPorId(
+    ResponseEntity<ProdutoBffDtoResponse> buscarPorId(
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id
     );
@@ -84,18 +84,18 @@ public interface ProdutoBffApi {
     @ApiResponse(
             responseCode = "400",
             description = "Dados inválidos",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @ApiResponse(
             responseCode = "404",
             description = "Produto não encontrado",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @PutMapping("/{id}")
-    ResponseEntity<ProdutoBffResponseDTO> atualizar(
+    ResponseEntity<ProdutoBffDtoResponse> atualizar(
             @Parameter(description = "ID do produto", example = "1")
             @PathVariable Long id,
-            @Valid @RequestBody ProdutoBffUpdateDTO dto
+            @Valid @RequestBody ProdutoBffUpdateDtoRequest dto
     );
 
     @Operation(
@@ -106,7 +106,7 @@ public interface ProdutoBffApi {
     @ApiResponse(
             responseCode = "404",
             description = "Produto não encontrado",
-            content = @Content(schema = @Schema(implementation = BffErrorDTO.class))
+            content = @Content(schema = @Schema(implementation = BffErrorDtoResponse.class))
     )
     @DeleteMapping("/{id}")
     ResponseEntity<Void> desativar(

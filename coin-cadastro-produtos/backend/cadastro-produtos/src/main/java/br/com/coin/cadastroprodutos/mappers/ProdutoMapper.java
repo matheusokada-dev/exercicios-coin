@@ -1,8 +1,8 @@
 package br.com.coin.cadastroprodutos.mappers;
 
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
 import br.com.coin.cadastroprodutos.entities.Produto;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class ProdutoMapper {
             "HDMI", "USB", "LED", "LCD", "SSD", "HD", "CPU", "GPU", "RAM", "TV", "DVD", "CD", "VGA", "RGB"
     );
 
-    public Produto toEntity(ProdutoRequestDTO dto) {
+    public Produto toEntity(ProdutoDtoRequest dto) {
         Produto produto = new Produto();
         produto.setNome(padronizarNome(dto.nome()));
         produto.setPreco(dto.preco());
@@ -25,8 +25,8 @@ public class ProdutoMapper {
         return produto;
     }
 
-    public ProdutoResponseDTO toResponseDTO(Produto produto) {
-        return new ProdutoResponseDTO(
+    public ProdutoDtoResponse toDtoResponse(Produto produto) {
+        return new ProdutoDtoResponse(
                 produto.getId(),
                 produto.getNome(),
                 produto.getPreco(),
@@ -34,7 +34,7 @@ public class ProdutoMapper {
         );
     }
 
-    public void updateEntity(Produto produto, ProdutoUpdateDTO dto) {
+    public void updateEntity(Produto produto, ProdutoUpdateDtoRequest dto) {
         produto.setNome(padronizarNome(dto.nome()));
         produto.setPreco(dto.preco());
         produto.setAtivo(dto.ativo());

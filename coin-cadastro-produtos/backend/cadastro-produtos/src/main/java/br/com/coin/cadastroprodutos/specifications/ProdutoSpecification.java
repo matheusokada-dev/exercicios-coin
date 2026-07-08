@@ -1,7 +1,7 @@
 package br.com.coin.cadastroprodutos.specifications;
 
 
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
 import br.com.coin.cadastroprodutos.entities.Produto;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -10,7 +10,7 @@ public class ProdutoSpecification {
     private ProdutoSpecification() {
     }
 
-    public static Specification<Produto> comFiltros(FiltroProdutoDTO filtro) {
+    public static Specification<Produto> comFiltros(ProdutoFiltroDtoRequest filtro) {
         return (root, query, criteriaBuilder) -> {
             var predicates = criteriaBuilder.conjunction();
 

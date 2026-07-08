@@ -1,9 +1,9 @@
 package br.com.coin.cadastroprodutos.controllers;
 
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
 import br.com.coin.cadastroprodutos.services.ProdutoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +22,15 @@ public class ProdutoController implements ProdutoApi {
     private final ProdutoService produtoService;
 
     @Override
-    public ResponseEntity<ProdutoResponseDTO> criar(@Valid ProdutoRequestDTO dto) {
+    public ResponseEntity<ProdutoDtoResponse> criar(@Valid ProdutoDtoRequest dto) {
         log.info("Recebida solicitacao para criar produto");
-        ProdutoResponseDTO produtoCriado = produtoService.criar(dto);
+        ProdutoDtoResponse produtoCriado = produtoService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoCriado);
     }
 
     @Override
-    public Page<ProdutoResponseDTO> listar(
-            @Valid FiltroProdutoDTO filtro,
+    public Page<ProdutoDtoResponse> listar(
+            @Valid ProdutoFiltroDtoRequest filtro,
             Pageable pageable
     ) {
         log.info("Recebida solicitacao para listar produtos. pagina={}, tamanho={}, ordenacao={}",
@@ -39,15 +39,15 @@ public class ProdutoController implements ProdutoApi {
     }
 
     @Override
-    public ResponseEntity<ProdutoResponseDTO> buscarPorId(Long id) {
+    public ResponseEntity<ProdutoDtoResponse> buscarPorId(Long id) {
         log.info("Recebida solicitacao para buscar produto por id={}", id);
         return ResponseEntity.ok(produtoService.buscarPorId(id));
     }
 
     @Override
-    public ResponseEntity<ProdutoResponseDTO> atualizar(
+    public ResponseEntity<ProdutoDtoResponse> atualizar(
             Long id,
-            @Valid ProdutoUpdateDTO dto
+            @Valid ProdutoUpdateDtoRequest dto
     ) {
         log.info("Recebida solicitacao para atualizar produto id={}", id);
         return ResponseEntity.ok(produtoService.atualizar(id, dto));
