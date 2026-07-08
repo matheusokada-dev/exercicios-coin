@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.handlers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.BffErrorDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
 import br.com.coin.bffcadastroprodutos.enums.BffErrorEnum;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ValidationHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BffErrorDTO> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<BffErrorDtoResponse> handleValidation(MethodArgumentNotValidException ex) {
         String mensagem = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -25,6 +25,6 @@ public class ValidationHandler {
 
         return ResponseEntity
                 .status(BffErrorEnum.REQUISICAO_INVALIDA.getHttpStatus())
-                .body(new BffErrorDTO(BffErrorEnum.REQUISICAO_INVALIDA.getErrorCode(), mensagem));
+                .body(new BffErrorDtoResponse(BffErrorEnum.REQUISICAO_INVALIDA.getErrorCode(), mensagem));
     }
 }

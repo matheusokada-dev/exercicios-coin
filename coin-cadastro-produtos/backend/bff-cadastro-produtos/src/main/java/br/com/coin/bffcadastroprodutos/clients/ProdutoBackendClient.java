@@ -1,10 +1,6 @@
 package br.com.coin.bffcadastroprodutos.clients;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendErrorDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.backend.*;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendIndisponivelException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendResponseException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendTimeoutException;
@@ -29,19 +25,19 @@ public class ProdutoBackendClient {
     private final RestClient produtoRestClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ProdutoBackendResponseDTO criar(ProdutoBackendRequestDTO dto) {
+    public ProdutoBackendDtoResponse criar(ProdutoBackendDtoRequest dto) {
         try {
             return produtoRestClient.post()
                     .uri("/produtos")
                     .body(dto)
                     .retrieve()
-                    .body(ProdutoBackendResponseDTO.class);
+                    .body(ProdutoBackendDtoResponse.class);
         } catch (Exception ex) {
             throw tratarErro(ex);
         }
     }
 
-    public ProdutoBackendPageResponseDTO<ProdutoBackendResponseDTO> listar(
+    public ProdutoBackendPageDtoResponse<ProdutoBackendDtoResponse> listar(
             Integer page,
             Integer size,
             String sort,
@@ -69,24 +65,24 @@ public class ProdutoBackendClient {
         }
     }
 
-    public ProdutoBackendResponseDTO buscarPorId(Long id) {
+    public ProdutoBackendDtoResponse buscarPorId(Long id) {
         try {
             return produtoRestClient.get()
                     .uri("/produtos/{id}", id)
                     .retrieve()
-                    .body(ProdutoBackendResponseDTO.class);
+                    .body(ProdutoBackendDtoResponse.class);
         } catch (Exception ex) {
             throw tratarErro(ex);
         }
     }
 
-    public ProdutoBackendResponseDTO atualizar(Long id, ProdutoBackendUpdateDTO dto) {
+    public ProdutoBackendDtoResponse atualizar(Long id, ProdutoBackendUpdateDtoRequest dto) {
         try {
             return produtoRestClient.put()
                     .uri("/produtos/{id}", id)
                     .body(dto)
                     .retrieve()
-                    .body(ProdutoBackendResponseDTO.class);
+                    .body(ProdutoBackendDtoResponse.class);
         } catch (Exception ex) {
             throw tratarErro(ex);
         }
@@ -146,7 +142,7 @@ public class ProdutoBackendClient {
                 return new BackendIndisponivelException();
             }
 
-            ProdutoBackendErrorDTO backendError = extrairErro(responseException);
+            ProdutoBackendErrorDtoResponse backendError = extrairErro(responseException);
 
             return new BackendResponseException(
                     status,
@@ -166,22 +162,22 @@ public class ProdutoBackendClient {
         return new BackendIndisponivelException();
     }
 
-    private ProdutoBackendErrorDTO extrairErro(RestClientResponseException ex) {
+    private ProdutoBackendErrorDtoResponse extrairErro(RestClientResponseException ex) {
         String body = ex.getResponseBodyAsString();
 
         if (body != null && !body.isBlank()) {
             try {
-                ProdutoBackendErrorDTO backendError = objectMapper.readValue(body, ProdutoBackendErrorDTO.class);
+                ProdutoBackendErrorDtoResponse backendError = objectMapper.readValue(body, ProdutoBackendErrorDtoResponse.class);
 
-                return new ProdutoBackendErrorDTO(
+                return new ProdutoBackendErrorDtoResponse(
                         backendError.codError() != null ? backendError.codError() : ex.getStatusCode().value(),
                         backendError.msgError() != null ? backendError.msgError() : "Erro ao consultar servi\u00e7o de produtos."
                 );
             } catch (JsonProcessingException ignored) {
-                return new ProdutoBackendErrorDTO(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
+                return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
             }
         }
 
-        return new ProdutoBackendErrorDTO(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
+        return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
     }
 }

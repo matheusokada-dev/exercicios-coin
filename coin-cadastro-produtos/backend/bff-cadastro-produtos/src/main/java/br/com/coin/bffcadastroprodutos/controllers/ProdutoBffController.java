@@ -1,10 +1,10 @@
 package br.com.coin.bffcadastroprodutos.controllers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffFiltroDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
 import br.com.coin.bffcadastroprodutos.services.ProdutoBffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,29 +19,29 @@ public class ProdutoBffController implements ProdutoBffApi {
     private final ProdutoBffService produtoBffService;
 
     @Override
-    public ResponseEntity<ProdutoBffResponseDTO> criar(
-            @Valid ProdutoBffRequestDTO dto
+    public ResponseEntity<ProdutoBffDtoResponse> criar(
+            @Valid ProdutoBffDtoRequest dto
     ) {
-        ProdutoBffResponseDTO response = produtoBffService.criar(dto);
+        ProdutoBffDtoResponse response = produtoBffService.criar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Override
-    public ResponseEntity<ProdutoBffPageResponseDTO<ProdutoBffResponseDTO>> listar(
-            @Valid ProdutoBffFiltroDTO filtro
+    public ResponseEntity<ProdutoBffPageDtoResponse<ProdutoBffDtoResponse>> listar(
+            @Valid ProdutoBffFiltroDtoRequest filtro
     ) {
         return ResponseEntity.ok(produtoBffService.listar(filtro));
     }
 
     @Override
-    public ResponseEntity<ProdutoBffResponseDTO> buscarPorId(Long id) {
+    public ResponseEntity<ProdutoBffDtoResponse> buscarPorId(Long id) {
         return ResponseEntity.ok(produtoBffService.buscarPorId(id));
     }
 
     @Override
-    public ResponseEntity<ProdutoBffResponseDTO> atualizar(
+    public ResponseEntity<ProdutoBffDtoResponse> atualizar(
             Long id,
-            @Valid ProdutoBffUpdateDTO dto
+            @Valid ProdutoBffUpdateDtoRequest dto
     ) {
         return ResponseEntity.ok(produtoBffService.atualizar(id, dto));
     }

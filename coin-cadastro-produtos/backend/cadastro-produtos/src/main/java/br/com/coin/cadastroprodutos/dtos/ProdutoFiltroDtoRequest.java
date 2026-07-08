@@ -1,13 +1,10 @@
-package br.com.coin.bffcadastroprodutos.dtos.bff;
+package br.com.coin.cadastroprodutos.dtos;
 
 import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
 
-public record ProdutoBffFiltroDTO(
-        Integer page,
-        Integer size,
-        String sort,
+public record ProdutoFiltroDtoRequest(
         String busca,
         String status,
 

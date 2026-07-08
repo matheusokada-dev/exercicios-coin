@@ -1,8 +1,8 @@
-package br.com.coin.bffcadastroprodutos.dtos.bff;
+package br.com.coin.bffcadastroprodutos.dtos.backend;
 
 import java.util.List;
 
-public record ProdutoBffPageResponseDTO<T>(
+public record ProdutoBackendPageDtoResponse<T>(
         List<T> content,
         Long totalElements,
         Integer totalPages,

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { delay, dematerialize, finalize, materialize } from 'rxjs';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ProdutoResponseDTO } from '../../../models/ProdutoResponseDTO';
+import { ProdutoDtoResponse } from '../../../models/ProdutoDtoResponse';
 import { ApiErrorService } from '../../../services/api-error.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ProdutoService } from '../../../services/produto.service';
@@ -25,8 +25,8 @@ export class DeletarProdutoComponent {
   ativo = true;
 
   busca = '';
-  resultadosBusca: ProdutoResponseDTO[] = [];
-  produtoSelecionado: ProdutoResponseDTO | null = null;
+  resultadosBusca: ProdutoDtoResponse[] = [];
+  produtoSelecionado: ProdutoDtoResponse | null = null;
 
   modalConfirmacaoAberto = false;
   processando = false;
@@ -69,7 +69,7 @@ export class DeletarProdutoComponent {
     });
   }
 
-  selecionarProduto(produto: ProdutoResponseDTO): void {
+  selecionarProduto(produto: ProdutoDtoResponse): void {
     this.produtoSelecionado = produto;
     this.id = produto.id;
     this.nome = produto.nome;

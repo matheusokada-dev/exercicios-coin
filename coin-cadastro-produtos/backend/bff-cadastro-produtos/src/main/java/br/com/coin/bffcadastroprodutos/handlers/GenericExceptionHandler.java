@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.handlers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.BffErrorDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
 import br.com.coin.bffcadastroprodutos.enums.BffErrorEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GenericExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<BffErrorDTO> handleException(Exception ex) {
+    public ResponseEntity<BffErrorDtoResponse> handleException(Exception ex) {
         log.error("Um erro inesperado aconteceu na BFF", ex);
 
         return ResponseEntity
                 .status(BffErrorEnum.ERRO_GENERICO.getHttpStatus())
-                .body(new BffErrorDTO(
+                .body(new BffErrorDtoResponse(
                         BffErrorEnum.ERRO_GENERICO.getErrorCode(),
                         BffErrorEnum.ERRO_GENERICO.getErrorMessage()
                 ));

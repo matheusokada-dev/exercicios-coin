@@ -1,9 +1,9 @@
 package br.com.coin.cadastroprodutos.controllers;
 
-import br.com.coin.cadastroprodutos.dtos.FiltroProdutoDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoRequestDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoResponseDTO;
-import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDTO;
+import br.com.coin.cadastroprodutos.dtos.ProdutoFiltroDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoRequest;
+import br.com.coin.cadastroprodutos.dtos.ProdutoDtoResponse;
+import br.com.coin.cadastroprodutos.dtos.ProdutoUpdateDtoRequest;
 import br.com.coin.cadastroprodutos.services.ProdutoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,12 +40,12 @@ class ProdutoControllerTest {
     @Test
     void testCriarProduto() {
         // Arrange
-        ProdutoRequestDTO requestDTO = new ProdutoRequestDTO("Arroz", BigDecimal.valueOf(10.00));
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        ProdutoDtoRequest requestDTO = new ProdutoDtoRequest("Arroz", BigDecimal.valueOf(10.00));
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
         when(produtoService.criar(requestDTO)).thenReturn(responseDTO);
 
         // Act
-        ResponseEntity<ProdutoResponseDTO> response = produtoController.criar(requestDTO);
+        ResponseEntity<ProdutoDtoResponse> response = produtoController.criar(requestDTO);
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -56,14 +56,14 @@ class ProdutoControllerTest {
     @Test
     void testListarProdutos() {
         // Arrange
-        FiltroProdutoDTO filtro = new FiltroProdutoDTO("Arroz", "todos", null, null);
+        ProdutoFiltroDtoRequest filtro = new ProdutoFiltroDtoRequest("Arroz", "todos", null, null);
         Pageable pageable = PageRequest.of(0, 5, Sort.by("nome").ascending());
-        ProdutoResponseDTO produto = new ProdutoResponseDTO(1L, "Arroz", BigDecimal.valueOf(10.00), true);
-        Page<ProdutoResponseDTO> produtos = new PageImpl<>(List.of(produto), pageable, 1);
+        ProdutoDtoResponse produto = new ProdutoDtoResponse(1L, "Arroz", BigDecimal.valueOf(10.00), true);
+        Page<ProdutoDtoResponse> produtos = new PageImpl<>(List.of(produto), pageable, 1);
         when(produtoService.listar(filtro, pageable)).thenReturn(produtos);
 
         // Act
-        Page<ProdutoResponseDTO> response = produtoController.listar(filtro, pageable);
+        Page<ProdutoDtoResponse> response = produtoController.listar(filtro, pageable);
 
         // Assert
         assertEquals(produtos, response);
@@ -75,11 +75,11 @@ class ProdutoControllerTest {
     void testBuscarProdutoPorId() {
         // Arrange
         Long produtoId = 1L;
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
         when(produtoService.buscarPorId(produtoId)).thenReturn(responseDTO);
 
         // Act
-        ResponseEntity<ProdutoResponseDTO> response = produtoController.buscarPorId(produtoId);
+        ResponseEntity<ProdutoDtoResponse> response = produtoController.buscarPorId(produtoId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -91,12 +91,12 @@ class ProdutoControllerTest {
     void testAtualizarProduto() {
         // Arrange
         Long produtoId = 1L;
-        ProdutoUpdateDTO updateDTO = new ProdutoUpdateDTO("Arroz", BigDecimal.valueOf(10.00),true);
-        ProdutoResponseDTO responseDTO = new ProdutoResponseDTO(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        ProdutoUpdateDtoRequest updateDTO = new ProdutoUpdateDtoRequest("Arroz", BigDecimal.valueOf(10.00),true);
+        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
         when(produtoService.atualizar(produtoId, updateDTO)).thenReturn(responseDTO);
 
         // Act
-        ResponseEntity<ProdutoResponseDTO> response = produtoController.atualizar(produtoId, updateDTO);
+        ResponseEntity<ProdutoDtoResponse> response = produtoController.atualizar(produtoId, updateDTO);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());

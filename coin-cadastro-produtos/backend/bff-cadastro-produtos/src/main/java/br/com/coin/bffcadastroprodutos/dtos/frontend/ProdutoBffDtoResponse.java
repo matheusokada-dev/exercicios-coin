@@ -1,10 +1,11 @@
-package br.com.coin.cadastroprodutos.dtos;
+package br.com.coin.bffcadastroprodutos.dtos.frontend;
 
 import java.math.BigDecimal;
 
-public record ProdutoResponseDTO(
+public record ProdutoBffDtoResponse(
         Long id,
         String nome,
         BigDecimal preco,
         Boolean ativo
-) {}
+) {
+}

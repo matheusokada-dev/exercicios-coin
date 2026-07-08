@@ -1,10 +1,10 @@
 package br.com.coin.bffcadastroprodutos.controllers;
 
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffFiltroDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffPageResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffRequestDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffResponseDTO;
-import br.com.coin.bffcadastroprodutos.dtos.bff.ProdutoBffUpdateDTO;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
 import br.com.coin.bffcadastroprodutos.services.ProdutoBffService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +31,8 @@ class ProdutoBffControllerTest {
 
     @Test
     void deveCriarProdutoComStatusCreated() {
-        var request = new ProdutoBffRequestDTO("Mouse", new BigDecimal("59.90"));
-        var response = new ProdutoBffResponseDTO(1L, "Mouse", new BigDecimal("59.90"), true);
+        var request = new ProdutoBffDtoRequest("Mouse", new BigDecimal("59.90"));
+        var response = new ProdutoBffDtoResponse(1L, "Mouse", new BigDecimal("59.90"), true);
 
         when(produtoBffService.criar(request)).thenReturn(response);
 
@@ -45,9 +45,9 @@ class ProdutoBffControllerTest {
 
     @Test
     void deveListarProdutosComStatusOk() {
-        var filtro = new ProdutoBffFiltroDTO(0, 5, "id,asc", null, "todos", null, null);
-        var produto = new ProdutoBffResponseDTO(1L, "Mouse", new BigDecimal("59.90"), true);
-        var page = new ProdutoBffPageResponseDTO<>(List.of(produto), 1L, 1, 5, 0);
+        var filtro = new ProdutoBffFiltroDtoRequest(0, 5, "id,asc", null, "todos", null, null);
+        var produto = new ProdutoBffDtoResponse(1L, "Mouse", new BigDecimal("59.90"), true);
+        var page = new ProdutoBffPageDtoResponse<>(List.of(produto), 1L, 1, 5, 0);
 
         when(produtoBffService.listar(filtro)).thenReturn(page);
 
@@ -60,7 +60,7 @@ class ProdutoBffControllerTest {
 
     @Test
     void deveBuscarProdutoPorIdComStatusOk() {
-        var response = new ProdutoBffResponseDTO(1L, "Mouse", new BigDecimal("59.90"), true);
+        var response = new ProdutoBffDtoResponse(1L, "Mouse", new BigDecimal("59.90"), true);
 
         when(produtoBffService.buscarPorId(1L)).thenReturn(response);
 
@@ -73,8 +73,8 @@ class ProdutoBffControllerTest {
 
     @Test
     void deveAtualizarProdutoComStatusOk() {
-        var update = new ProdutoBffUpdateDTO("Mouse Gamer", new BigDecimal("99.90"), true);
-        var response = new ProdutoBffResponseDTO(1L, "Mouse Gamer", new BigDecimal("99.90"), true);
+        var update = new ProdutoBffUpdateDtoRequest("Mouse Gamer", new BigDecimal("99.90"), true);
+        var response = new ProdutoBffDtoResponse(1L, "Mouse Gamer", new BigDecimal("99.90"), true);
 
         when(produtoBffService.atualizar(1L, update)).thenReturn(response);
 

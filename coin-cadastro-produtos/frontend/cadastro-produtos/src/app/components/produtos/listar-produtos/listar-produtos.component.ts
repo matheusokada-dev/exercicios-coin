@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { delay, dematerialize, finalize, materialize } from 'rxjs';
 import { LoadingComponent } from '../../loading/loading.component';
-import { ProdutoResponseDTO } from '../../../models/ProdutoResponseDTO';
+import { ProdutoDtoResponse } from '../../../models/ProdutoDtoResponse';
 import { ApiErrorService } from '../../../services/api-error.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ProdutoService } from '../../../services/produto.service';
@@ -21,7 +21,7 @@ export class ListarProdutosComponent implements OnInit {
   private buscaAtual = 0;
   private primeiraBusca = true;
 
-  produtos: ProdutoResponseDTO[] = [];
+  produtos: ProdutoDtoResponse[] = [];
 
   paginaAtual = 0;
   tamanhoPagina = 5;
@@ -45,7 +45,7 @@ export class ListarProdutosComponent implements OnInit {
   processando = false;
   menuAcoesAbertoId: number | null = null;
 
-  produtoParaExcluir: ProdutoResponseDTO | null = null;
+  produtoParaExcluir: ProdutoDtoResponse | null = null;
   modalExclusaoAberto = false;
 
     filtrosAplicados = {
@@ -232,7 +232,7 @@ private validarBusca(): boolean {
     this.menuAcoesAbertoId = this.menuAcoesAbertoId === produtoId ? null : produtoId;
   }
 
-  alterarProduto(produto: ProdutoResponseDTO): void {
+  alterarProduto(produto: ProdutoDtoResponse): void {
     this.menuAcoesAbertoId = null;
     this.router.navigate(['/alterar-produto'], {
       queryParams: {
@@ -242,7 +242,7 @@ private validarBusca(): boolean {
     });
   }
 
-  abrirModalExclusao(produto: ProdutoResponseDTO): void {
+  abrirModalExclusao(produto: ProdutoDtoResponse): void {
     if (!produto.ativo) {
       return;
     }

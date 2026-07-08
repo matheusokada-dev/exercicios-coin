@@ -29,6 +29,7 @@ if (deveRedirecionarParaErro(erro)) {
     })
   );
 };
+
 function deveRedirecionarParaErro(erro: HttpErrorResponse): boolean {
   return erro.status === 0
     || erro.status === 503

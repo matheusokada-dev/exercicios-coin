@@ -1,17 +1,15 @@
-package br.com.coin.bffcadastroprodutos.dtos.bff;
+package br.com.coin.cadastroprodutos.dtos;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.math.BigDecimal;
 
-public record ProdutoBffRequestDTO(
+public record ProdutoDtoRequest(
         @NotBlank(message = "Nome é obrigatório")
         String nome,
 
         @NotNull(message = "Preço é obrigatório")
         @DecimalMin(value = "0.01", message = "Preço deve ser maior que zero")
         BigDecimal preco
-) {
-}
+) {}
