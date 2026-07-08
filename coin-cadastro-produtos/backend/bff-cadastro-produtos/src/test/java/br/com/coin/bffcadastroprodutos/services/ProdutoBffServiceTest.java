@@ -1,14 +1,15 @@
 package br.com.coin.bffcadastroprodutos.services;
 
 import br.com.coin.bffcadastroprodutos.clients.ProdutoBackendClient;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendUpdateDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.request.ProdutoBackendDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.request.ProdutoBackendUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffPageDtoResponse;
 import br.com.coin.bffcadastroprodutos.exceptions.ProdutoBffValidationException;
 import br.com.coin.bffcadastroprodutos.mappers.ProdutoBffMapper;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class ProdutoBffServiceTest {
         var filtro = new ProdutoBffFiltroDtoRequest(null, null, null, null, null, null, null);
         var backendProduto = new ProdutoBackendDtoResponse(1L, "Mouse", new BigDecimal("59.90"), true);
         var backendPage = new ProdutoBackendPageDtoResponse<>(List.of(backendProduto), 1L, 1, 5, 0);
-        var bffPage = new br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse<>(
+        var bffPage = new ProdutoBffPageDtoResponse<>(
                 List.of(new ProdutoBffDtoResponse(1L, "Mouse", new BigDecimal("59.90"), true)),
                 1L,
                 1,

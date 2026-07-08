@@ -1,13 +1,13 @@
 package br.com.coin.bffcadastroprodutos.services;
 
 import br.com.coin.bffcadastroprodutos.clients.ProdutoBackendClient;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
 import br.com.coin.bffcadastroprodutos.exceptions.ProdutoBffValidationException;
 import br.com.coin.bffcadastroprodutos.mappers.ProdutoBffMapper;
 import lombok.RequiredArgsConstructor;

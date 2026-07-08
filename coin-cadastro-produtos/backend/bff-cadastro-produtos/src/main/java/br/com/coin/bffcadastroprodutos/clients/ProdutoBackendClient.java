@@ -1,6 +1,10 @@
 package br.com.coin.bffcadastroprodutos.clients;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.*;
+import br.com.coin.bffcadastroprodutos.dtos.backend.request.ProdutoBackendDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.request.ProdutoBackendUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendErrorDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendPageDtoResponse;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendIndisponivelException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendResponseException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendTimeoutException;
@@ -171,13 +175,13 @@ public class ProdutoBackendClient {
 
                 return new ProdutoBackendErrorDtoResponse(
                         backendError.codError() != null ? backendError.codError() : ex.getStatusCode().value(),
-                        backendError.msgError() != null ? backendError.msgError() : "Erro ao consultar servi\u00e7o de produtos."
+                        backendError.msgError() != null ? backendError.msgError() : "Erro ao consultar serviço de produtos."
                 );
             } catch (JsonProcessingException ignored) {
-                return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
+                return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar serviço de produtos.");
             }
         }
 
-        return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar servi\u00e7o de produtos.");
+        return new ProdutoBackendErrorDtoResponse(ex.getStatusCode().value(), "Erro ao consultar serviço de produtos.");
     }
 }

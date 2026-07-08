@@ -1,11 +1,11 @@
 package br.com.coin.bffcadastroprodutos.controllers;
 
-import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.BffErrorDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "BFF Produtos", description = "Endpoints da BFF consumidos pelo frontend de cadastro de produtos")
 @RequestMapping("/api/bff/produtos")
-public interface ProdutoBffApi {
+public interface git ProdutoBffApi {
 
     @Operation(
             summary = "Cadastrar produto",
