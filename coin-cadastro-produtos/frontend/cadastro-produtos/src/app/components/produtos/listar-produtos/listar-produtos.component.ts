@@ -17,7 +17,7 @@ import { ProdutoService } from '../../../services/produto.service';
   styleUrl: './listar-produtos.component.css'
 })
 export class ListarProdutosComponent implements OnInit {
-  private readonly tempoLoadingMs = 3000;
+  private readonly tempoLoadingMs = 1000;
   private buscaAtual = 0;
   private primeiraBusca = true;
 
@@ -78,7 +78,7 @@ export class ListarProdutosComponent implements OnInit {
     this.mensagemResultado = '';
     const buscaId = ++this.buscaAtual;
 
-    
+
 
 
 this.produtoService.listar({

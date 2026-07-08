@@ -40,17 +40,17 @@ class ProdutoControllerTest {
     @Test
     void testCriarProduto() {
         // Arrange
-        ProdutoDtoRequest requestDTO = new ProdutoDtoRequest("Arroz", BigDecimal.valueOf(10.00));
-        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
-        when(produtoService.criar(requestDTO)).thenReturn(responseDTO);
+        ProdutoDtoRequest requestDto = new ProdutoDtoRequest("Arroz", BigDecimal.valueOf(10.00));
+        ProdutoDtoResponse responseDto = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        when(produtoService.criar(requestDto)).thenReturn(responseDto);
 
         // Act
-        ResponseEntity<ProdutoDtoResponse> response = produtoController.criar(requestDTO);
+        ResponseEntity<ProdutoDtoResponse> response = produtoController.criar(requestDto);
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(responseDTO, response.getBody());
-        verify(produtoService, times(1)).criar(requestDTO);
+        assertEquals(responseDto, response.getBody());
+        verify(produtoService, times(1)).criar(requestDto);
     }
 
     @Test
@@ -75,15 +75,15 @@ class ProdutoControllerTest {
     void testBuscarProdutoPorId() {
         // Arrange
         Long produtoId = 1L;
-        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
-        when(produtoService.buscarPorId(produtoId)).thenReturn(responseDTO);
+        ProdutoDtoResponse responseDto = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        when(produtoService.buscarPorId(produtoId)).thenReturn(responseDto);
 
         // Act
         ResponseEntity<ProdutoDtoResponse> response = produtoController.buscarPorId(produtoId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseDTO, response.getBody());
+        assertEquals(responseDto, response.getBody());
         verify(produtoService, times(1)).buscarPorId(produtoId);
     }
 
@@ -91,17 +91,17 @@ class ProdutoControllerTest {
     void testAtualizarProduto() {
         // Arrange
         Long produtoId = 1L;
-        ProdutoUpdateDtoRequest updateDTO = new ProdutoUpdateDtoRequest("Arroz", BigDecimal.valueOf(10.00),true);
-        ProdutoDtoResponse responseDTO = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
-        when(produtoService.atualizar(produtoId, updateDTO)).thenReturn(responseDTO);
+        ProdutoUpdateDtoRequest updateDto = new ProdutoUpdateDtoRequest("Arroz", BigDecimal.valueOf(10.00),true);
+        ProdutoDtoResponse responseDto = new ProdutoDtoResponse(1L,"Arroz", BigDecimal.valueOf(10.00),true);
+        when(produtoService.atualizar(produtoId, updateDto)).thenReturn(responseDto);
 
         // Act
-        ResponseEntity<ProdutoDtoResponse> response = produtoController.atualizar(produtoId, updateDTO);
+        ResponseEntity<ProdutoDtoResponse> response = produtoController.atualizar(produtoId, updateDto);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseDTO, response.getBody());
-        verify(produtoService, times(1)).atualizar(produtoId, updateDTO);
+        assertEquals(responseDto, response.getBody());
+        verify(produtoService, times(1)).atualizar(produtoId, updateDto);
     }
 
     @Test
@@ -118,3 +118,4 @@ class ProdutoControllerTest {
         verify(produtoService, times(1)).desativar(produtoId);
     }
 }
+
