@@ -1,9 +1,9 @@
 package br.com.coin.bffcadastroprodutos.mappers;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

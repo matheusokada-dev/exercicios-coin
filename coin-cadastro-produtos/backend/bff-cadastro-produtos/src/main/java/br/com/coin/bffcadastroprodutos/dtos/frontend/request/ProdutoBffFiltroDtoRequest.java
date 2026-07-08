@@ -1,4 +1,4 @@
-package br.com.coin.bffcadastroprodutos.dtos.frontend;
+package br.com.coin.bffcadastroprodutos.dtos.frontend.request;
 
 import jakarta.validation.constraints.DecimalMin;
 

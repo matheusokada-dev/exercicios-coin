@@ -1,4 +1,4 @@
-package br.com.coin.bffcadastroprodutos.dtos.backend;
+package br.com.coin.bffcadastroprodutos.dtos.backend.response;
 
 import java.math.BigDecimal;
 

@@ -1,10 +1,10 @@
 package br.com.coin.bffcadastroprodutos.controllers;
 
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffFiltroDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffPageDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoRequest;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffDtoResponse;
-import br.com.coin.bffcadastroprodutos.dtos.frontend.ProdutoBffUpdateDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffFiltroDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffPageDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
 import br.com.coin.bffcadastroprodutos.services.ProdutoBffService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

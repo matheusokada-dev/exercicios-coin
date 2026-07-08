@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.handlers;
 
-import br.com.coin.bffcadastroprodutos.dtos.frontend.BffErrorDtoResponse;
+import br.com.coin.bffcadastroprodutos.dtos.frontend.response.BffErrorDtoResponse;
 import br.com.coin.bffcadastroprodutos.enums.BffErrorEnum;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

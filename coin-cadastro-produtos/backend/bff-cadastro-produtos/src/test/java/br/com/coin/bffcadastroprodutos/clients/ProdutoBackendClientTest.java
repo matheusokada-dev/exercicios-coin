@@ -1,6 +1,6 @@
 package br.com.coin.bffcadastroprodutos.clients;
 
-import br.com.coin.bffcadastroprodutos.dtos.backend.ProdutoBackendDtoRequest;
+import br.com.coin.bffcadastroprodutos.dtos.backend.request.ProdutoBackendDtoRequest;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendIndisponivelException;
 import br.com.coin.bffcadastroprodutos.exceptions.BackendResponseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,7 +130,7 @@ class ProdutoBackendClientTest {
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
         assertEquals(1000, exception.getCodError());
-        assertEquals("Produto n\u00e3o existente.", exception.getMessage());
+        assertEquals("Produto não existente.", exception.getMessage());
         server.verify();
     }
 }

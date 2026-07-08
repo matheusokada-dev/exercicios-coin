@@ -22,7 +22,7 @@ if (deveRedirecionarParaErro(erro)) {
         tipo: 'infra'
       }
     });
-  }, 2500);
+  }, 2000);
 }
 
       return throwError(() => erro);
