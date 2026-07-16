@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "BFF Produtos", description = "Endpoints da BFF consumidos pelo frontend de cadastro de produtos")
 @RequestMapping("/api/bff/produtos")
-public interface git ProdutoBffApi {
+public interface ProdutoBffApi {
 
     @Operation(
             summary = "Cadastrar produto",

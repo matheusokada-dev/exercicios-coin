@@ -8,7 +8,7 @@ public enum BffErrorEnum {
     BACKEND_INDISPONIVEL(503, 503, "Serviço de produtos indisponível."),
     BACKEND_TIMEOUT(504, 504, "Tempo limite excedido ao consultar o serviço de produtos."),
     REQUISICAO_INVALIDA(400, 400, "Request inválido.");
-    //Adicionar 0 404
+
     private final int httpStatus;
     private final int errorCode;
     private final String errorMessage;

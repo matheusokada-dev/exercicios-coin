@@ -5,7 +5,6 @@ import br.com.coin.bffcadastroprodutos.dtos.backend.response.ProdutoBackendDtoRe
 import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
 import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProdutoBffMapperTest {
 
-    private final ProdutoBffMapper mapper = Mappers.getMapper(ProdutoBffMapper.class);
+    private final ProdutoBffMapper mapper = new ProdutoBffMapper();
 
     @Test
     void deveConverterRequestDaBffParaBackend() {
