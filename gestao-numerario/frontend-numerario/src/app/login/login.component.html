@@ -1,0 +1,43 @@
+<main class="login-page">
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="brand-mark">
+      <strong>COIN</strong>
+      <span>Numerário</span>
+    </div>
+
+    <h1 id="login-title">Acessar operação</h1>
+
+    <form class="login-form" [formGroup]="formulario" (ngSubmit)="entrar()" novalidate>
+      <label for="login">Login</label>
+      <input
+        id="login"
+        formControlName="login"
+        autocomplete="username"
+        aria-describedby="login-error"
+      >
+      @if (formulario.controls.login.touched && formulario.controls.login.invalid) {
+        <p id="login-error" class="field-error">Informe o login.</p>
+      }
+
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        formControlName="senha"
+        type="password"
+        autocomplete="current-password"
+        aria-describedby="senha-error"
+      >
+      @if (formulario.controls.senha.touched && formulario.controls.senha.invalid) {
+        <p id="senha-error" class="field-error">Informe a senha.</p>
+      }
+
+      @if (erro) {
+        <p class="form-error" role="alert">{{ erro }}</p>
+      }
+
+      <button type="submit" [disabled]="carregando">
+        {{ carregando ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </section>
+</main>

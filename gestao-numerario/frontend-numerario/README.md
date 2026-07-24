@@ -1,0 +1,77 @@
+# Frontend Numerário
+
+Aplicação Angular 19 da Gestão de Numerário.
+
+## Fluxo atual
+
+- A raiz `/` redireciona para a tela de login em `/login`.
+- Rotas internas protegidas por `authGuard`.
+- COIN Home em `/menu`, separando Tesouraria e Cadastros.
+- Tesouraria direciona para `/tesouraria`, com cards para Dashboard, Solicitações, Agências, Movimentações e Livro Caixa.
+- Cadastros direciona para a página de erro porque o módulo ainda não foi desenvolvido.
+- O header autenticado contém somente o botão Sair.
+- Telas internas possuem breadcrumbs e botão Voltar conforme a hierarquia de navegação.
+- Livro Caixa em `/livro-caixa`: seleciona agência e período e gera relatório `.xlsx`.
+- Token JWT salvo no `localStorage` com a chave `numerario_access_token`.
+- Interceptor HTTP envia `Authorization: Bearer <token>` nas chamadas ao BFF.
+- Interceptor global exibe loading e toast em chamadas HTTP.
+- Rotas de agência usam `gestorGuard`.
+- A página `/erro` trata URL inválida, acesso indevido e indisponibilidade da API/BFF.
+- Rotas disponíveis: menu, tesouraria, dashboard, agências, detalhe da agência, solicitações, movimentações e livro caixa.
+
+## Livro Caixa
+
+O relatório usa somente contratos existentes:
+
+- `GET /api/v1/agencias` para seleção da agência.
+- `GET /api/v1/movimentacoes` com agência, data inicial, data final e paginação.
+
+O frontend consolida todas as páginas e gera o XLSX com saldos, entradas, saídas e totalizadores. Como a listagem de agências exige perfil gestor na API atual, `/livro-caixa` usa `gestorGuard`.
+
+## Perfis COIN
+
+O frontend reconhece os perfis `COIN0001` a `COIN0006`.
+
+- Compatibilidade local temporária: `GESTOR` é interpretado como `COIN0001`; `OPERADOR` como `COIN0003`.
+
+O backend continua persistindo e emitindo `GESTOR/OPERADOR`.
+
+## Desenvolvimento local
+
+O frontend deve consumir o BFF pelas rotas relativas `/api/v1`.
+
+Para iniciar todo o ambiente local, usar o script da raiz do projeto:
+
+```bash
+scripts/iniciar-tudo.ps1
+```
+
+Portas esperadas:
+
+- Frontend: `http://localhost:4200`
+- BFF: `http://localhost:8080`
+- API: `http://localhost:8081`
+
+## Dados de exemplo
+
+Antes do seed, crie ou redefina o gestor local com uma senha conhecida:
+
+```powershell
+Get-Content .\database\scripts\upsert-gestor-dev.sql | mysql -u root -p gestao_numerario
+```
+
+Credencial local: login `gestor`, senha `admin123`.
+
+Depois, se o banco estiver vazio, aplique o seed local:
+
+```powershell
+Get-Content .\database\scripts\seed-dados-dev.sql | mysql -u root -p gestao_numerario
+```
+
+O seed cria usuários locais e popula agências, solicitações e movimentações para o dashboard e as listas do frontend. A senha fixa é somente para desenvolvimento local.
+
+## Pendências
+
+- Evoluir formulários de agências, solicitações e movimentações.
+- Substituir IDs de agência digitados manualmente por seleção pesquisável.
+- Adicionar testes automatizados para os componentes e interceptores globais.

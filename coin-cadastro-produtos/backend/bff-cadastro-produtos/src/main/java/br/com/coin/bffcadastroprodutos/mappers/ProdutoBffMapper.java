@@ -8,20 +8,38 @@ import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffPageDtoR
 import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffDtoRequest;
 import br.com.coin.bffcadastroprodutos.dtos.frontend.response.ProdutoBffDtoResponse;
 import br.com.coin.bffcadastroprodutos.dtos.frontend.request.ProdutoBffUpdateDtoRequest;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface ProdutoBffMapper {
+@Component
+public class ProdutoBffMapper {
 
-    ProdutoBackendDtoRequest toBackendRequest(ProdutoBffDtoRequest dto);
+    public ProdutoBackendDtoRequest toBackendRequest(ProdutoBffDtoRequest dto) {
+        return new ProdutoBackendDtoRequest(
+                dto.nome(),
+                dto.preco()
+        );
+    }
 
-    ProdutoBackendUpdateDtoRequest toBackendUpdate(ProdutoBffUpdateDtoRequest dto);
+    public ProdutoBackendUpdateDtoRequest toBackendUpdate(ProdutoBffUpdateDtoRequest dto) {
+        return new ProdutoBackendUpdateDtoRequest(
+                dto.nome(),
+                dto.preco(),
+                dto.ativo()
+        );
+    }
 
-    ProdutoBffDtoResponse toBffResponse(ProdutoBackendDtoResponse dto);
+    public ProdutoBffDtoResponse toBffResponse(ProdutoBackendDtoResponse dto) {
+        return new ProdutoBffDtoResponse(
+                dto.id(),
+                dto.nome(),
+                dto.preco(),
+                dto.ativo()
+        );
+    }
 
-    default ProdutoBffPageDtoResponse<ProdutoBffDtoResponse> toBffPage(
+    public ProdutoBffPageDtoResponse<ProdutoBffDtoResponse> toBffPage(
             ProdutoBackendPageDtoResponse<ProdutoBackendDtoResponse> page
     ) {
         List<ProdutoBffDtoResponse> content = page.content()

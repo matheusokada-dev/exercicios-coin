@@ -1,0 +1,27 @@
+<header class="menu-heading">
+  <h1>COIN HOME</h1>
+  <span aria-hidden="true"></span>
+</header>
+
+<p class="menu-section-title">Módulos</p>
+<section class="menu-grid menu-grid--home" aria-label="Módulos do COIN">
+  <a class="menu-card" routerLink="/tesouraria">
+    <span class="menu-card__icon">
+      <lucide-icon [img]="Landmark" [size]="18" aria-hidden="true" />
+    </span>
+    <span class="menu-card__content">
+      <strong>Tesouraria</strong>
+    </span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" aria-hidden="true" />
+  </a>
+
+  <a class="menu-card" routerLink="/erro" [queryParams]="{ tipo: 'cadastros' }">
+    <span class="menu-card__icon">
+      <lucide-icon [img]="Settings2" [size]="18" aria-hidden="true" />
+    </span>
+    <span class="menu-card__content">
+      <strong>Cadastros</strong>
+    </span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" aria-hidden="true" />
+  </a>
+</section>

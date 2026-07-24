@@ -1,0 +1,8 @@
+# Copie este arquivo para application-local.properties e informe sua senha local.
+spring.datasource.url=jdbc:mysql://localhost:3306/gestao_numerario?useSSL=false&allowPublicKeyRetrieval=true&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+spring.datasource.username=root
+spring.datasource.password=COLOQUE_SUA_SENHA_AQUI
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# Mínimo de 32 caracteres. Não versionar o valor real.
+app.security.jwt.secret=ALTERE_POR_UMA_CHAVE_SECRETA_COM_PELO_MENOS_32_CARACTERES

@@ -123,6 +123,16 @@ this.produtoService.listar({
         this.totalPaginas = 0;
         this.totalElementos = 0;
         this.mensagemResultado = '';
+
+        if (this.apiErrorService.ehErroInfra(erro)) {
+          this.router.navigate(['/erro'], {
+            queryParams: {
+              tipo: 'infra'
+            }
+          });
+          return;
+        }
+
         this.mensagem = this.apiErrorService.obterMensagem(erro, 'Erro ao buscar produtos.');
         this.tipoMensagem = 'erro';
         this.notificationService.error(this.mensagem);
