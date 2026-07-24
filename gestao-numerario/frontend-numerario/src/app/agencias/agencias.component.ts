@@ -1,92 +1,122 @@
-import { Component, OnInit } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Agencia, PaginaResponse } from '../core/api.models';
 import { AuthService } from '../core/auth.service';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { ConfirmationDialogComponent } from '../shared/confirmation-dialog/confirmation-dialog.component';
+import { BreadcrumbItem, PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { AgenciasService } from './agencias.service';
-import { PageBackComponent } from '../shared/page-back/page-back.component';
+
+interface NovaAgencia {
+  codigo: string;
+  nome: string;
+  cidade: string;
+  saldoAtual: number | '';
+  limiteMinimo: number | '';
+}
 
 @Component({
   selector: 'app-agencias',
-  imports: [CurrencyPipe, FormsModule, RouterLink, PageBackComponent],
+  imports: [
+    AlertComponent,
+    ConfirmationDialogComponent,
+    CurrencyPipe,
+    FormsModule,
+    PageHeaderComponent,
+    PaginationComponent,
+    RouterLink
+  ],
   template: `
-    <div class="page-navigation">
-      <p class="crumb"><a routerLink="/menu">COIN Home</a> / <a routerLink="/tesouraria">Tesouraria</a> / Agências</p>
-      <app-page-back to="/tesouraria" />
-    </div>
-    <h1>Agências</h1>
+    <app-page-header
+      title="Agências"
+      description="Consulta, cadastro e acompanhamento do limite operacional."
+      [breadcrumbs]="breadcrumbs" />
 
     @if (!isGestor) {
-      <p class="form-error">A consulta e manutencao de agencias exige perfil gestor.</p>
+      <app-alert type="warning" message="A consulta e a manutenção de agências exigem perfil gestor." />
     }
 
-    <section class="filters">
-      <input [(ngModel)]="busca" placeholder="Codigo, nome ou cidade">
-      <select [(ngModel)]="alerta">
-        <option value="">Status</option>
-        <option value="true">Em alerta</option>
-        <option value="false">OK</option>
-      </select>
-      <select [(ngModel)]="ordenarPor">
-        <option value="CODIGO">Codigo</option>
-        <option value="NOME">Nome</option>
-        <option value="CIDADE">Cidade</option>
-        <option value="SALDO_ATUAL">Saldo</option>
-      </select>
-      <select [(ngModel)]="direcao">
-        <option value="ASC">Ascendente</option>
-        <option value="DESC">Descendente</option>
-      </select>
-      <button (click)="pesquisar()">Pesquisar</button>
-      <button class="outline" (click)="limpar()">Limpar</button>
+    <section class="filters" aria-label="Filtros de agências">
+      <label class="field field--wide">
+        <span>Busca</span>
+        <input [(ngModel)]="busca" placeholder="Código, nome ou cidade">
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select [(ngModel)]="alerta">
+          <option value="">Todos</option>
+          <option value="true">Em alerta</option>
+          <option value="false">Regular</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Ordenar por</span>
+        <select [(ngModel)]="ordenarPor">
+          <option value="CODIGO">Código</option>
+          <option value="NOME">Nome</option>
+          <option value="CIDADE">Cidade</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Direção</span>
+        <select [(ngModel)]="direcao">
+          <option value="ASC">Crescente</option>
+          <option value="DESC">Decrescente</option>
+        </select>
+      </label>
+      <button type="button" (click)="pesquisar()">Pesquisar</button>
+      <button type="button" class="outline" (click)="limpar()">Limpar</button>
     </section>
 
     @if (isGestor) {
-      <section class="form">
-        <input [(ngModel)]="nova.codigo" placeholder="Codigo *">
-        <input [(ngModel)]="nova.nome" placeholder="Nome *">
-        <input [(ngModel)]="nova.cidade" placeholder="Cidade *">
-        <input [(ngModel)]="nova.saldoAtual" type="number" min="0" step="0.01" placeholder="Saldo inicial *">
-        <input [(ngModel)]="nova.limiteMinimo" type="number" min="0" step="0.01" placeholder="Limite minimo *">
-        <button (click)="criar()" [disabled]="salvando">Nova agencia +</button>
+      <section class="form-panel" aria-labelledby="new-agency-title">
+        <h2 id="new-agency-title">Nova agência</h2>
+        <div class="form">
+          <label class="field"><span>Código</span><input [(ngModel)]="nova.codigo" required></label>
+          <label class="field"><span>Nome</span><input [(ngModel)]="nova.nome" required></label>
+          <label class="field"><span>Cidade</span><input [(ngModel)]="nova.cidade" required></label>
+          <label class="field"><span>Saldo inicial</span><input [(ngModel)]="nova.saldoAtual" type="number" min="0" step="0.01"></label>
+          <label class="field"><span>Limite mínimo</span><input [(ngModel)]="nova.limiteMinimo" type="number" min="0" step="0.01" required></label>
+          <button type="button" (click)="criar()" [disabled]="salvando">Cadastrar agência</button>
+        </div>
       </section>
     }
 
     @if (erro) {
-      <p class="form-error">{{ erro }}</p>
+      <app-alert type="error" [message]="erro" />
     }
     @if (sucesso) {
-      <p class="form-success">{{ sucesso }}</p>
+      <app-alert type="success" [message]="sucesso" />
     }
 
     @if (carregando) {
-      <p class="empty">Carregando agencias...</p>
-    } @else if (resultado && resultado.itens?.length) {
+      <p class="empty">Carregando agências...</p>
+    } @else if (resultado?.itens?.length) {
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Codigo</th>
-              <th>Agencia</th>
-              <th>Cidade</th>
-              <th>Saldo</th>
-              <th>Status</th>
-              <th>Acoes</th>
-            </tr>
+            <tr><th>Código</th><th>Agência</th><th>Cidade</th><th>Saldo</th><th>Status</th><th>Ações</th></tr>
           </thead>
           <tbody>
-            @for (a of resultado.itens; track a.id) {
+            @for (agencia of resultado!.itens; track agencia.id) {
               <tr>
-                <td><a [routerLink]="['/agencias', a.id]">{{ a.codigo }}</a></td>
-                <td>{{ a.nome }}</td>
-                <td>{{ a.cidade }}</td>
-                <td>{{ a.saldoAtual | currency:'BRL' }}</td>
-                <td [class.alerta]="a.abaixoDoLimite">{{ a.abaixoDoLimite ? 'Alerta' : 'OK' }}</td>
+                <td><a [routerLink]="['/agencias', agencia.id]">{{ agencia.codigo }}</a></td>
+                <td>{{ agencia.nome }}</td>
+                <td>{{ agencia.cidade }}</td>
+                <td>{{ agencia.saldoAtual | currency:'BRL' }}</td>
+                <td>
+                  <span class="status-badge" [class.status-badge--attention]="agencia.abaixoDoLimite">
+                    {{ agencia.abaixoDoLimite ? 'Em alerta' : 'Regular' }}
+                  </span>
+                </td>
                 <td class="actions">
-                  <a class="button-link" [routerLink]="['/agencias', a.id]">Detalhar</a>
-                  @if (isGestor && a.ativo !== false) {
-                    <button class="outline" (click)="desativar(a.id)">Desativar</button>
+                  <a class="button-link" [routerLink]="['/agencias', agencia.id]">Detalhar</a>
+                  @if (isGestor && agencia.ativo !== false) {
+                    <button type="button" class="outline" (click)="solicitarDesativacao(agencia)">Desativar</button>
                   }
                 </td>
               </tr>
@@ -94,43 +124,55 @@ import { PageBackComponent } from '../shared/page-back/page-back.component';
           </tbody>
         </table>
       </div>
-      <section class="pagination">
-        <button class="outline" (click)="paginaAnterior()" [disabled]="pagina === 0">Anterior</button>
-        <span>Pagina {{ pagina + 1 }} de {{ totalPaginas }}</span>
-        <button class="outline" (click)="proximaPagina()" [disabled]="pagina + 1 >= totalPaginas">Proxima</button>
-      </section>
+      <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
     } @else if (resultado) {
-      <p class="empty">Nenhuma agencia encontrada para os filtros informados.</p>
+      <p class="empty">Nenhuma agência encontrada para os filtros informados.</p>
     }
+
+    <app-confirmation-dialog
+      #deactivationDialog
+      title="Desativar agência"
+      [message]="mensagemDesativacao"
+      confirmLabel="Desativar"
+      [danger]="true"
+      (confirmed)="desativar()" />
   `
 })
 export class AgenciasComponent implements OnInit {
+  @ViewChild('deactivationDialog') private dialog!: ConfirmationDialogComponent;
+
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'COIN Home', link: '/menu' },
+    { label: 'Tesouraria', link: '/tesouraria' },
+    { label: 'Agências' }
+  ];
   busca = '';
   alerta = '';
   ordenarPor = 'CODIGO';
   direcao = 'ASC';
   pagina = 0;
   tamanho = 20;
-  resultado: any;
+  resultado?: PaginaResponse<Agencia>;
   carregando = false;
   salvando = false;
   erro = '';
   sucesso = '';
-  nova: any = { codigo: '', nome: '', cidade: '', saldoAtual: '', limiteMinimo: '' };
+  nova: NovaAgencia = this.novaAgenciaVazia();
+  agenciaParaDesativar?: Agencia;
 
   constructor(
-    private service: AgenciasService,
-    private http: HttpClient,
-    private auth: AuthService,
-    private route: ActivatedRoute
+    private readonly service: AgenciasService,
+    private readonly http: HttpClient,
+    private readonly auth: AuthService,
+    private readonly route: ActivatedRoute
   ) {}
 
-  get isGestor() {
-    return this.auth.isGestor();
-  }
-
-  get totalPaginas() {
-    return Math.max(1, this.resultado?.totalPaginas || 1);
+  get isGestor() { return this.auth.isGestor(); }
+  get totalPaginas() { return Math.max(1, this.resultado?.totalPaginas ?? 1); }
+  get mensagemDesativacao() {
+    return this.agenciaParaDesativar
+      ? `A agência ${this.agenciaParaDesativar.codigo} — ${this.agenciaParaDesativar.nome} deixará de operar.`
+      : '';
   }
 
   ngOnInit() {
@@ -139,19 +181,16 @@ export class AgenciasComponent implements OnInit {
   }
 
   pesquisar(resetPagina = true) {
-    if (resetPagina) {
-      this.pagina = 0;
-    }
-
+    if (resetPagina) this.pagina = 0;
     this.erro = '';
     this.sucesso = '';
     this.carregando = true;
     this.service.listar(this.busca, this.alerta, this.ordenarPor, this.direcao, this.pagina, this.tamanho).subscribe({
-      next: r => {
-        this.resultado = r;
+      next: resultado => {
+        this.resultado = resultado;
         this.carregando = false;
       },
-      error: e => this.falha(e, 'Nao foi possivel carregar agencias.')
+      error: error => this.falha(error, 'Não foi possível carregar as agências.')
     });
   }
 
@@ -172,47 +211,44 @@ export class AgenciasComponent implements OnInit {
       saldoAtual: Number(this.nova.saldoAtual),
       limiteMinimo: Number(this.nova.limiteMinimo)
     };
-
     this.http.post('/api/v1/agencias', body).subscribe({
       next: () => {
-        this.nova = { codigo: '', nome: '', cidade: '', saldoAtual: '', limiteMinimo: '' };
+        this.nova = this.novaAgenciaVazia();
         this.salvando = false;
-        this.sucesso = 'Agencia criada com sucesso.';
         this.pesquisar();
+        this.sucesso = 'Agência criada com sucesso.';
       },
-      error: e => {
+      error: error => {
         this.salvando = false;
-        this.falha(e, 'Nao foi possivel criar a agencia.');
+        this.falha(error, 'Não foi possível criar a agência.');
       }
     });
   }
 
-  desativar(id: number) {
-    if (!confirm('Desativar esta agencia?')) {
-      return;
-    }
+  solicitarDesativacao(agencia: Agencia) {
+    this.agenciaParaDesativar = agencia;
+    this.dialog.open();
+  }
 
-    this.http.delete(`/api/v1/agencias/${id}`).subscribe({
+  desativar() {
+    if (!this.agenciaParaDesativar) return;
+    this.http.delete(`/api/v1/agencias/${this.agenciaParaDesativar.id}`).subscribe({
       next: () => {
-        this.sucesso = 'Agencia desativada com sucesso.';
+        this.agenciaParaDesativar = undefined;
         this.pesquisar(false);
+        this.sucesso = 'Agência desativada com sucesso.';
       },
-      error: e => this.falha(e, 'Nao foi possivel desativar a agencia.')
+      error: error => this.falha(error, 'Não foi possível desativar a agência.')
     });
   }
 
-  paginaAnterior() {
-    if (this.pagina > 0) {
-      this.pagina -= 1;
-      this.pesquisar(false);
-    }
+  irParaPagina(pagina: number) {
+    this.pagina = pagina;
+    this.pesquisar(false);
   }
 
-  proximaPagina() {
-    if (this.pagina + 1 < this.totalPaginas) {
-      this.pagina += 1;
-      this.pesquisar(false);
-    }
+  private novaAgenciaVazia(): NovaAgencia {
+    return { codigo: '', nome: '', cidade: '', saldoAtual: '', limiteMinimo: '' };
   }
 
   private falha(error: HttpErrorResponse, fallback: string) {

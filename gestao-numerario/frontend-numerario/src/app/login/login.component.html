@@ -32,7 +32,7 @@
       }
 
       @if (erro) {
-        <p class="form-error" role="alert">{{ erro }}</p>
+        <app-alert type="error" [message]="erro" />
       }
 
       <button type="submit" [disabled]="carregando">

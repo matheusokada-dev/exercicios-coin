@@ -1,94 +1,122 @@
-import { Component, OnInit } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { PaginaResponse, Solicitacao } from '../core/api.models';
 import { AuthService } from '../core/auth.service';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { PageBackComponent } from '../shared/page-back/page-back.component';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { BreadcrumbItem, PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
+
+interface NovaSolicitacao {
+  agenciaId: number | '';
+  valor: number | '';
+  motivo: string;
+  dataDesejada: string;
+}
+
+interface Decisao {
+  solicitacao?: Solicitacao;
+  acao: 'aprovar' | 'rejeitar' | '';
+  justificativaDecisao: string;
+  justificativaEspecial: string;
+}
 
 @Component({
   selector: 'app-solicitacoes',
-  imports: [CurrencyPipe, FormsModule, RouterLink, PageBackComponent],
+  imports: [
+    AlertComponent,
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    PageHeaderComponent,
+    PaginationComponent
+  ],
   template: `
-    <div class="page-navigation">
-      <p class="crumb"><a routerLink="/menu">COIN Home</a> / <a routerLink="/tesouraria">Tesouraria</a> / Solicitações</p>
-      <app-page-back to="/tesouraria" />
-    </div>
-    <h1>Solicitações de abastecimento</h1>
+    <app-page-header
+      title="Solicitações de abastecimento"
+      description="Registro e acompanhamento dos pedidos de numerário."
+      [breadcrumbs]="breadcrumbs" />
 
-    <section class="filters">
-      <input [(ngModel)]="agenciaId" placeholder="ID da agencia">
-      <select [(ngModel)]="status">
-        <option value="">Status</option>
-        <option value="PENDENTE">Pendente</option>
-        <option value="APROVADA">Aprovada</option>
-        <option value="REJEITADA">Rejeitada</option>
-        <option value="ATENDIDA">Atendida</option>
-      </select>
-      <input [(ngModel)]="dataInicio" type="date" aria-label="Data inicial">
-      <input [(ngModel)]="dataFim" type="date" aria-label="Data final">
-      <button (click)="listar()">Pesquisar</button>
-      <button class="outline" (click)="limpar()">Limpar</button>
+    <section class="filters" aria-label="Filtros de solicitações">
+      <label class="field"><span>Agência</span><input [(ngModel)]="agenciaId" type="number" min="1" placeholder="ID da agência"></label>
+      <label class="field">
+        <span>Status</span>
+        <select [(ngModel)]="status">
+          <option value="">Todos</option>
+          <option value="PENDENTE">Pendente</option>
+          <option value="APROVADA">Aprovada</option>
+          <option value="REJEITADA">Rejeitada</option>
+          <option value="ATENDIDA">Atendida</option>
+        </select>
+      </label>
+      <label class="field"><span>Data inicial</span><input [(ngModel)]="dataInicio" type="date"></label>
+      <label class="field"><span>Data final</span><input [(ngModel)]="dataFim" type="date"></label>
+      <button type="button" (click)="listar()">Pesquisar</button>
+      <button type="button" class="outline" (click)="limpar()">Limpar</button>
     </section>
 
-    <section class="form">
-      <input [(ngModel)]="nova.agenciaId" type="number" min="1" placeholder="Agencia *">
-      <input [(ngModel)]="nova.valor" type="number" min="0.01" step="0.01" placeholder="Valor *">
-      <input [(ngModel)]="nova.motivo" placeholder="Motivo *">
-      <input [(ngModel)]="nova.dataDesejada" type="date">
-      <button (click)="criar()" [disabled]="salvando">Nova solicitacao +</button>
+    <section class="form-panel" aria-labelledby="new-request-title">
+      <h2 id="new-request-title">Nova solicitação</h2>
+      <div class="form">
+        <label class="field"><span>Agência</span><input [(ngModel)]="nova.agenciaId" type="number" min="1" required></label>
+        <label class="field"><span>Valor</span><input [(ngModel)]="nova.valor" type="number" min="0.01" step="0.01" required></label>
+        <label class="field field--wide"><span>Motivo</span><input [(ngModel)]="nova.motivo" required></label>
+        <label class="field"><span>Data desejada</span><input [(ngModel)]="nova.dataDesejada" type="date"></label>
+        <button type="button" (click)="criar()" [disabled]="salvando">Cadastrar solicitação</button>
+      </div>
     </section>
 
     @if (decisao.solicitacao) {
-      <section class="form decision-panel">
-        <strong>{{ decisao.acao === 'aprovar' ? 'Aprovar' : 'Rejeitar' }} solicitacao #{{ decisao.solicitacao.id }}</strong>
-        <input [(ngModel)]="decisao.justificativaDecisao" placeholder="Justificativa da decisao *">
-        @if (decisao.acao === 'aprovar' && decisao.solicitacao.valor > 500000) {
-          <input [(ngModel)]="decisao.justificativaEspecial" placeholder="Justificativa especial para valor acima de R$ 500.000 *">
-        }
-        <button (click)="confirmarDecisao()" [disabled]="salvando">Confirmar</button>
-        <button class="outline" (click)="cancelarDecisao()">Cancelar</button>
+      <section class="form-panel decision-panel" aria-labelledby="decision-title">
+        <h2 id="decision-title">
+          {{ decisao.acao === 'aprovar' ? 'Aprovar' : 'Rejeitar' }} solicitação #{{ decisao.solicitacao.id }}
+        </h2>
+        <div class="form">
+          <label class="field field--wide"><span>Justificativa da decisão</span><input [(ngModel)]="decisao.justificativaDecisao" required></label>
+          @if (decisao.acao === 'aprovar' && decisao.solicitacao.valor > 500000) {
+            <label class="field field--wide">
+              <span>Justificativa especial para valor acima de {{ 500000 | currency:'BRL' }}</span>
+              <input [(ngModel)]="decisao.justificativaEspecial" required>
+            </label>
+          }
+          <button type="button" (click)="confirmarDecisao()" [disabled]="salvando">Confirmar</button>
+          <button type="button" class="outline" (click)="cancelarDecisao()">Cancelar</button>
+        </div>
       </section>
     }
 
     @if (!isGestor) {
-      <p class="empty">Aprovacao e rejeicao sao exclusivas do perfil gestor.</p>
+      <app-alert type="info" message="A aprovação e a rejeição são exclusivas do perfil gestor." />
     }
-    @if (erro) {
-      <p class="form-error">{{ erro }}</p>
-    }
-    @if (sucesso) {
-      <p class="form-success">{{ sucesso }}</p>
-    }
+    @if (erro) { <app-alert type="error" [message]="erro" /> }
+    @if (sucesso) { <app-alert type="success" [message]="sucesso" /> }
 
     @if (carregando) {
-      <p class="empty">Carregando solicitacoes...</p>
-    } @else if (resultado && resultado.itens?.length) {
+      <p class="empty">Carregando solicitações...</p>
+    } @else if (resultado?.itens?.length) {
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Agencia</th>
-              <th>Valor</th>
-              <th>Data desejada</th>
-              <th>Status</th>
-              <th>Acoes</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Agência</th><th>Valor</th><th>Data desejada</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody>
-            @for (s of resultado.itens; track s.id) {
+            @for (solicitacao of resultado!.itens; track solicitacao.id) {
               <tr>
-                <td>{{ s.agenciaId }}</td>
-                <td>{{ s.valor | currency:'BRL' }}</td>
-                <td>{{ s.dataDesejada }}</td>
-                <td>{{ s.status }}</td>
+                <td>{{ solicitacao.agenciaId }}</td>
+                <td>{{ solicitacao.valor | currency:'BRL' }}</td>
+                <td>{{ solicitacao.dataDesejada | date:'dd/MM/yyyy':'UTC' }}</td>
+                <td>
+                  <span class="status-badge" [class.status-badge--attention]="solicitacao.status === 'PENDENTE'">
+                    {{ rotuloStatus(solicitacao.status) }}
+                  </span>
+                </td>
                 <td class="actions">
-                  @if (s.status === 'PENDENTE' && isGestor) {
-                    <button (click)="abrirDecisao(s, 'aprovar')">Aprovar</button>
-                    <button class="outline" (click)="abrirDecisao(s, 'rejeitar')">Rejeitar</button>
+                  @if (solicitacao.status === 'PENDENTE' && isGestor) {
+                    <button type="button" (click)="abrirDecisao(solicitacao, 'aprovar')">Aprovar</button>
+                    <button type="button" class="outline" (click)="abrirDecisao(solicitacao, 'rejeitar')">Rejeitar</button>
                   }
-                  @if (s.status === 'APROVADA') {
-                    <button (click)="atender(s)">Atender</button>
+                  @if (solicitacao.status === 'APROVADA') {
+                    <button type="button" (click)="atender(solicitacao)">Atender</button>
                   }
                 </td>
               </tr>
@@ -96,44 +124,40 @@ import { PageBackComponent } from '../shared/page-back/page-back.component';
           </tbody>
         </table>
       </div>
-      <section class="pagination">
-        <button class="outline" (click)="paginaAnterior()" [disabled]="pagina === 0">Anterior</button>
-        <span>Pagina {{ pagina + 1 }} de {{ totalPaginas }}</span>
-        <button class="outline" (click)="proximaPagina()" [disabled]="pagina + 1 >= totalPaginas">Proxima</button>
-      </section>
+      <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
     } @else if (resultado) {
-      <p class="empty">Nenhuma solicitacao encontrada para os filtros informados.</p>
+      <p class="empty">Nenhuma solicitação encontrada para os filtros informados.</p>
     }
   `
 })
 export class SolicitacoesComponent implements OnInit {
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'COIN Home', link: '/menu' },
+    { label: 'Tesouraria', link: '/tesouraria' },
+    { label: 'Solicitações' }
+  ];
   agenciaId = '';
   status = '';
   dataInicio = '';
   dataFim = '';
   pagina = 0;
   tamanho = 20;
-  resultado: any;
+  resultado?: PaginaResponse<Solicitacao>;
   carregando = false;
   salvando = false;
   erro = '';
   sucesso = '';
-  nova: any = { agenciaId: '', valor: '', motivo: '', dataDesejada: '' };
-  decisao: any = { solicitacao: null, acao: '', justificativaDecisao: '', justificativaEspecial: '' };
+  nova: NovaSolicitacao = this.solicitacaoVazia();
+  decisao: Decisao = this.decisaoVazia();
 
   constructor(
-    private http: HttpClient,
-    private auth: AuthService,
-    private route: ActivatedRoute
+    private readonly http: HttpClient,
+    private readonly auth: AuthService,
+    private readonly route: ActivatedRoute
   ) {}
 
-  get isGestor() {
-    return this.auth.isGestor();
-  }
-
-  get totalPaginas() {
-    return Math.max(1, this.resultado?.totalPaginas || 1);
-  }
+  get isGestor() { return this.auth.isGestor(); }
+  get totalPaginas() { return Math.max(1, this.resultado?.totalPaginas ?? 1); }
 
   ngOnInit() {
     this.status = this.route.snapshot.queryParamMap.get('status') || '';
@@ -141,10 +165,7 @@ export class SolicitacoesComponent implements OnInit {
   }
 
   listar(resetPagina = true) {
-    if (resetPagina) {
-      this.pagina = 0;
-    }
-
+    if (resetPagina) this.pagina = 0;
     this.erro = '';
     this.sucesso = '';
     this.carregando = true;
@@ -153,13 +174,12 @@ export class SolicitacoesComponent implements OnInit {
     if (this.status) params = params.set('status', this.status);
     if (this.dataInicio) params = params.set('dataInicio', this.dataInicio);
     if (this.dataFim) params = params.set('dataFim', this.dataFim);
-
-    this.http.get<any>('/api/v1/solicitacoes', { params }).subscribe({
-      next: r => {
-        this.resultado = r;
+    this.http.get<PaginaResponse<Solicitacao>>('/api/v1/solicitacoes', { params }).subscribe({
+      next: resultado => {
+        this.resultado = resultado;
         this.carregando = false;
       },
-      error: e => this.falha(e, 'Nao foi possivel carregar solicitacoes.')
+      error: error => this.falha(error, 'Não foi possível carregar as solicitações.')
     });
   }
 
@@ -175,84 +195,77 @@ export class SolicitacoesComponent implements OnInit {
     this.erro = '';
     this.sucesso = '';
     this.salvando = true;
-    const body = {
-      ...this.nova,
-      agenciaId: Number(this.nova.agenciaId),
-      valor: Number(this.nova.valor)
-    };
-
+    const body = { ...this.nova, agenciaId: Number(this.nova.agenciaId), valor: Number(this.nova.valor) };
     this.http.post('/api/v1/solicitacoes', body).subscribe({
       next: () => {
-        this.nova = { agenciaId: '', valor: '', motivo: '', dataDesejada: '' };
+        this.nova = this.solicitacaoVazia();
         this.salvando = false;
-        this.sucesso = 'Solicitacao criada com sucesso.';
         this.listar();
+        this.sucesso = 'Solicitação criada com sucesso.';
       },
-      error: e => {
+      error: error => {
         this.salvando = false;
-        this.falha(e, 'Nao foi possivel criar a solicitacao.');
+        this.falha(error, 'Não foi possível criar a solicitação.');
       }
     });
   }
 
-  abrirDecisao(solicitacao: any, acao: 'aprovar' | 'rejeitar') {
+  abrirDecisao(solicitacao: Solicitacao, acao: 'aprovar' | 'rejeitar') {
     this.erro = '';
     this.sucesso = '';
     this.decisao = { solicitacao, acao, justificativaDecisao: '', justificativaEspecial: '' };
   }
 
-  cancelarDecisao() {
-    this.decisao = { solicitacao: null, acao: '', justificativaDecisao: '', justificativaEspecial: '' };
-  }
+  cancelarDecisao() { this.decisao = this.decisaoVazia(); }
 
   confirmarDecisao() {
     const { solicitacao, acao, justificativaDecisao, justificativaEspecial } = this.decisao;
-    if (!solicitacao) {
-      return;
-    }
-
+    if (!solicitacao || !acao) return;
     this.salvando = true;
-    const body: any = { justificativaDecisao };
-    if (acao === 'aprovar') {
-      body.justificativaEspecial = justificativaEspecial;
-    }
-
+    const body = acao === 'aprovar'
+      ? { justificativaDecisao, justificativaEspecial }
+      : { justificativaDecisao };
     this.http.put(`/api/v1/solicitacoes/${solicitacao.id}/${acao}`, body).subscribe({
       next: () => {
         this.salvando = false;
-        this.sucesso = `Solicitacao ${acao === 'aprovar' ? 'aprovada' : 'rejeitada'} com sucesso.`;
         this.cancelarDecisao();
         this.listar(false);
+        this.sucesso = `Solicitação ${acao === 'aprovar' ? 'aprovada' : 'rejeitada'} com sucesso.`;
       },
-      error: e => {
+      error: error => {
         this.salvando = false;
-        this.falha(e, 'Nao foi possivel concluir a decisao.');
+        this.falha(error, 'Não foi possível concluir a decisão.');
       }
     });
   }
 
-  atender(s: any) {
-    this.http.put(`/api/v1/solicitacoes/${s.id}/atender`, { idempotencyKey: crypto.randomUUID() }).subscribe({
+  atender(solicitacao: Solicitacao) {
+    this.http.put(`/api/v1/solicitacoes/${solicitacao.id}/atender`, {
+      idempotencyKey: crypto.randomUUID()
+    }).subscribe({
       next: () => {
-        this.sucesso = 'Solicitacao atendida com sucesso.';
         this.listar(false);
+        this.sucesso = 'Solicitação atendida com sucesso.';
       },
-      error: e => this.falha(e, 'Nao foi possivel atender a solicitacao.')
+      error: error => this.falha(error, 'Não foi possível atender a solicitação.')
     });
   }
 
-  paginaAnterior() {
-    if (this.pagina > 0) {
-      this.pagina -= 1;
-      this.listar(false);
-    }
+  irParaPagina(pagina: number) {
+    this.pagina = pagina;
+    this.listar(false);
   }
 
-  proximaPagina() {
-    if (this.pagina + 1 < this.totalPaginas) {
-      this.pagina += 1;
-      this.listar(false);
-    }
+  rotuloStatus(status: Solicitacao['status']) {
+    return { PENDENTE: 'Pendente', APROVADA: 'Aprovada', REJEITADA: 'Rejeitada', ATENDIDA: 'Atendida' }[status];
+  }
+
+  private solicitacaoVazia(): NovaSolicitacao {
+    return { agenciaId: '', valor: '', motivo: '', dataDesejada: '' };
+  }
+
+  private decisaoVazia(): Decisao {
+    return { acao: '', justificativaDecisao: '', justificativaEspecial: '' };
   }
 
   private falha(error: HttpErrorResponse, fallback: string) {

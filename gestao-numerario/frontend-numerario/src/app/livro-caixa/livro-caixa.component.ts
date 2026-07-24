@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Workbook, Worksheet } from 'exceljs';
 import { Download, LucideAngularModule } from 'lucide-angular';
 import { LoadingService } from '../core/loading.service';
 import { NotificationService } from '../core/notification.service';
-import { PageBackComponent } from '../shared/page-back/page-back.component';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { BreadcrumbItem, PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 interface Agencia {
   id: number;
@@ -42,12 +42,17 @@ interface Pagina<T> {
 @Component({
   selector: 'app-livro-caixa',
   standalone: true,
-  imports: [FormsModule, RouterLink, LucideAngularModule, PageBackComponent],
+  imports: [AlertComponent, FormsModule, LucideAngularModule, PageHeaderComponent],
   templateUrl: './livro-caixa.component.html',
   styleUrl: './livro-caixa.component.css'
 })
 export class LivroCaixaComponent implements OnInit {
   readonly Download = Download;
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'COIN Home', link: '/menu' },
+    { label: 'Tesouraria', link: '/tesouraria' },
+    { label: 'Livro Caixa' }
+  ];
 
   agencias: Agencia[] = [];
   agenciaId = '';

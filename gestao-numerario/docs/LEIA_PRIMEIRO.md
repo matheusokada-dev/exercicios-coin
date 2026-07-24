@@ -4,6 +4,10 @@
 
 Este arquivo é o resumo de retomada. Antes de implementar, ler também o documento técnico da etapa: banco em `MODELO_DADOS.md`, endpoints em `CONTRATOS_API.md` e escopo em `REQUISITOS.md`.
 
+Alterações de interface devem consultar `PADRAO_FRONTEND_BRADESCO.md`. O guia
+separa regras extraídas do Liquid Bradesco, adaptações Angular e lacunas ainda
+dependentes de documentação oficial.
+
 Para uma visão consolidada e navegável, abrir `DOCUMENTACAO_COMPLETA.html`.
 
 ## Ordem de precedência
@@ -59,6 +63,7 @@ Para uma visão consolidada e navegável, abrir `DOCUMENTACAO_COMPLETA.html`.
 - O formulário de login usa template HTML separado e valida os campos obrigatórios antes de chamar o BFF.
 - Frontend possui COIN Home separado em Tesouraria/Cadastros, rotas protegidas, loading global, toast de sucesso somente para alterações, toast de erro e página de erro centralizada.
 - Valores monetários exibidos pelo Angular usam `CurrencyPipe` com locale `pt-BR` e moeda `BRL`.
+- O padrão visual do frontend passa a seguir `PADRAO_FRONTEND_BRADESCO.md`; tipografia, paginação, donut, alert e modal possuem referência recebida, enquanto Card e paleta institucional completa continuam pendentes de fonte oficial.
 - A camada frontend reconhece `COIN0001` a `COIN0006` e mapeia temporariamente `GESTOR/OPERADOR` para `COIN0001/COIN0003`.
 - Tesouraria abre um menu com Dashboard, Solicitações, Agências, Movimentações e Livro Caixa.
 - Cadastros abre a página de erro porque ainda não foi desenvolvido.

@@ -119,7 +119,7 @@
 <body>
   <header class="topbar">
     <a class="brand" href="#inicio"><strong>COIN</strong><span>Gestão de Numerário</span></a>
-    <span class="updated">Documento consolidado em 23/07/2026</span>
+    <span class="updated">Documento consolidado em 24/07/2026</span>
   </header>
   <div class="layout">
     <aside class="sidebar">
@@ -219,7 +219,7 @@
         <h3>Livro Caixa</h3>
         <ol><li>Gestor escolhe agência e período.</li><li>Frontend lista agências ativas.</li><li>Todas as páginas de movimentações do período são consultadas.</li><li>ExcelJS gera o arquivo no navegador.</li></ol>
         <h3>Experiência transversal</h3>
-        <ul><li>Header autenticado contém somente logout.</li><li>Telas internas têm breadcrumbs e Voltar.</li><li>Interceptor global apresenta loading e toast.</li><li>Erros 403, 404 e indisponibilidade possuem página centralizada.</li></ul>
+        <ul><li>Header autenticado contém somente logout.</li><li>Telas internas têm breadcrumbs e Voltar.</li><li>Interceptor global apresenta loading, toast de alteração e toast de erro; consultas GET não geram toast de sucesso.</li><li>Erros 403, 404 e indisponibilidade possuem página centralizada.</li><li>Alterações de interface devem seguir o guia Bradesco/Liquid versionado, distinguindo referência oficial de adaptação provisória.</li></ul>
       </section>
 
       <section class="doc-section" id="arquitetura">
@@ -369,7 +369,7 @@ Get-Content .\database\scripts\seed-dados-dev.sql | mysql -u root -p gestao_nume
       <section class="doc-section sources" id="fontes">
         <h2>13. Fontes internas</h2>
         <p>Conteúdo consolidado a partir dos documentos versionados:</p>
-        <a href="./LEIA_PRIMEIRO.md">LEIA_PRIMEIRO.md</a><a href="./REQUISITOS.md">REQUISITOS.md</a><a href="./ARQUITETURA.md">ARQUITETURA.md</a><a href="./MODELO_DADOS.md">MODELO_DADOS.md</a><a href="./CONTRATOS_API.md">CONTRATOS_API.md</a><a href="./ANALISE_STORIES_COINCAD.md">ANALISE_STORIES_COINCAD.md</a><a href="./MASSA_DADOS.md">MASSA_DADOS.md</a><a href="./DIARIO_IMPLEMENTACAO.md">DIARIO_IMPLEMENTACAO.md</a>
+        <a href="./LEIA_PRIMEIRO.md">LEIA_PRIMEIRO.md</a><a href="./PADRAO_FRONTEND_BRADESCO.md">PADRAO_FRONTEND_BRADESCO.md</a><a href="./REQUISITOS.md">REQUISITOS.md</a><a href="./ARQUITETURA.md">ARQUITETURA.md</a><a href="./MODELO_DADOS.md">MODELO_DADOS.md</a><a href="./CONTRATOS_API.md">CONTRATOS_API.md</a><a href="./ANALISE_STORIES_COINCAD.md">ANALISE_STORIES_COINCAD.md</a><a href="./MASSA_DADOS.md">MASSA_DADOS.md</a><a href="./DIARIO_IMPLEMENTACAO.md">DIARIO_IMPLEMENTACAO.md</a>
       </section>
       <footer>COIN — Gestão de Numerário · Documento local e autocontido</footer>
     </main>

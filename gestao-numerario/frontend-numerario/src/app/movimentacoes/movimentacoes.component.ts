@@ -1,118 +1,137 @@
-import { Component, OnInit } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { PageBackComponent } from '../shared/page-back/page-back.component';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Movimentacao, PaginaResponse, TipoMovimentacao } from '../core/api.models';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { BreadcrumbItem, PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { PaginationComponent } from '../shared/pagination/pagination.component';
+
+interface NovaMovimentacao {
+  agenciaId: number | '';
+  tipo: Exclude<TipoMovimentacao, 'ABASTECIMENTO'>;
+  entradaAjuste: boolean | null;
+  valor: number | '';
+  descricao: string;
+}
 
 @Component({
   selector: 'app-movimentacoes',
-  imports: [CurrencyPipe, FormsModule, RouterLink, PageBackComponent],
+  imports: [
+    AlertComponent,
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    PageHeaderComponent,
+    PaginationComponent
+  ],
   template: `
-    <div class="page-navigation">
-      <p class="crumb"><a routerLink="/menu">COIN Home</a> / <a routerLink="/tesouraria">Tesouraria</a> / Movimentações</p>
-      <app-page-back to="/tesouraria" />
-    </div>
-    <h1>Movimentações</h1>
+    <app-page-header
+      title="Movimentações"
+      description="Consulta e registro de entradas e saídas de numerário."
+      [breadcrumbs]="breadcrumbs" />
 
-    <section class="filters">
-      <input [(ngModel)]="agenciaId" placeholder="ID da agencia">
-      <select [(ngModel)]="tipo">
-        <option value="">Tipo</option>
-        <option value="SAQUE">Saque</option>
-        <option value="DEPOSITO">Deposito</option>
-        <option value="RECOLHIMENTO">Recolhimento</option>
-        <option value="AJUSTE">Ajuste</option>
-        <option value="ABASTECIMENTO">Abastecimento</option>
-      </select>
-      <input [(ngModel)]="dataInicio" type="date" aria-label="Data inicial">
-      <input [(ngModel)]="dataFim" type="date" aria-label="Data final">
-      <button (click)="listar()">Pesquisar</button>
-      <button class="outline" (click)="limpar()">Limpar</button>
-    </section>
-
-    <section class="form">
-      <input [(ngModel)]="nova.agenciaId" type="number" min="1" placeholder="Agencia *">
-      <select [(ngModel)]="nova.tipo">
-        <option value="SAQUE">Saque</option>
-        <option value="DEPOSITO">Deposito</option>
-        <option value="RECOLHIMENTO">Recolhimento</option>
-        <option value="AJUSTE">Ajuste</option>
-      </select>
-      @if (nova.tipo === 'AJUSTE') {
-        <select [(ngModel)]="nova.entradaAjuste">
-          <option [ngValue]="true">Entrada</option>
-          <option [ngValue]="false">Saida</option>
+    <section class="filters" aria-label="Filtros de movimentações">
+      <label class="field"><span>Agência</span><input [(ngModel)]="agenciaId" type="number" min="1" placeholder="ID da agência"></label>
+      <label class="field">
+        <span>Tipo</span>
+        <select [(ngModel)]="tipo">
+          <option value="">Todos</option>
+          <option value="SAQUE">Saque</option>
+          <option value="DEPOSITO">Depósito</option>
+          <option value="RECOLHIMENTO">Recolhimento</option>
+          <option value="AJUSTE">Ajuste</option>
+          <option value="ABASTECIMENTO">Abastecimento</option>
         </select>
-      }
-      <input [(ngModel)]="nova.valor" type="number" min="0.01" step="0.01" placeholder="Valor *">
-      <input [(ngModel)]="nova.descricao" placeholder="Descricao">
-      <button (click)="criar()" [disabled]="salvando">Registrar +</button>
+      </label>
+      <label class="field"><span>Data inicial</span><input [(ngModel)]="dataInicio" type="date"></label>
+      <label class="field"><span>Data final</span><input [(ngModel)]="dataFim" type="date"></label>
+      <button type="button" (click)="listar()">Pesquisar</button>
+      <button type="button" class="outline" (click)="limpar()">Limpar</button>
     </section>
 
-    @if (erro) {
-      <p class="form-error">{{ erro }}</p>
-    }
-    @if (sucesso) {
-      <p class="form-success">{{ sucesso }}</p>
-    }
+    <section class="form-panel" aria-labelledby="new-movement-title">
+      <h2 id="new-movement-title">Registrar movimentação</h2>
+      <div class="form">
+        <label class="field"><span>Agência</span><input [(ngModel)]="nova.agenciaId" type="number" min="1" required></label>
+        <label class="field">
+          <span>Tipo</span>
+          <select [(ngModel)]="nova.tipo">
+            <option value="SAQUE">Saque</option>
+            <option value="DEPOSITO">Depósito</option>
+            <option value="RECOLHIMENTO">Recolhimento</option>
+            <option value="AJUSTE">Ajuste</option>
+          </select>
+        </label>
+        @if (nova.tipo === 'AJUSTE') {
+          <label class="field">
+            <span>Direção do ajuste</span>
+            <select [(ngModel)]="nova.entradaAjuste">
+              <option [ngValue]="true">Entrada</option>
+              <option [ngValue]="false">Saída</option>
+            </select>
+          </label>
+        }
+        <label class="field"><span>Valor</span><input [(ngModel)]="nova.valor" type="number" min="0.01" step="0.01" required></label>
+        <label class="field field--wide"><span>Descrição</span><input [(ngModel)]="nova.descricao"></label>
+        <button type="button" (click)="criar()" [disabled]="salvando">Registrar</button>
+      </div>
+    </section>
+
+    @if (erro) { <app-alert type="error" [message]="erro" /> }
+    @if (sucesso) { <app-alert type="success" [message]="sucesso" /> }
 
     @if (carregando) {
-      <p class="empty">Carregando movimentacoes...</p>
-    } @else if (resultado && resultado.itens?.length) {
+      <p class="empty">Carregando movimentações...</p>
+    } @else if (resultado?.itens?.length) {
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>Agencia</th>
-              <th>Tipo</th>
-              <th>Valor</th>
-              <th>Saldo posterior</th>
-              <th>Data</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Agência</th><th>Tipo</th><th>Valor</th><th>Saldo posterior</th><th>Data e hora</th></tr></thead>
           <tbody>
-            @for (m of resultado.itens; track m.id) {
+            @for (movimento of resultado!.itens; track movimento.id) {
               <tr>
-                <td>{{ m.agenciaId }}</td>
-                <td>{{ m.tipo }}</td>
-                <td>{{ m.valor | currency:'BRL' }}</td>
-                <td>{{ m.saldoPosterior | currency:'BRL' }}</td>
-                <td>{{ m.dataMovimento }}</td>
+                <td>{{ movimento.agenciaId }}</td>
+                <td>{{ movimento.tipo }}</td>
+                <td>{{ movimento.valor | currency:'BRL' }}</td>
+                <td>{{ movimento.saldoPosterior | currency:'BRL' }}</td>
+                <td>{{ movimento.dataMovimento | date:'dd/MM/yyyy HH:mm' }}</td>
               </tr>
             }
           </tbody>
         </table>
       </div>
-      <section class="pagination">
-        <button class="outline" (click)="paginaAnterior()" [disabled]="pagina === 0">Anterior</button>
-        <span>Pagina {{ pagina + 1 }} de {{ totalPaginas }}</span>
-        <button class="outline" (click)="proximaPagina()" [disabled]="pagina + 1 >= totalPaginas">Proxima</button>
-      </section>
+      <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
     } @else if (resultado) {
-      <p class="empty">Nenhuma movimentacao encontrada para os filtros informados.</p>
+      <p class="empty">Nenhuma movimentação encontrada para os filtros informados.</p>
     }
   `
 })
 export class MovimentacoesComponent implements OnInit {
+  readonly breadcrumbs: BreadcrumbItem[] = [
+    { label: 'COIN Home', link: '/menu' },
+    { label: 'Tesouraria', link: '/tesouraria' },
+    { label: 'Movimentações' }
+  ];
   agenciaId = '';
   tipo = '';
   dataInicio = '';
   dataFim = '';
   pagina = 0;
   tamanho = 20;
-  resultado: any;
+  resultado?: PaginaResponse<Movimentacao>;
   carregando = false;
   salvando = false;
   erro = '';
   sucesso = '';
-  nova: any = { agenciaId: '', tipo: 'SAQUE', entradaAjuste: null, valor: '', descricao: '' };
+  nova: NovaMovimentacao = this.movimentacaoVazia();
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly route: ActivatedRoute
+  ) {}
 
-  get totalPaginas() {
-    return Math.max(1, this.resultado?.totalPaginas || 1);
-  }
+  get totalPaginas() { return Math.max(1, this.resultado?.totalPaginas ?? 1); }
 
   ngOnInit() {
     this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
@@ -120,10 +139,7 @@ export class MovimentacoesComponent implements OnInit {
   }
 
   listar(resetPagina = true) {
-    if (resetPagina) {
-      this.pagina = 0;
-    }
-
+    if (resetPagina) this.pagina = 0;
     this.erro = '';
     this.sucesso = '';
     this.carregando = true;
@@ -133,12 +149,12 @@ export class MovimentacoesComponent implements OnInit {
     if (this.dataInicio) params = params.set('dataInicio', this.dataInicio);
     if (this.dataFim) params = params.set('dataFim', this.dataFim);
 
-    this.http.get<any>('/api/v1/movimentacoes', { params }).subscribe({
-      next: r => {
-        this.resultado = r;
+    this.http.get<PaginaResponse<Movimentacao>>('/api/v1/movimentacoes', { params }).subscribe({
+      next: resultado => {
+        this.resultado = resultado;
         this.carregando = false;
       },
-      error: e => this.falha(e, 'Nao foi possivel carregar movimentacoes.')
+      error: error => this.falha(error, 'Não foi possível carregar as movimentações.')
     });
   }
 
@@ -154,42 +170,35 @@ export class MovimentacoesComponent implements OnInit {
     this.erro = '';
     this.sucesso = '';
     this.salvando = true;
-    const body: any = {
+    const body = {
       ...this.nova,
       agenciaId: Number(this.nova.agenciaId),
       valor: Number(this.nova.valor),
+      entradaAjuste: this.nova.tipo === 'AJUSTE' ? this.nova.entradaAjuste : null,
       idempotencyKey: crypto.randomUUID()
     };
-    if (body.tipo !== 'AJUSTE') {
-      body.entradaAjuste = null;
-    }
 
     this.http.post('/api/v1/movimentacoes', body).subscribe({
       next: () => {
-        this.nova = { agenciaId: '', tipo: 'SAQUE', entradaAjuste: null, valor: '', descricao: '' };
+        this.nova = this.movimentacaoVazia();
         this.salvando = false;
-        this.sucesso = 'Movimentacao registrada com sucesso.';
         this.listar();
+        this.sucesso = 'Movimentação registrada com sucesso.';
       },
-      error: e => {
+      error: error => {
         this.salvando = false;
-        this.falha(e, 'Nao foi possivel registrar a movimentacao.');
+        this.falha(error, 'Não foi possível registrar a movimentação.');
       }
     });
   }
 
-  paginaAnterior() {
-    if (this.pagina > 0) {
-      this.pagina -= 1;
-      this.listar(false);
-    }
+  irParaPagina(pagina: number) {
+    this.pagina = pagina;
+    this.listar(false);
   }
 
-  proximaPagina() {
-    if (this.pagina + 1 < this.totalPaginas) {
-      this.pagina += 1;
-      this.listar(false);
-    }
+  private movimentacaoVazia(): NovaMovimentacao {
+    return { agenciaId: '', tipo: 'SAQUE', entradaAjuste: null, valor: '', descricao: '' };
   }
 
   private falha(error: HttpErrorResponse, fallback: string) {

@@ -27,6 +27,7 @@ Legenda: `Pendente`, `Em andamento`, `Concluído`. Origem: **Gestor** ou **Guia*
 | RF19 | Upload XLSX com resumo/log e relatórios Excel | Usuário | Pendente |
 | RF20 | Livro Caixa por agência e período com download de arquivo Excel | Usuário | Concluído |
 | RF21 | Header autenticado somente com logout; breadcrumbs e Voltar nas telas internas | Usuário | Concluído |
+| RF22 | Padronizar o frontend conforme a documentação Bradesco/Liquid fornecida, distinguindo regra oficial, adaptação Angular e componente ainda sem referência | Usuário | Em andamento |
 
 ## Regras de negócio
 
