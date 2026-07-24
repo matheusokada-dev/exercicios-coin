@@ -1,20 +1,11 @@
-<div class="page-navigation">
-  <p class="crumb">
-    <a routerLink="/menu">COIN Home</a> /
-    <a routerLink="/tesouraria">Tesouraria</a> /
-    Livro Caixa
-  </p>
-  <app-page-back to="/tesouraria" />
-</div>
-
-<header class="report-heading">
-  <h1>Livro Caixa</h1>
-  <p>Selecione a agência e o período para gerar o relatório Excel.</p>
-</header>
+<app-page-header
+  title="Livro Caixa"
+  description="Selecione a agência e o período para gerar o relatório Excel."
+  [breadcrumbs]="breadcrumbs" />
 
 <form class="report-form" (ngSubmit)="gerar()">
-  <label>
-    Agência
+  <label class="field">
+    <span>Agência</span>
     <select name="agencia" [(ngModel)]="agenciaId" required>
       <option value="">Selecione</option>
       @for (agencia of agencias; track agencia.id) {
@@ -22,13 +13,13 @@
       }
     </select>
   </label>
-  <label>
-    Data inicial
-    <input name="dataInicio" type="date" [(ngModel)]="dataInicio" required />
+  <label class="field">
+    <span>Data inicial</span>
+    <input name="dataInicio" type="date" [(ngModel)]="dataInicio" required>
   </label>
-  <label>
-    Data final
-    <input name="dataFim" type="date" [(ngModel)]="dataFim" required />
+  <label class="field">
+    <span>Data final</span>
+    <input name="dataFim" type="date" [(ngModel)]="dataFim" required>
   </label>
   <button type="submit" [disabled]="gerando || !agencias.length">
     <lucide-icon [img]="Download" [size]="18" aria-hidden="true" />
@@ -37,5 +28,5 @@
 </form>
 
 @if (erro) {
-  <p class="form-error">{{ erro }}</p>
+  <app-alert type="error" [message]="erro" />
 }

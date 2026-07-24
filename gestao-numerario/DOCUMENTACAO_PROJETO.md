@@ -32,6 +32,7 @@ Compilações e testes automatizados ficam pendentes por decisão do usuário ne
 
 ## Documentos
 
+- [Padrão de frontend Bradesco](docs/PADRAO_FRONTEND_BRADESCO.md)
 - [Massa de dados de desenvolvimento](docs/MASSA_DADOS.md)
 - [Análise das stories do COINCAD](docs/ANALISE_STORIES_COINCAD.md)
 - [Contexto e decisões](docs/LEIA_PRIMEIRO.md)

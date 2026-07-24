@@ -1,5 +1,14 @@
 # Diário de implementação
 
+## 24/07/2026 - Referência Bradesco/Liquid para o frontend
+
+- Analisado o material fornecido sobre Pagination, Chart Donut, Alert, Modal Dialog e Typography.
+- Criado `docs/PADRAO_FRONTEND_BRADESCO.md` como referência versionada de UI.
+- Registrados família tipográfica, escala, pesos, alturas de linha, cores estendidas de gráfico, contratos dos componentes e regras de acessibilidade.
+- Separadas regras extraídas da fonte, adaptações necessárias ao Angular e decisões provisórias do projeto.
+- Card, paleta institucional primária, espaçamento, botões, campos, tabelas e navegação permanecem pendentes de documentação oficial.
+- Registrado RF22 para acompanhar a migração progressiva do frontend ao padrão.
+
 ## 24/07/2026 - Padronização monetária e feedback de consultas
 
 - Registrado o locale global `pt-BR` no frontend.
