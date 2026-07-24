@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--clr-bg);
+}
+
+.error-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 72px 24px 48px;
+}
+
+.error-card {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.error-icon {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border: 1px solid var(--clr-border);
+  border-radius: 50%;
+  background: var(--clr-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--clr-accent);
+}
+
+.error-code {
+  margin: 22px 0 8px;
+  color: var(--clr-accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.error-card h1 {
+  margin: 0 0 10px;
+  color: var(--clr-text);
+  font-size: 26px;
+}
+
+.description {
+  max-width: 430px;
+  margin: 0;
+  color: var(--clr-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.back-button {
+  margin-top: 30px;
+}
+
+@media (max-width: 640px) {
+  .error-card h1 {
+    font-size: 22px;
+  }
+}

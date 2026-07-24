@@ -1,0 +1,35 @@
+<header class="menu-heading">
+  <h1>COIN TESOURARIA</h1>
+  <span aria-hidden="true"></span>
+</header>
+
+<p class="menu-section-title">Tesouraria</p>
+<section class="menu-grid" aria-label="Operações de Tesouraria">
+  <a class="menu-card" routerLink="/dashboard">
+    <span class="menu-card__icon"><lucide-icon [img]="LayoutDashboard" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Dashboard</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/solicitacoes">
+    <span class="menu-card__icon"><lucide-icon [img]="ClipboardList" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Solicitações</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/agencias">
+    <span class="menu-card__icon"><lucide-icon [img]="Building2" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Agências</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/movimentacoes">
+    <span class="menu-card__icon"><lucide-icon [img]="ArrowLeftRight" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Movimentações</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/livro-caixa">
+    <span class="menu-card__icon"><lucide-icon [img]="BookOpen" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Livro Caixa</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+</section>
+
+<div class="menu-back"><app-page-back to="/menu" /></div>

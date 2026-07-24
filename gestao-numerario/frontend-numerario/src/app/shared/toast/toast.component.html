@@ -1,0 +1,26 @@
+@if (notifications.notification(); as notification) {
+  <div
+    class="toast"
+    [class.toast--success]="notification.type === 'success'"
+    [class.toast--error]="notification.type === 'error'"
+    role="status"
+    aria-live="polite"
+  >
+    <lucide-icon
+      class="toast__status"
+      [img]="notification.type === 'success' ? CheckCircle2 : CircleX"
+      [size]="20"
+      aria-hidden="true"
+    />
+    <span>{{ notification.text }}</span>
+    <button
+      type="button"
+      class="toast__close"
+      aria-label="Fechar notificação"
+      title="Fechar"
+      (click)="notifications.clear()"
+    >
+      <lucide-icon [img]="X" [size]="17" aria-hidden="true" />
+    </button>
+  </div>
+}
