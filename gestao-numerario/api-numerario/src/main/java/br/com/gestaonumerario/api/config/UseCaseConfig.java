@@ -5,6 +5,11 @@ import br.com.gestaonumerario.api.core.usecase.movimentacao.MovimentacaoUseCase;
 import br.com.gestaonumerario.api.core.usecase.dashboard.DashboardUseCase;
 import br.com.gestaonumerario.api.core.usecase.autenticacao.AutenticacaoUseCase;
 import br.com.gestaonumerario.api.core.usecase.solicitacao.SolicitacaoUseCase;
+import br.com.gestaonumerario.api.core.usecase.solicitacao.SolicitacaoNumerarioUseCase;
+import br.com.gestaonumerario.api.core.usecase.solicitacao.OperacaoNumerarioUseCase;
+import br.com.gestaonumerario.api.core.usecase.solicitacao.FinanceiroNumerarioUseCase;
+import br.com.gestaonumerario.api.core.usecase.solicitacao.ConsultaNumerarioUseCase;
+import br.com.gestaonumerario.api.port.output.NumerarioOutputPort;
 import br.com.gestaonumerario.api.core.usecase.usuario.UsuarioUseCase;
 import br.com.gestaonumerario.api.port.output.AgenciaOutputPort;
 import br.com.gestaonumerario.api.port.output.CodificadorSenhaOutputPort;
@@ -15,6 +20,7 @@ import br.com.gestaonumerario.api.port.output.RelogioOutputPort;
 import br.com.gestaonumerario.api.port.output.SolicitacaoAbastecimentoOutputPort;
 import br.com.gestaonumerario.api.port.output.TransacaoOutputPort;
 import br.com.gestaonumerario.api.port.output.UsuarioOutputPort;
+import br.com.gestaonumerario.api.port.output.RefreshTokenOutputPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +29,32 @@ import java.time.Duration;
 
 @Configuration
 public class UseCaseConfig {
+
+    @Bean
+    SolicitacaoNumerarioUseCase solicitacaoNumerarioService(
+            NumerarioOutputPort numerarioPort, UsuarioOutputPort usuarioPort,
+            RelogioOutputPort relogioPort, TransacaoOutputPort transacaoPort) {
+        return new SolicitacaoNumerarioUseCase(numerarioPort,usuarioPort,relogioPort,transacaoPort);
+    }
+
+    @Bean
+    OperacaoNumerarioUseCase operacaoNumerarioService(
+            NumerarioOutputPort numerarioPort,UsuarioOutputPort usuarioPort,
+            RelogioOutputPort relogioPort,TransacaoOutputPort transacaoPort) {
+        return new OperacaoNumerarioUseCase(numerarioPort,usuarioPort,relogioPort,transacaoPort);
+    }
+
+    @Bean
+    FinanceiroNumerarioUseCase financeiroNumerarioService(
+            NumerarioOutputPort numerarioPort,UsuarioOutputPort usuarioPort,
+            RelogioOutputPort relogioPort,TransacaoOutputPort transacaoPort) {
+        return new FinanceiroNumerarioUseCase(numerarioPort,usuarioPort,relogioPort,transacaoPort);
+    }
+
+    @Bean
+    ConsultaNumerarioUseCase consultaNumerarioService(NumerarioOutputPort numerarioPort) {
+        return new ConsultaNumerarioUseCase(numerarioPort);
+    }
 
     @Bean
     SolicitacaoUseCase solicitacaoService(
@@ -77,11 +109,12 @@ public class UseCaseConfig {
     @Bean
     AutenticacaoUseCase autenticacaoService(UsuarioOutputPort usuarioPort, CodificadorSenhaOutputPort codificadorSenhaPort,
                                             TokenJwtOutputPort tokenJwtPort, RelogioOutputPort relogioPort,
+                                            RefreshTokenOutputPort refreshTokenPort,
                                             @Value("${app.security.login.max-failed-attempts}") int limiteTentativas,
-                                            @Value("${app.security.login.lock-duration-minutes}") long minutosBloqueio) {
+                                            @Value("${app.security.login.lock-duration-minutes}") long minutosBloqueio,
+                                            @Value("${app.security.refresh.expiration-hours}") long horasRefresh) {
         return new AutenticacaoUseCase(usuarioPort, codificadorSenhaPort, tokenJwtPort, relogioPort,
-                limiteTentativas, Duration.ofMinutes(minutosBloqueio));
+                limiteTentativas, Duration.ofMinutes(minutosBloqueio),
+                Duration.ofHours(horasRefresh), refreshTokenPort);
     }
 }
-
-

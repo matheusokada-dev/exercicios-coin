@@ -11,6 +11,7 @@ import br.com.gestaonumerario.api.core.exception.IdempotencyKeyDuplicadaExceptio
 import br.com.gestaonumerario.api.core.exception.SolicitacaoAbertaDuplicadaException;
 import br.com.gestaonumerario.api.core.exception.SolicitacaoNaoEncontradaException;
 import br.com.gestaonumerario.api.core.exception.UsuarioNaoEncontradoException;
+import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
 import br.com.gestaonumerario.api.port.input.SolicitacaoInputPort;
 import br.com.gestaonumerario.api.core.domain.model.FiltroSolicitacao;
 import br.com.gestaonumerario.api.core.domain.model.Pagina;
@@ -59,6 +60,7 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
         return transacaoPort.executar(() -> {
             Agencia agencia = buscarAgencia(command.agenciaId());
             Usuario solicitante = buscarUsuario(command.solicitanteId());
+            agencia.exigirAtiva();
 
             if (solicitacaoPort.existeSolicitacaoAbertaParaAgencia(
                     command.agenciaId()
@@ -145,10 +147,9 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
                     solicitacao.getAgencia().getId()
             ).orElseThrow(AgenciaNaoEncontradaException::new);
 
-            String idempotencyKey = textoOpcional(command.idempotencyKey());
+            String idempotencyKey = textoObrigatorio(command.idempotencyKey());
 
-            if (idempotencyKey != null
-                    && movimentacaoPort.existePorIdempotencyKey(idempotencyKey)) {
+            if (movimentacaoPort.existePorIdempotencyKey(idempotencyKey)) {
                 throw new IdempotencyKeyDuplicadaException();
             }
 
@@ -159,7 +160,7 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
                     solicitacao,
                     TipoMovimentacao.ABASTECIMENTO,
                     solicitacao.getValor(),
-                    "Atendimento da solicitaÃ§Ã£o " + solicitacao.getId(),
+                    "Atendimento da solicitação " + solicitacao.getId(),
                     agora,
                     usuario,
                     idempotencyKey
@@ -190,8 +191,12 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
     }
 
     private Usuario buscarUsuario(Long id) {
-        return usuarioPort.buscarPorId(id)
+        Usuario usuario = usuarioPort.buscarPorId(id)
                 .orElseThrow(UsuarioNaoEncontradoException::new);
+        if (!usuario.isAtivo()) {
+            throw new RegraOperacaoNumerarioException();
+        }
+        return usuario;
     }
 
     private SolicitacaoAbastecimento buscarSolicitacao(Long id) {
@@ -211,11 +216,12 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
         }
     }
 
-    private static String textoOpcional(String valor) {
-        return valor == null || valor.isBlank() ? null : valor.trim();
+    private static String textoObrigatorio(String valor) {
+        if (valor == null || valor.isBlank()) {
+            throw new CampoObrigatorioException();
+        }
+        return valor.trim();
     }
 }
-
-
 
 

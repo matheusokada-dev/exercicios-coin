@@ -1,0 +1,15 @@
+<app-page-header title="Nova agência" description="Cadastre a identificação e os limites operacionais da agência."
+  backTo="/agencias" [breadcrumbs]="breadcrumbs" />
+@if (erro) { <app-alert type="error" [message]="erro" /> }
+<section class="form-panel"><h2>Dados da agência</h2><div class="form">
+  <label class="field"><span>Código</span><input [(ngModel)]="nova.codigo" maxlength="10"></label>
+  <label class="field"><span>Nome</span><input [(ngModel)]="nova.nome" maxlength="120"></label>
+  <label class="field"><span>Cidade</span><input [(ngModel)]="nova.cidade" maxlength="100"></label>
+  <label class="field"><span>Saldo inicial</span><input appCurrencyInput [(ngModel)]="nova.saldoAtual" inputmode="numeric"></label>
+  <label class="field"><span>Limite mínimo</span><input appCurrencyInput [(ngModel)]="nova.limiteMinimo" inputmode="numeric"></label>
+  <button type="button" (click)="salvar()" [disabled]="salvando">Cadastrar agência</button>
+  <button type="button" class="outline" (click)="voltar()">Cancelar</button>
+</div></section>
+<app-confirmation-dialog #confirmacao title="Confirmar cadastro"
+  message="Confirma o cadastro desta agência?" confirmLabel="Cadastrar"
+  (confirmed)="confirmarCadastro()" />

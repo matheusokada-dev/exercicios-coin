@@ -1,5 +1,32 @@
 $raizProjeto = Split-Path -Parent $PSScriptRoot
 
+function Importar-AmbienteLocal {
+    $arquivoAmbiente = Join-Path $raizProjeto '.env'
+    if (-not (Test-Path -LiteralPath $arquivoAmbiente)) {
+        throw 'Arquivo .env ausente. Copie .env.example para .env e preencha os valores locais.'
+    }
+
+    Get-Content -LiteralPath $arquivoAmbiente | ForEach-Object {
+        $linha = $_.Trim()
+        if ($linha -and -not $linha.StartsWith('#')) {
+            $partes = $linha.Split('=', 2)
+            if ($partes.Count -eq 2) {
+                [Environment]::SetEnvironmentVariable(
+                    $partes[0].Trim(),
+                    $partes[1].Trim(),
+                    [EnvironmentVariableTarget]::Process
+                )
+            }
+        }
+    }
+
+    @('DB_URL', 'DB_USERNAME', 'DB_PASSWORD', 'JWT_SECRET') | ForEach-Object {
+        if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($_))) {
+            throw "Variavel obrigatoria ausente no .env: $_"
+        }
+    }
+}
+
 function Iniciar-Terminal {
     param(
         [string]$Titulo,
@@ -10,6 +37,8 @@ function Iniciar-Terminal {
     $instrucao = "`$Host.UI.RawUI.WindowTitle = '$Titulo'; Set-Location -LiteralPath '$Diretorio'; $Comando"
     Start-Process powershell.exe -ArgumentList '-NoExit', '-Command', $instrucao
 }
+
+Importar-AmbienteLocal
 
 Iniciar-Terminal `
     -Titulo 'API Numerario - 8081' `

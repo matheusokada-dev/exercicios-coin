@@ -32,12 +32,16 @@ public class MovimentacaoEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "agencia_id", nullable = false)
-    private AgenciaEntity agencia;
+    @JoinColumn(name = "unidade_operacional_id", nullable = false)
+    private UnidadeOperacionalEntity unidade;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "solicitacao_id")
     private SolicitacaoAbastecimentoEntity solicitacao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "operacao_id")
+    private OperacaoNumerarioEntity operacao;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 25)
@@ -83,7 +87,7 @@ public class MovimentacaoEntity {
             String idempotencyKey
     ) {
         this.id = id;
-        this.agencia = agencia;
+        this.unidade = agencia == null ? null : agencia.getUnidadeOperacional();
         this.solicitacao = solicitacao;
         this.tipo = tipo;
         this.entrada = entrada;
@@ -95,5 +99,20 @@ public class MovimentacaoEntity {
         this.usuario = usuario;
         this.idempotencyKey = idempotencyKey;
     }
-}
 
+    public AgenciaEntity getAgencia() {
+        return unidade == null ? null : unidade.getAgencia();
+    }
+
+    public MovimentacaoEntity(UnidadeOperacionalEntity unidade,
+            SolicitacaoAbastecimentoEntity solicitacao, OperacaoNumerarioEntity operacao,
+            TipoMovimentacao tipo, boolean entrada, BigDecimal valor,
+            BigDecimal saldoAnterior, BigDecimal saldoPosterior, String descricao,
+            Instant dataMovimento, UsuarioEntity usuario, String idempotencyKey) {
+        this.unidade=unidade;this.solicitacao=solicitacao;this.operacao=operacao;
+        this.tipo=tipo;this.entrada=entrada;this.valor=valor;
+        this.saldoAnterior=saldoAnterior;this.saldoPosterior=saldoPosterior;
+        this.descricao=descricao;this.dataMovimento=dataMovimento;
+        this.usuario=usuario;this.idempotencyKey=idempotencyKey;
+    }
+}

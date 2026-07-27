@@ -1,0 +1,103 @@
+<app-page-header
+  title="Agências"
+  description="Consulta, cadastro e acompanhamento do limite operacional."
+  [backTo]="backTo"
+  [breadcrumbs]="breadcrumbs" />
+
+@if (!isGestor) {
+  <app-alert type="warning" message="A consulta e a manutenção de agências exigem perfil gestor." />
+}
+
+<section class="filters" aria-label="Filtros de agências">
+  <label class="field field--wide">
+    <span>Busca</span>
+    <input [(ngModel)]="busca" placeholder="Código, nome ou cidade">
+  </label>
+  <label class="field">
+    <span>Status</span>
+    <select [(ngModel)]="alerta">
+      <option value="">Todos</option>
+      <option value="true">Em alerta</option>
+      <option value="false">Regular</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Ordenar por</span>
+    <select [(ngModel)]="ordenarPor">
+      <option value="CODIGO">Código</option>
+      <option value="NOME">Nome</option>
+      <option value="CIDADE">Cidade</option>
+    </select>
+  </label>
+  <label class="field">
+    <span>Direção</span>
+    <select [(ngModel)]="direcao">
+      <option value="ASC">Crescente</option>
+      <option value="DESC">Decrescente</option>
+    </select>
+  </label>
+  <button type="button" (click)="pesquisar()">Pesquisar</button>
+  <button type="button" class="outline" (click)="limpar()">Limpar</button>
+</section>
+
+@if (false) {
+  <section class="form-panel" aria-labelledby="new-agency-title">
+    <h2 id="new-agency-title">Nova agência</h2>
+    <div class="form">
+      <label class="field"><span>Código</span><input [(ngModel)]="nova.codigo" required></label>
+      <label class="field"><span>Nome</span><input [(ngModel)]="nova.nome" required></label>
+      <label class="field"><span>Cidade</span><input [(ngModel)]="nova.cidade" required></label>
+      <label class="field"><span>Saldo inicial</span><input [(ngModel)]="nova.saldoAtual" type="number" min="0" step="0.01"></label>
+      <label class="field"><span>Limite mínimo</span><input [(ngModel)]="nova.limiteMinimo" type="number" min="0" step="0.01" required></label>
+      <button type="button" (click)="criar()" [disabled]="salvando">Cadastrar agência</button>
+    </div>
+  </section>
+}
+
+@if (erro) {
+  <app-alert type="error" [message]="erro" />
+}
+@if (sucesso) {
+  <app-alert type="success" [message]="sucesso" />
+}
+
+@if (carregando) {
+  <p class="empty">Carregando agências...</p>
+} @else if (resultado?.itens?.length) {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Código</th><th>Agência</th><th>Cidade</th><th>Saldo</th><th>Status</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        @for (agencia of resultado!.itens; track agencia.id) {
+          <tr>
+            <td><a [routerLink]="['/agencias', agencia.id]">{{ agencia.codigo }}</a></td>
+            <td>{{ agencia.nome }}</td>
+            <td>{{ agencia.cidade }}</td>
+            <td>{{ agencia.saldoAtual | currency:'BRL' }}</td>
+            <td>
+              <span class="status-badge" [class.status-badge--attention]="agencia.abaixoDoLimite">
+                {{ agencia.abaixoDoLimite ? 'Em alerta' : 'Regular' }}
+              </span>
+            </td>
+            <td class="actions">
+              <a class="button-link" [routerLink]="['/agencias', agencia.id]">Detalhar</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
+} @else if (resultado) {
+  <p class="empty">Nenhuma agência encontrada para os filtros informados.</p>
+}
+
+<app-confirmation-dialog
+  #deactivationDialog
+  title="Desativar agência"
+  [message]="mensagemDesativacao"
+  confirmLabel="Desativar"
+  [danger]="true"
+  (confirmed)="desativar()" />

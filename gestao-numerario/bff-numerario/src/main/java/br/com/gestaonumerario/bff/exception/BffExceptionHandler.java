@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.ResourceAccessException;
@@ -20,6 +21,7 @@ public class BffExceptionHandler {
 
     private static final int CAMPO_INVALIDO = 1000;
     private static final int SERVICO_INDISPONIVEL = 9000;
+    private static final int TIMEOUT_SERVICO = 9001;
     private static final int ERRO_GENERICO = 1;
 
     @ExceptionHandler(RestClientResponseException.class)
@@ -35,11 +37,12 @@ public class BffExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleBodyValidation(MethodArgumentNotValidException exception) {
-        String field = exception.getBindingResult().getFieldErrors().stream()
+        return exception.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(error -> error.getField())
-                .orElse(null);
-        return invalidField(field);
+                .map(error -> invalidField(
+                        error.getField(),
+                        validationMessage(error.getField(), error.getCode(), error.getDefaultMessage())))
+                .orElseGet(() -> invalidField(null, "O corpo da requisição é inválido."));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -48,19 +51,43 @@ public class BffExceptionHandler {
                 .findFirst()
                 .map(violation -> violation.getPropertyPath().toString())
                 .orElse(null);
-        return invalidField(field);
+        return invalidField(field, "O parâmetro '" + field + "' é inválido.");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
-        return invalidField(exception.getName());
+        String field = exception.getName();
+        return invalidField(field, "O valor informado para '" + field + "' é inválido.");
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ErrorResponse> handleMissingHeader(MissingRequestHeaderException exception) {
+        String header = exception.getHeaderName();
+        return invalidField(header, "O cabeçalho '" + header + "' é obrigatório.");
     }
 
     @ExceptionHandler(ResourceAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnavailableApi(ResourceAccessException exception) {
+        if (possuiCausaTimeout(exception)) {
+            log.error("Timeout ao acessar API Numerario.", exception);
+            return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT)
+                    .body(new ErrorResponse(TIMEOUT_SERVICO, "Tempo limite do servico de dados excedido.", null));
+        }
         log.error("API Numerario indisponivel.", exception);
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(new ErrorResponse(SERVICO_INDISPONIVEL, "Servico de dados indisponivel.", null));
+    }
+
+    private boolean possuiCausaTimeout(Throwable exception) {
+        Throwable causa = exception;
+        while (causa != null) {
+            if (causa instanceof java.net.http.HttpTimeoutException
+                    || causa instanceof java.net.SocketTimeoutException) {
+                return true;
+            }
+            causa = causa.getCause();
+        }
+        return false;
     }
 
     @ExceptionHandler(Exception.class)
@@ -77,9 +104,27 @@ public class BffExceptionHandler {
                 .body(new ErrorResponse(ERRO_GENERICO, "Algo deu errado. Tente novamente mais tarde.", null));
     }
 
-    private ResponseEntity<ErrorResponse> invalidField(String field) {
+    private ResponseEntity<ErrorResponse> invalidField(String field, String message) {
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse(CAMPO_INVALIDO, "Campo obrigatorio ou invalido.", field));
+                .body(new ErrorResponse(CAMPO_INVALIDO, message, field));
+    }
+
+    private String validationMessage(String field, String code, String defaultMessage) {
+        return switch (code == null ? "" : code) {
+            case "NotNull", "NotBlank", "NotEmpty" ->
+                    "O campo '" + field + "' é obrigatório.";
+            case "Positive" ->
+                    "O campo '" + field + "' deve ser maior que zero.";
+            case "PositiveOrZero" ->
+                    "O campo '" + field + "' não pode ser negativo.";
+            case "Digits" ->
+                    "O campo '" + field + "' possui precisão ou casas decimais inválidas.";
+            case "Size" ->
+                    "O campo '" + field + "' possui tamanho inválido.";
+            case "Future", "FutureOrPresent" ->
+                    "O campo '" + field + "' não pode estar no passado.";
+            default -> defaultMessage == null ? "Valor inválido." : defaultMessage;
+        };
     }
 
     private String messageFor(int status) {

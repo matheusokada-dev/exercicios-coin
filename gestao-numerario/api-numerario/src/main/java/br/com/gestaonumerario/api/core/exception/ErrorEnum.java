@@ -6,6 +6,8 @@ public enum ErrorEnum {
             "Algo deu errado. Tente novamente mais tarde."),
     CAMPO_OBRIGATORIO(400, 1000,
             "Campo obrigatório."),
+    CAMPO_INVALIDO(400, 1006,
+            "Um ou mais campos informados são inválidos."),
     VALOR_MONETARIO_OBRIGATORIO(400, 1001,
             "Valor monetário é obrigatório."),
     VALOR_DEVE_SER_MAIOR_QUE_ZERO(400, 1002,
@@ -45,7 +47,13 @@ public enum ErrorEnum {
     PERIODO_CONSULTA_INVALIDO(400, 3008,
             "A data final não pode ser anterior à data inicial."),
     CREDENCIAIS_INVALIDAS(401, 3009,
-            "Login ou senha inválidos.");
+            "Login ou senha inválidos."),
+    REGRA_OPERACAO_NUMERARIO_VIOLADA(422, 4000,
+            "A operação de numerário viola uma regra de negócio."),
+    CONFLITO_VERSAO(409, 4001,
+            "O registro foi alterado por outra operação."),
+    API_V1_SOMENTE_CONSULTA(410, 4002,
+            "Operação indisponível para este contrato.");
 
     private final int httpStatus;
     private final int errorCode;

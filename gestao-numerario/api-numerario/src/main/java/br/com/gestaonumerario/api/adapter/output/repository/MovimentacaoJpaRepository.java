@@ -38,7 +38,7 @@ public interface MovimentacaoJpaRepository
 
     @Query("""
             select coalesce(sum(movimentacao.valor), 0) from MovimentacaoEntity movimentacao
-            where movimentacao.agencia.id = :agenciaId
+            where movimentacao.unidade.agencia.id = :agenciaId
               and movimentacao.entrada = :entrada
               and movimentacao.dataMovimento >= :inicio
               and movimentacao.dataMovimento < :fimExclusivo
@@ -51,12 +51,12 @@ public interface MovimentacaoJpaRepository
     );
 
     @EntityGraph(attributePaths = {
-            "agencia", "usuario", "solicitacao", "solicitacao.agencia",
+            "unidade", "unidade.agencia", "usuario", "solicitacao", "solicitacao.agencia",
             "solicitacao.solicitante", "solicitacao.decisor"
     })
     @Query("""
             select movimentacao from MovimentacaoEntity movimentacao
-            where (:agenciaId is null or movimentacao.agencia.id = :agenciaId)
+            where (:agenciaId is null or movimentacao.unidade.agencia.id = :agenciaId)
               and (:tipo is null or movimentacao.tipo = :tipo)
               and (:inicio is null or movimentacao.dataMovimento >= :inicio)
               and (:fimExclusivo is null or movimentacao.dataMovimento < :fimExclusivo)
@@ -69,4 +69,3 @@ public interface MovimentacaoJpaRepository
             Pageable pageable
     );
 }
-

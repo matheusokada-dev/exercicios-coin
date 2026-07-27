@@ -12,7 +12,8 @@ Aplicação Angular 19 da Gestão de Numerário.
 - O header autenticado contém somente o botão Sair.
 - Telas internas possuem breadcrumbs e botão Voltar conforme a hierarquia de navegação.
 - Livro Caixa em `/livro-caixa`: seleciona agência e período e gera relatório `.xlsx`.
-- Token JWT salvo no `localStorage` com a chave `numerario_access_token`.
+- Access e refresh tokens salvos no `localStorage` nas chaves `coin.accessToken`
+  e `coin.refreshToken`; o resumo da sessão usa `coin.sessao`.
 - Interceptor HTTP envia `Authorization: Bearer <token>` nas chamadas ao BFF.
 - Interceptor global exibe loading e toast em chamadas HTTP.
 - Rotas de agência usam `gestorGuard`.
@@ -74,4 +75,3 @@ O seed cria usuários locais e popula agências, solicitações e movimentaçõe
 
 - Evoluir formulários de agências, solicitações e movimentações.
 - Substituir IDs de agência digitados manualmente por seleção pesquisável.
-- Adicionar testes automatizados para os componentes e interceptores globais.

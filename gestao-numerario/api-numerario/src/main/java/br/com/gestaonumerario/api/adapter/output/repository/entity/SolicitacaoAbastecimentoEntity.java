@@ -1,6 +1,8 @@
 package br.com.gestaonumerario.api.adapter.output.repository.entity;
 
 import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacao;
+import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacaoNumerario;
+import br.com.gestaonumerario.api.core.domain.enums.TipoOperacaoNumerario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,7 +25,7 @@ import java.time.LocalDate;
 
 @Getter
 @Entity
-@Table(name = "solicitacao_abastecimento")
+@Table(name = "solicitacao_numerario")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SolicitacaoAbastecimentoEntity {
 
@@ -32,10 +34,22 @@ public class SolicitacaoAbastecimentoEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "agencia_id", nullable = false)
+    @JoinColumn(name = "agencia_referencia_id", nullable = false)
     private AgenciaEntity agencia;
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_operacao", nullable = false, length = 20)
+    private TipoOperacaoNumerario tipoOperacao;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "origem_id")
+    private UnidadeOperacionalEntity origem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destino_id")
+    private UnidadeOperacionalEntity destino;
+
+    @Column(name = "valor_solicitado", nullable = false, precision = 19, scale = 2)
     private BigDecimal valor;
 
     @Column(nullable = false, length = 500)
@@ -46,7 +60,7 @@ public class SolicitacaoAbastecimentoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private StatusSolicitacao status;
+    private StatusSolicitacaoNumerario status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "solicitante_id", nullable = false)
@@ -59,17 +73,24 @@ public class SolicitacaoAbastecimentoEntity {
     @Column(name = "justificativa_decisao", length = 500)
     private String justificativaDecisao;
 
-    @Column(name = "justificativa_especial", length = 500)
-    private String justificativaEspecial;
-
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private Instant dataCriacao;
 
     @Column(name = "data_decisao")
     private Instant dataDecisao;
 
-    @Column(name = "data_atendimento")
+    @Column(name = "data_conclusao")
     private Instant dataAtendimento;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cancelado_por_id")
+    private UsuarioEntity canceladoPor;
+
+    @Column(name = "justificativa_cancelamento", length = 500)
+    private String justificativaCancelamento;
+
+    @Column(name = "data_cancelamento")
+    private Instant dataCancelamento;
 
     @Version
     @Column(nullable = false)
@@ -93,17 +114,50 @@ public class SolicitacaoAbastecimentoEntity {
     ) {
         this.id = id;
         this.agencia = agencia;
+        this.tipoOperacao = TipoOperacaoNumerario.SUPRIMENTO;
+        this.destino = agencia == null ? null : agencia.getUnidadeOperacional();
         this.valor = valor;
         this.motivo = motivo;
         this.dataDesejada = dataDesejada;
-        this.status = status;
+        this.status = switch (status) {
+            case PENDENTE -> StatusSolicitacaoNumerario.PENDENTE;
+            case APROVADA -> StatusSolicitacaoNumerario.APROVADA;
+            case REJEITADA -> StatusSolicitacaoNumerario.REJEITADA;
+            case ATENDIDA -> StatusSolicitacaoNumerario.CONCLUIDA;
+        };
         this.solicitante = solicitante;
         this.decisor = decisor;
         this.justificativaDecisao = justificativaDecisao;
-        this.justificativaEspecial = justificativaEspecial;
         this.dataCriacao = dataCriacao;
         this.dataDecisao = dataDecisao;
         this.dataAtendimento = dataAtendimento;
         this.versao = versao;
+    }
+
+    public StatusSolicitacao getStatusLegado() {
+        return switch (status) {
+            case PENDENTE -> StatusSolicitacao.PENDENTE;
+            case REJEITADA -> StatusSolicitacao.REJEITADA;
+            case CONCLUIDA -> StatusSolicitacao.ATENDIDA;
+            default -> StatusSolicitacao.APROVADA;
+        };
+    }
+
+    public String getJustificativaEspecial() { return null; }
+
+    public SolicitacaoAbastecimentoEntity(Long id, TipoOperacaoNumerario tipoOperacao,
+            AgenciaEntity agencia, UnidadeOperacionalEntity origem, UnidadeOperacionalEntity destino,
+            BigDecimal valor, String motivo, LocalDate dataDesejada,
+            StatusSolicitacaoNumerario status, UsuarioEntity solicitante, UsuarioEntity decisor,
+            String justificativaDecisao, Instant dataCriacao, Instant dataDecisao,
+            Instant dataConclusao, UsuarioEntity canceladoPor,
+            String justificativaCancelamento, Instant dataCancelamento, long versao) {
+        this.id=id; this.tipoOperacao=tipoOperacao; this.agencia=agencia; this.origem=origem;
+        this.destino=destino; this.valor=valor; this.motivo=motivo; this.dataDesejada=dataDesejada;
+        this.status=status; this.solicitante=solicitante; this.decisor=decisor;
+        this.justificativaDecisao=justificativaDecisao; this.dataCriacao=dataCriacao;
+        this.dataDecisao=dataDecisao; this.dataAtendimento=dataConclusao;
+        this.canceladoPor=canceladoPor; this.justificativaCancelamento=justificativaCancelamento;
+        this.dataCancelamento=dataCancelamento; this.versao=versao;
     }
 }

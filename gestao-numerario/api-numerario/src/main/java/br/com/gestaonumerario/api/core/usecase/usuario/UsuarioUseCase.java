@@ -30,12 +30,12 @@ public class UsuarioUseCase implements UsuarioInputPort {
     @Override
     public Usuario criar(CriarUsuarioCommand command) {
         if (command == null) {
-            throw new CampoObrigatorioException();
+            throw new CampoObrigatorioException("comando");
         }
 
         return transacaoPort.executar(() -> {
-            String login = textoObrigatorio(command.login());
-            String senha = textoObrigatorio(command.senha());
+            String login = textoObrigatorio(command.login(), "login");
+            String senha = textoObrigatorio(command.senha(), "senha");
 
             if (usuarioPort.existePorLogin(login)) {
                 throw new LoginDuplicadoException();
@@ -50,19 +50,18 @@ public class UsuarioUseCase implements UsuarioInputPort {
     @Override
     public Usuario buscarPorId(Long id) {
         if (id == null) {
-            throw new CampoObrigatorioException();
+            throw new CampoObrigatorioException("usuarioId");
         }
         return usuarioPort.buscarPorId(id).orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
-    private static String textoObrigatorio(String valor) {
+    private static String textoObrigatorio(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
-            throw new CampoObrigatorioException();
+            throw new CampoObrigatorioException(campo);
         }
         return valor.trim();
     }
 }
-
 
 
 

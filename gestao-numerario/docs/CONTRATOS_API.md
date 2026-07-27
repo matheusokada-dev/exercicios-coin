@@ -1,5 +1,25 @@
 # Contratos da API e do BFF
 
+> A especificação executável é publicada por cada serviço em `/v3/api-docs` e
+> `/swagger-ui.html`. Este documento registra decisões que não devem depender
+> apenas da geração automática.
+
+## Compatibilidade de erros
+
+Respostas da API mantêm `codError`, `msgError` e `value` para consumidores
+legados. Os campos preferidos para novas integrações são `code`, `message`,
+`path`, `timestamp` e `fields`.
+
+Validações devem informar o campo e a causa concreta. Consulte
+`docs/ERROS_API.md` para o catálogo e exemplos.
+
+## Controle otimista
+
+Campos `versao`, `versaoOperacao`, `versaoSolicitacao` e `versaoUnidade` são
+obrigatórios nos comandos que alteram recursos versionados. Omiti-los produz
+`400 Bad Request`; informar uma versão defasada produz `409 Conflict` com o
+código `CONFLITO_VERSAO`.
+
 ## Situação
 
 A API usa base `/api/v1` e o BFF mantém o mesmo prefixo para simplificar o consumo pelo Angular. O frontend chama rotas relativas, por exemplo `/api/v1/auth/login`, e o BFF encaminha para a API.
@@ -18,9 +38,12 @@ A API usa base `/api/v1` e o BFF mantém o mesmo prefixo para simplificar o cons
 
 | Método e rota | Corpo | Resposta |
 | --- | --- | --- |
-| `POST /api/v1/auth/login` | `login`, `senha` | `200 OK` + `accessToken`, `tokenType`, `expiraEm` |
+| `POST /api/v1/auth/login` | `login`, `senha` | `200 OK` + access token, refresh token e dados da sessão |
+| `POST /api/v1/auth/refresh` | `refreshToken` | `200 OK` + novo par de tokens rotacionado |
+| `POST /api/v1/auth/logout` | `refreshToken` | `204 No Content` |
+| `GET /api/v1/auth/me` | Header Bearer | Dados resumidos da sessão |
 
-O token é JWT Bearer com validade de 60 minutos, sem refresh token. O primeiro gestor já foi criado diretamente no MySQL. Depois disso, criação de usuários é fluxo protegido por perfil `GESTOR`.
+O access token é JWT Bearer com validade de 15 minutos. O refresh token dura 8 horas, é rotacionado e armazenado no banco somente como hash. No navegador, ambos ficam no `localStorage`; o interceptor envia o access token no header `Authorization`.
 
 Login e senha são obrigatórios. Cinco senhas incorretas consecutivas bloqueiam a conta por 15 minutos, e uma autenticação válida limpa o contador. Usuário inexistente, inativo, bloqueado ou senha incorreta recebem o mesmo status `401` e a mesma mensagem principal.
 
@@ -95,11 +118,27 @@ O BFF mantém as rotas `/api/v1` e encaminha o JWT recebido do frontend para a A
 
 | Área | Rotas implementadas no BFF | Status |
 | --- | --- | --- |
-| Autenticação | `POST /api/v1/auth/login` | Em andamento |
+| Autenticação | `POST /api/v1/auth/login`, `refresh`, `logout` e `GET /me` | Implementado |
 | Dashboard | `GET /api/v1/dashboard` | Em andamento |
 | Agências | `GET /api/v1/agencias`, `GET /api/v1/agencias/{id}/detalhe`, `POST`, `PUT`, `DELETE` | Em andamento |
 | Solicitações | `GET`, `POST`, `PUT /api/v1/solicitacoes/{id}/{acao}` | Em andamento |
 | Movimentações | `GET`, `POST` | Em andamento |
+
+### BFF — fluxo evoluído de Tesouraria
+
+O BFF expõe os mesmos caminhos públicos da API v1, mantém DTOs próprios e
+repassa o JWT. Nos comandos idempotentes, o cabeçalho `Idempotency-Key` recebido
+do frontend é preservado.
+
+| Área | Rotas |
+| --- | --- |
+| Solicitações | `GET/POST /api/v1/solicitacoes-numerario`, `GET /{id}`, `GET /{id}/historico`, `PUT /{id}/aprovar`, `/rejeitar` e `/cancelar` |
+| Logística | `PUT /{id}/programar`, `/iniciar-separacao`, `/expedir`, `/registrar-ocorrencia`, `/receber` e `/conciliar` |
+| Consultas auxiliares | `GET /api/v1/unidades-operacionais`, `GET /api/v1/operacoes-numerario` |
+| Financeiro | `POST /api/v1/tesouraria/carga-inicial`, `POST /api/v1/solicitacoes-numerario/{id}/ajustes-divergencia` |
+
+O BFF preserva o status HTTP, o tipo de conteúdo e o corpo de erros devolvidos
+pela API, inclusive `403 Forbidden`, `409 Conflict` e `410 Gone`.
 
 ## Pendência
 

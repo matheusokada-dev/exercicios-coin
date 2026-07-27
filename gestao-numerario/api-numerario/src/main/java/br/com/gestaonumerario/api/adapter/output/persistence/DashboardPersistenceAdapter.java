@@ -4,6 +4,7 @@ import br.com.gestaonumerario.api.adapter.output.repository.AgenciaJpaRepository
 import br.com.gestaonumerario.api.adapter.output.repository.MovimentacaoJpaRepository;
 import br.com.gestaonumerario.api.adapter.output.repository.SolicitacaoAbastecimentoJpaRepository;
 import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacao;
+import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacaoNumerario;
 import br.com.gestaonumerario.api.core.domain.enums.TipoMovimentacao;
 import br.com.gestaonumerario.api.core.domain.model.ResumoDashboard;
 import br.com.gestaonumerario.api.port.output.DashboardOutputPort;
@@ -30,12 +31,11 @@ public class DashboardPersistenceAdapter implements DashboardOutputPort {
                 dataReferencia,
                 agenciaRepository.somarSaldoDasAgenciasAtivas(),
                 agenciaRepository.contarAgenciasAtivasEmAlerta(),
-                solicitacaoRepository.countByStatus(StatusSolicitacao.PENDENTE),
+                solicitacaoRepository.countByStatus(StatusSolicitacaoNumerario.PENDENTE),
                 movimentacaoRepository.countByTipoAndDataMovimentoGreaterThanEqualAndDataMovimentoLessThan(
                         TipoMovimentacao.ABASTECIMENTO, inicio, fimExclusivo),
                 movimentacaoRepository.somarValorPorTipoEPeriodo(TipoMovimentacao.ABASTECIMENTO, inicio, fimExclusivo)
         );
     }
 }
-
 

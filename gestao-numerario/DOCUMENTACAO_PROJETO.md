@@ -7,28 +7,29 @@ Documento consolidado e navegável: [docs/DOCUMENTACAO_COMPLETA.html](docs/DOCUM
 ## Estado atual
 
 - API criada em `api-numerario`, com Java 21, Maven, Spring Boot 3.5.14 e arquitetura hexagonal.
-- MySQL 8.4.5 local e banco `gestao_numerario` validados.
-- Migrations Flyway V1, V2 e V3 criadas; a V3 persiste tentativas inválidas e bloqueio temporário de login.
-- Autenticação JWT implementada na API e encaminhada pelo BFF.
+- Migrations Flyway V1 a V6 disponíveis; V4 a V6 permanecem desabilitadas por
+  padrão até a execução do procedimento de backup e migração segura.
+- Autenticação com JWT curto, refresh token rotativo, cookies HttpOnly e CSRF.
 - Login protegido por bloqueio de 15 minutos após cinco senhas incorretas consecutivas.
 - Primeiro usuário gestor já foi criado diretamente no MySQL.
 - BFF criado em `bff-numerario`, porta 8080, encaminhando chamadas para a API na porta 8081.
-- Frontend Angular criado em `frontend-numerario`, com login, dashboard, agências, solicitações e movimentações em versão inicial.
+- Frontend Angular com login, dashboard, agências, solicitações, operações,
+  movimentações, tesouraria e livro-caixa.
+- Contratos existentes e fluxo evoluído mantidos sob o prefixo `/api/v1`.
 - Script local `scripts/iniciar-tudo.ps1` criado para iniciar API, BFF e frontend.
 
 ## Próxima etapa
 
-Validar manualmente o fluxo completo pelo frontend:
+Validar o fluxo completo após a migração local concluída em Flyway V6:
 
 1. Iniciar API, BFF e frontend.
-2. Popular dados locais com `database/scripts/seed-dados-dev.sql`, se o banco ainda não tiver agências, solicitações e movimentações.
-3. Acessar `/login`.
-4. Entrar com o gestor já criado.
-5. Conferir dashboard.
-6. Navegar por agências, solicitações e movimentações.
-7. Registrar ajustes necessários encontrados na navegação.
+2. Acessar `/login`.
+3. Conferir dashboard e contratos existentes.
+4. Validar solicitações, operações, movimentações e tesouraria.
+5. Registrar eventuais ajustes encontrados na navegação.
 
-Compilações e testes automatizados ficam pendentes por decisão do usuário nesta etapa.
+Para migrar outro ambiente, repetir integralmente
+`docs/MIGRACAO_BANCO_SEGURA.md`; o backup local não deve ser reutilizado.
 
 ## Documentos
 

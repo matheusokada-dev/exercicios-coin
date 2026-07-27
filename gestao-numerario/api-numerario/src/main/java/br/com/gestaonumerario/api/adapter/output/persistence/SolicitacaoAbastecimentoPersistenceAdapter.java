@@ -7,6 +7,7 @@ import br.com.gestaonumerario.api.adapter.output.repository.AgenciaJpaRepository
 import br.com.gestaonumerario.api.adapter.output.repository.SolicitacaoAbastecimentoJpaRepository;
 import br.com.gestaonumerario.api.adapter.output.repository.UsuarioJpaRepository;
 import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacao;
+import br.com.gestaonumerario.api.core.domain.enums.StatusSolicitacaoNumerario;
 import br.com.gestaonumerario.api.core.domain.model.SolicitacaoAbastecimento;
 import br.com.gestaonumerario.api.port.output.SolicitacaoAbastecimentoOutputPort;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,9 @@ import br.com.gestaonumerario.api.core.domain.model.Pagina;
 @RequiredArgsConstructor
 public class SolicitacaoAbastecimentoPersistenceAdapter implements SolicitacaoAbastecimentoOutputPort {
 
-    private static final EnumSet<StatusSolicitacao> STATUS_ABERTOS =
-            EnumSet.of(StatusSolicitacao.PENDENTE, StatusSolicitacao.APROVADA);
+    private static final EnumSet<StatusSolicitacaoNumerario> STATUS_ABERTOS =
+            EnumSet.of(StatusSolicitacaoNumerario.PENDENTE, StatusSolicitacaoNumerario.APROVADA,
+                    StatusSolicitacaoNumerario.EM_EXECUCAO, StatusSolicitacaoNumerario.COM_DIVERGENCIA);
 
     private final SolicitacaoAbastecimentoJpaRepository repository;
     private final AgenciaJpaRepository agenciaRepository;
@@ -39,17 +41,28 @@ public class SolicitacaoAbastecimentoPersistenceAdapter implements SolicitacaoAb
 
     @Override
     public Optional<SolicitacaoAbastecimento> buscarAprovadaPorAgenciaId(Long agenciaId) {
-        return repository.findByAgencia_IdAndStatus(agenciaId, StatusSolicitacao.APROVADA).map(mapper::toDomain);
+        return repository.findByAgencia_IdAndStatus(
+                agenciaId, StatusSolicitacaoNumerario.APROVADA).map(mapper::toDomain);
     }
 
     @Override
     public Pagina<SolicitacaoAbastecimento> buscar(FiltroSolicitacao filtro) {
-        var page = repository.buscar(filtro.agenciaId(), filtro.status(),
+        var page = repository.buscar(filtro.agenciaId(), converter(filtro.status()),
                 filtro.dataInicio() == null ? null : filtro.dataInicio().atStartOfDay(ZoneOffset.UTC).toInstant(),
                 filtro.dataFim() == null ? null : filtro.dataFim().plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant(),
                 PageRequest.of(filtro.pagina(), filtro.tamanho(), Sort.by(Sort.Direction.DESC, "dataCriacao")));
         return new Pagina<>(page.getContent().stream().map(mapper::toDomain).toList(), page.getNumber(),
                 page.getSize(), page.getTotalElements(), page.getTotalPages());
+    }
+
+    private static StatusSolicitacaoNumerario converter(StatusSolicitacao status) {
+        if (status == null) return null;
+        return switch (status) {
+            case PENDENTE -> StatusSolicitacaoNumerario.PENDENTE;
+            case APROVADA -> StatusSolicitacaoNumerario.APROVADA;
+            case REJEITADA -> StatusSolicitacaoNumerario.REJEITADA;
+            case ATENDIDA -> StatusSolicitacaoNumerario.CONCLUIDA;
+        };
     }
 
     @Override
@@ -68,6 +81,5 @@ public class SolicitacaoAbastecimentoPersistenceAdapter implements SolicitacaoAb
         return mapper.toDomain(repository.save(mapper.toEntity(solicitacao, agencia, solicitante, decisor)));
     }
 }
-
 
 

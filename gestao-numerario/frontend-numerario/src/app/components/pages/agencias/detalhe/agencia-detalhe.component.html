@@ -1,0 +1,36 @@
+<app-page-header
+  [title]="detalhe?.agencia?.nome || 'Detalhe da agência'"
+  [description]="descricao"
+  backTo="/agencias/consultar"
+  [breadcrumbs]="breadcrumbs" />
+
+@if (erro) { <app-alert type="error" [message]="erro" /> }
+@if (sucesso) { <app-alert type="success" [message]="sucesso" /> }
+
+@if (detalhe) {
+  <section class="cards" aria-label="Posição financeira da agência">
+    <article><small>Saldo atual</small><strong>{{ detalhe.agencia.saldoAtual | currency:'BRL' }}</strong></article>
+    <article><small>Entradas hoje</small><strong>{{ detalhe.valorEntradasHoje | currency:'BRL' }}</strong></article>
+    <article><small>Saídas hoje</small><strong>{{ detalhe.valorSaidasHoje | currency:'BRL' }}</strong></article>
+    <article><small>Saldo previsto</small><strong>{{ detalhe.saldoPrevistoAposAbastecimentoAprovado | currency:'BRL' }}</strong></article>
+  </section>
+
+  <section class="form-panel" aria-labelledby="edit-agency-title">
+    <h2 id="edit-agency-title">Editar agência</h2>
+    <div class="form">
+      <label class="field"><span>Nome</span><input [(ngModel)]="edicao.nome" required></label>
+      <label class="field"><span>Cidade</span><input [(ngModel)]="edicao.cidade" required></label>
+      <label class="field"><span>Limite mínimo</span><input appCurrencyInput [(ngModel)]="edicao.limiteMinimo" inputmode="numeric" required></label>
+      <button type="button" (click)="salvar()" [disabled]="salvando">Salvar alterações</button>
+      <button type="button" class="outline danger" (click)="confirmarDesativacao()">Desativar agência</button>
+    </div>
+  </section>
+} @else if (!erro) {
+  <p class="empty">Carregando detalhe da agência...</p>
+}
+<app-confirmation-dialog #confirmacaoEdicao title="Confirmar alterações"
+  message="Confirma a edição dos dados desta agência?" confirmLabel="Salvar"
+  (confirmed)="confirmarEdicao()" />
+<app-confirmation-dialog #confirmacaoDesativacao title="Desativar agência"
+  message="A agência deixará de operar. Confirma a desativação?" confirmLabel="Desativar"
+  [danger]="true" (confirmed)="desativar()" />

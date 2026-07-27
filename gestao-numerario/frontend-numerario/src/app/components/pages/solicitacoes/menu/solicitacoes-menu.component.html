@@ -1,0 +1,14 @@
+<div class="menu-back"><app-page-back to="/tesouraria" /></div>
+<header class="menu-heading"><h1>Solicitações de numerário</h1><span aria-hidden="true"></span></header>
+<section class="menu-grid menu-grid--actions" aria-label="Opções de solicitações">
+  <a class="menu-card" routerLink="/solicitacoes/consultar">
+    <span class="menu-card__icon"><lucide-icon [img]="ClipboardList" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Consultar solicitações</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/solicitacoes/nova">
+    <span class="menu-card__icon"><lucide-icon [img]="FilePlus2" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Nova solicitação</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+</section>

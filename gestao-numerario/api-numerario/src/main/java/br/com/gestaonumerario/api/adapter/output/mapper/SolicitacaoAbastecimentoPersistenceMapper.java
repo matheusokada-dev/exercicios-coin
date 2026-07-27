@@ -21,7 +21,7 @@ public class SolicitacaoAbastecimentoPersistenceMapper {
 
         return SolicitacaoAbastecimento.reconstituir(
                 entity.getId(), agenciaMapper.toDomain(entity.getAgencia()), entity.getValor(), entity.getMotivo(),
-                entity.getDataDesejada(), entity.getStatus(), usuarioMapper.toDomain(entity.getSolicitante()),
+                entity.getDataDesejada(), entity.getStatusLegado(), usuarioMapper.toDomain(entity.getSolicitante()),
                 usuarioMapper.toDomain(entity.getDecisor()), entity.getJustificativaDecisao(),
                 entity.getJustificativaEspecial(), entity.getDataCriacao(), entity.getDataDecisao(),
                 entity.getDataAtendimento(), entity.getVersao());
@@ -44,4 +44,3 @@ public class SolicitacaoAbastecimentoPersistenceMapper {
                 domain.getDataAtendimento(), domain.getVersao());
     }
 }
-

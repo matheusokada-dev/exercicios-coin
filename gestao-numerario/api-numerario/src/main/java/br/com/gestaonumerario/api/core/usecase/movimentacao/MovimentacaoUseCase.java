@@ -10,6 +10,7 @@ import br.com.gestaonumerario.api.core.exception.CampoObrigatorioException;
 import br.com.gestaonumerario.api.core.exception.IdempotencyKeyDuplicadaException;
 import br.com.gestaonumerario.api.core.exception.TipoMovimentacaoNaoPermitidoException;
 import br.com.gestaonumerario.api.core.exception.UsuarioNaoEncontradoException;
+import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
 import br.com.gestaonumerario.api.port.input.MovimentacaoInputPort;
 import br.com.gestaonumerario.api.core.domain.model.command.RegistrarMovimentacaoCommand;
 import br.com.gestaonumerario.api.port.output.AgenciaOutputPort;
@@ -40,9 +41,12 @@ public class MovimentacaoUseCase implements MovimentacaoInputPort {
 
     @Override
     public Movimentacao registrar(RegistrarMovimentacaoCommand command) {
-        if (command == null || command.agenciaId() == null || command.usuarioId() == null
-                || command.tipo() == null || command.idempotencyKey() == null || command.idempotencyKey().isBlank()) {
-            throw new CampoObrigatorioException();
+        if (command == null) throw new CampoObrigatorioException("comando");
+        if (command.agenciaId() == null) throw new CampoObrigatorioException("agenciaId");
+        if (command.usuarioId() == null) throw new CampoObrigatorioException("usuarioId");
+        if (command.tipo() == null) throw new CampoObrigatorioException("tipo");
+        if (command.idempotencyKey() == null || command.idempotencyKey().isBlank()) {
+            throw new CampoObrigatorioException("idempotencyKey");
         }
 
         if (command.tipo() == TipoMovimentacao.ABASTECIMENTO) {
@@ -54,6 +58,8 @@ public class MovimentacaoUseCase implements MovimentacaoInputPort {
                     .orElseThrow(AgenciaNaoEncontradaException::new);
             Usuario usuario = usuarioPort.buscarPorId(command.usuarioId())
                     .orElseThrow(UsuarioNaoEncontradoException::new);
+            agencia.exigirAtiva();
+            exigirUsuarioAtivo(usuario);
 
             String idempotencyKey = command.idempotencyKey().trim();
             if (movimentacaoPort.existePorIdempotencyKey(idempotencyKey)) {
@@ -78,7 +84,7 @@ public class MovimentacaoUseCase implements MovimentacaoInputPort {
     @Override
     public Pagina<Movimentacao> consultar(FiltroMovimentacao filtro) {
         if (filtro == null) {
-            throw new CampoObrigatorioException();
+            throw new CampoObrigatorioException("filtro");
         }
         return movimentacaoPort.buscar(filtro);
     }
@@ -86,14 +92,19 @@ public class MovimentacaoUseCase implements MovimentacaoInputPort {
     private static boolean resolverEntrada(TipoMovimentacao tipo, Boolean entradaAjuste) {
         if (tipo.exigeDirecaoInformada()) {
             if (entradaAjuste == null) {
-                throw new CampoObrigatorioException();
+                throw new CampoObrigatorioException("entradaAjuste");
             }
             return entradaAjuste;
         }
         return tipo.getEntradaPadrao();
     }
+
+    private static void exigirUsuarioAtivo(Usuario usuario) {
+        if (!usuario.isAtivo()) {
+            throw new RegraOperacaoNumerarioException(
+                    "O usuário está inativo e não pode registrar movimentações.");
+        }
+    }
 }
-
-
 
 

@@ -1,0 +1,41 @@
+@if (totalPages > 1) {
+  <nav class="brad-pagination" aria-label="Paginação">
+    <button
+      type="button"
+      class="brad-pagination__control"
+      [disabled]="page === 0"
+      aria-label="Página anterior"
+      (click)="change(page - 1)">
+      <lucide-icon [img]="ChevronLeft" [size]="17" aria-hidden="true" />
+      <span>Anterior</span>
+    </button>
+
+    <div class="brad-pagination__pages">
+      @for (pageNumber of visiblePages; track pageNumber) {
+        <button
+          type="button"
+          class="brad-pagination__page"
+          [class.brad-pagination__page--active]="pageNumber === page"
+          [attr.aria-current]="pageNumber === page ? 'page' : null"
+          [attr.aria-label]="'Página ' + (pageNumber + 1)"
+          (click)="change(pageNumber)">
+          {{ pageNumber + 1 }}
+        </button>
+      }
+    </div>
+
+    <span class="brad-pagination__compact">
+      Página {{ page + 1 }} de {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      class="brad-pagination__control"
+      [disabled]="page + 1 >= totalPages"
+      aria-label="Próxima página"
+      (click)="change(page + 1)">
+      <span>Próxima</span>
+      <lucide-icon [img]="ChevronRight" [size]="17" aria-hidden="true" />
+    </button>
+  </nav>
+}

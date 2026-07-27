@@ -1,0 +1,14 @@
+<div class="menu-back"><app-page-back to="/tesouraria" /></div>
+<header class="menu-heading"><h1>Agências</h1><span aria-hidden="true"></span></header>
+<section class="menu-grid menu-grid--actions" aria-label="Opções de agências">
+  <a class="menu-card" routerLink="/agencias/consultar">
+    <span class="menu-card__icon"><lucide-icon [img]="Building2" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Consultar agências</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+  <a class="menu-card" routerLink="/agencias/nova">
+    <span class="menu-card__icon"><lucide-icon [img]="PlusCircle" [size]="18" /></span>
+    <span class="menu-card__content"><strong>Cadastrar nova agência</strong></span>
+    <lucide-icon class="menu-card__chevron" [img]="ChevronRight" [size]="16" />
+  </a>
+</section>

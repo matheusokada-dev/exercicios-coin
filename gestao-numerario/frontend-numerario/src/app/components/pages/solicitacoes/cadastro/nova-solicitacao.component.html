@@ -1,0 +1,27 @@
+<app-page-header title="Nova solicitação"
+  description="Informe se a agência precisa receber ou recolher numerário."
+  backTo="/solicitacoes" [breadcrumbs]="breadcrumbs" />
+@if(erro){<app-alert type="error" [message]="erro" />}
+<section class="form-panel" aria-labelledby="nova-title">
+  <h2 id="nova-title">Dados da solicitação</h2>
+  <div class="form">
+    <label class="field"><span>Operação</span><select [(ngModel)]="nova.tipoOperacao">
+      <option value="SUPRIMENTO">Suprimento para agência</option>
+      <option value="RECOLHIMENTO">Recolhimento da agência</option>
+    </select></label>
+    <label class="field"><span>Agência</span><select [(ngModel)]="nova.agenciaId">
+      <option value="">Selecione uma agência</option>
+      @for (agencia of agencias; track agencia.id) {
+        <option [ngValue]="agencia.id">{{ agencia.codigo }} — {{ agencia.nome }}</option>
+      }
+    </select></label>
+    <label class="field"><span>Valor</span><input appCurrencyInput [(ngModel)]="nova.valor" inputmode="numeric"></label>
+    <label class="field"><span>Data desejada</span><input [(ngModel)]="nova.dataDesejada" type="date"></label>
+    <label class="field field--full"><span>Motivo</span><textarea [(ngModel)]="nova.motivo" rows="4"></textarea></label>
+    <button type="button" (click)="salvar()" [disabled]="salvando">Cadastrar solicitação</button>
+    <button type="button" class="outline" (click)="voltar()">Cancelar</button>
+  </div>
+</section>
+<app-confirmation-dialog #confirmacao title="Confirmar solicitação"
+  message="Confirma o cadastro desta solicitação?" confirmLabel="Cadastrar"
+  (confirmed)="confirmarCadastro()" />
