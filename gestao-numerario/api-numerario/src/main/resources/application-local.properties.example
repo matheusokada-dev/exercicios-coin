@@ -1,5 +1,6 @@
-# Exemplo das variaveis exigidas pelo profile local.
-# Nao copie credenciais reais para arquivos versionados.
+# Referencia das variaveis exigidas. Use o .env na raiz ou variaveis de
+# ambiente; nao crie application-local.properties dentro de src/main/resources,
+# pois esse arquivo seria empacotado no JAR.
 DB_URL=jdbc:mysql://localhost:3306/gestao_numerario?useSSL=false&allowPublicKeyRetrieval=true&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
 DB_USERNAME=numerario_app
 DB_PASSWORD=COLOQUE_SUA_SENHA_AQUI

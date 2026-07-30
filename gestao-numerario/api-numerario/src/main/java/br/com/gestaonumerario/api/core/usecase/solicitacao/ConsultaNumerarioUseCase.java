@@ -1,7 +1,10 @@
 package br.com.gestaonumerario.api.core.usecase.solicitacao;
 
 import br.com.gestaonumerario.api.core.domain.enums.TipoUnidadeOperacional;
-import br.com.gestaonumerario.api.core.domain.model.*;
+import br.com.gestaonumerario.api.core.domain.model.FiltroOperacaoNumerario;
+import br.com.gestaonumerario.api.core.domain.model.OperacaoNumerario;
+import br.com.gestaonumerario.api.core.domain.model.Pagina;
+import br.com.gestaonumerario.api.core.domain.model.UnidadeOperacional;
 import br.com.gestaonumerario.api.port.input.ConsultaNumerarioInputPort;
 import br.com.gestaonumerario.api.port.output.NumerarioOutputPort;
 import java.util.List;
@@ -10,7 +13,7 @@ public class ConsultaNumerarioUseCase implements ConsultaNumerarioInputPort {
     private final NumerarioOutputPort port;
 
     public ConsultaNumerarioUseCase(NumerarioOutputPort port) {
-        this.port=port;
+        this.port = port;
     }
 
     @Override

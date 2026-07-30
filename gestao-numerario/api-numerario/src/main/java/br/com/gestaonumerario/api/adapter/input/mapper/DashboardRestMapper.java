@@ -8,9 +8,13 @@ import org.springframework.stereotype.Component;
 public class DashboardRestMapper {
 
     public DashboardResponse toResponse(ResumoDashboard resumo) {
-        return new DashboardResponse(resumo.dataReferencia(), resumo.numerarioTotal(),
-                resumo.quantidadeAgenciasEmAlerta(), resumo.quantidadeSolicitacoesPendentes(),
-                resumo.quantidadeAbastecimentosHoje(), resumo.valorAbastecidoHoje());
+        return new DashboardResponse(
+                resumo.dataReferencia(),
+                resumo.numerarioTotal(),
+                resumo.quantidadeAgenciasEmAlerta(),
+                resumo.quantidadeSolicitacoesPendentes(),
+                resumo.quantidadeAbastecimentosHoje(),
+                resumo.valorAbastecidoHoje()
+        );
     }
 }
-

@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -58,7 +58,6 @@ export class AgenciasComponent implements OnInit {
 
   constructor(
     private readonly service: AgenciasService,
-    private readonly http: HttpClient,
     private readonly auth: AuthService,
     private readonly route: ActivatedRoute
   ) {}
@@ -118,7 +117,7 @@ export class AgenciasComponent implements OnInit {
       saldoAtual: Number(this.nova.saldoAtual),
       limiteMinimo: Number(this.nova.limiteMinimo)
     };
-    this.http.post('/api/v1/agencias', body).subscribe({
+    this.service.criar(body).subscribe({
       next: () => {
         this.nova = this.novaAgenciaVazia();
         this.salvando = false;
@@ -139,7 +138,7 @@ export class AgenciasComponent implements OnInit {
 
   desativar() {
     if (!this.agenciaParaDesativar) return;
-    this.http.delete(`/api/v1/agencias/${this.agenciaParaDesativar.id}`).subscribe({
+    this.service.desativar(this.agenciaParaDesativar.id).subscribe({
       next: () => {
         this.agenciaParaDesativar = undefined;
         this.pesquisar(false);
@@ -151,6 +150,12 @@ export class AgenciasComponent implements OnInit {
 
   irParaPagina(pagina: number) {
     this.pagina = pagina;
+    this.pesquisar(false);
+  }
+
+  alterarTamanho(tamanho: number) {
+    this.tamanho = tamanho;
+    this.pagina = 0;
     this.pesquisar(false);
   }
 

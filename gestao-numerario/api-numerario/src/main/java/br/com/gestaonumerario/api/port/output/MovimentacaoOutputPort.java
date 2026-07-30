@@ -1,10 +1,9 @@
 package br.com.gestaonumerario.api.port.output;
 
+import br.com.gestaonumerario.api.core.domain.model.FiltroMovimentacao;
 import br.com.gestaonumerario.api.core.domain.model.Movimentacao;
 import br.com.gestaonumerario.api.core.domain.model.Pagina;
-import br.com.gestaonumerario.api.core.domain.model.FiltroMovimentacao;
 import br.com.gestaonumerario.api.core.domain.model.ResumoMovimentacaoDiaria;
-
 import java.time.LocalDate;
 
 public interface MovimentacaoOutputPort {
@@ -17,4 +16,3 @@ public interface MovimentacaoOutputPort {
 
     Movimentacao salvar(Movimentacao movimentacao);
 }
-

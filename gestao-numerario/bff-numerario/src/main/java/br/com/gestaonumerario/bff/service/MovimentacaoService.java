@@ -3,11 +3,9 @@ package br.com.gestaonumerario.bff.service;
 import br.com.gestaonumerario.bff.client.ApiNumerarioClient;
 import br.com.gestaonumerario.bff.dto.MovimentacaoResponse;
 import br.com.gestaonumerario.bff.dto.PaginaResponse;
-import br.com.gestaonumerario.bff.dto.RegistrarMovimentacaoRequest;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -22,13 +20,15 @@ public class MovimentacaoService {
             LocalDate dataInicio,
             LocalDate dataFim,
             int pagina,
-            int tamanho
-    ) {
+            int tamanho) {
         return apiNumerarioClient.listarMovimentacoes(
-                authorization, agenciaId, tipo, dataInicio, dataFim, pagina, tamanho);
-    }
-
-    public MovimentacaoResponse criar(String authorization, RegistrarMovimentacaoRequest request) {
-        return apiNumerarioClient.criarMovimentacao(authorization, request);
+                authorization,
+                agenciaId,
+                tipo,
+                dataInicio,
+                dataFim,
+                pagina,
+                tamanho
+        );
     }
 }

@@ -3,5 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/api-numerario/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/bff-numerario/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/coin-srv-relatorios/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relatorio-numerario/src/main/java" charset="UTF-8" />
   </component>
 </project>

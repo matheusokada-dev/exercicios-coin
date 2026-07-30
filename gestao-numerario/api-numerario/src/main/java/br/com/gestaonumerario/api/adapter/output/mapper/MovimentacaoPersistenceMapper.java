@@ -22,27 +22,43 @@ public class MovimentacaoPersistenceMapper {
         }
 
         return Movimentacao.reconstituir(
-                entity.getId(), agenciaMapper.toDomain(entity.getAgencia()),
-                solicitacaoMapper.toDomain(entity.getSolicitacao()), entity.getTipo(), entity.isEntrada(),
+                entity.getId(),
+                agenciaMapper.toDomain(entity.getAgencia()),
+                solicitacaoMapper.toDomain(entity.getSolicitacao()),
+                entity.getTipo(),
+                entity.isEntrada(),
                 entity.getValor(),
-                entity.getSaldoAnterior(), entity.getSaldoPosterior(), entity.getDescricao(),
-                entity.getDataMovimento(), usuarioMapper.toDomain(entity.getUsuario()), entity.getIdempotencyKey());
+                entity.getSaldoAnterior(),
+                entity.getSaldoPosterior(),
+                entity.getDescricao(),
+                entity.getDataMovimento(),
+                usuarioMapper.toDomain(entity.getUsuario()),
+                entity.getIdempotencyKey()
+        );
     }
 
     public MovimentacaoEntity toEntity(
             Movimentacao domain,
             AgenciaEntity agencia,
             SolicitacaoAbastecimentoEntity solicitacao,
-            UsuarioEntity usuario
-    ) {
+            UsuarioEntity usuario) {
         if (domain == null) {
             return null;
         }
 
         return new MovimentacaoEntity(
-                domain.getId(), agencia, solicitacao, domain.getTipo(), domain.isEntrada(), domain.getValor(),
-                domain.getSaldoAnterior(), domain.getSaldoPosterior(), domain.getDescricao(),
-                domain.getDataMovimento(), usuario, domain.getIdempotencyKey());
+                domain.getId(),
+                agencia,
+                solicitacao,
+                domain.getTipo(),
+                domain.isEntrada(),
+                domain.getValor(),
+                domain.getSaldoAnterior(),
+                domain.getSaldoPosterior(),
+                domain.getDescricao(),
+                domain.getDataMovimento(),
+                usuario,
+                domain.getIdempotencyKey()
+        );
     }
 }
-

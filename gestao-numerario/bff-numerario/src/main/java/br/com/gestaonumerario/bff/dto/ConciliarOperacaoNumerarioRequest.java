@@ -1,4 +1,12 @@
 package br.com.gestaonumerario.bff.dto;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
 public record ConciliarOperacaoNumerarioRequest(
- @NotBlank @Size(max=500) String justificativa,@NotNull @PositiveOrZero Integer versaoOperacao) {}
+        @NotBlank @Size(max = 500) String justificativa,
+        @NotNull @PositiveOrZero Integer versaoOperacao
+) {
+}

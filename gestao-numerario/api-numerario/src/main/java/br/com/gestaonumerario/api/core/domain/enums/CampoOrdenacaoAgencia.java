@@ -4,7 +4,7 @@ public enum CampoOrdenacaoAgencia {
     CODIGO("codigo"),
     NOME("nome"),
     CIDADE("cidade"),
-    SALDO_ATUAL("unidadeOperacional.saldoAtual"),
+    SALDO_ATUAL("saldoAtual"),
     LIMITE_MINIMO("limiteMinimo");
 
     private final String propriedadeJpa;

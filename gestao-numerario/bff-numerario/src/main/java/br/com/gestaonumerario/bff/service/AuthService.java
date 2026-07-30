@@ -17,14 +17,6 @@ public class AuthService {
         return apiNumerarioClient.autenticar(request);
     }
 
-    public LoginResponse renovar(String refreshToken) {
-        return apiNumerarioClient.renovar(refreshToken);
-    }
-
-    public void encerrar(String refreshToken) {
-        apiNumerarioClient.encerrar(refreshToken);
-    }
-
     public SessaoResponse consultarSessao(String authorization) {
         return apiNumerarioClient.consultarSessao(authorization);
     }

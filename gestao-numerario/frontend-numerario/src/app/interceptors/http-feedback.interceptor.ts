@@ -1,4 +1,5 @@
 import {
+  HttpContextToken,
   HttpErrorResponse,
   HttpEvent,
   HttpEventType,
@@ -10,21 +11,30 @@ import { catchError, finalize, tap, throwError } from 'rxjs';
 import { LoadingService } from '../services/loading.service';
 import { NotificationService } from '../services/notification.service';
 
+export const SILENCIAR_NOTIFICACOES_HTTP = new HttpContextToken<boolean>(() => false);
+
 export const httpFeedbackInterceptor: HttpInterceptorFn = (request, next) => {
   const loading = inject(LoadingService);
   const notification = inject(NotificationService);
   const router = inject(Router);
+  const silenciarNotificacoes = request.context.get(SILENCIAR_NOTIFICACOES_HTTP);
 
   loading.iniciar();
 
   return next(request).pipe(
     tap((event: HttpEvent<unknown>) => {
-      if (event.type === HttpEventType.Response && request.method.toUpperCase() !== 'GET') {
+      if (
+        !silenciarNotificacoes
+        && event.type === HttpEventType.Response
+        && request.method.toUpperCase() !== 'GET'
+      ) {
         notification.success(mensagemSucesso(request.method));
       }
     }),
     catchError((error: HttpErrorResponse) => {
-      notification.error(mensagemErro(error));
+      if (!silenciarNotificacoes) {
+        notification.error(mensagemErro(error));
+      }
 
       const tipoErro = tipoPaginaErro(error);
       if (tipoErro && !router.url.startsWith('/erro')) {

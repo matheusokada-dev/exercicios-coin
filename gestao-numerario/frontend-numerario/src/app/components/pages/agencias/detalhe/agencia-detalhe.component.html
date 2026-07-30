@@ -2,35 +2,140 @@
   [title]="detalhe?.agencia?.nome || 'Detalhe da agência'"
   [description]="descricao"
   backTo="/agencias/consultar"
-  [breadcrumbs]="breadcrumbs" />
+  [breadcrumbs]="breadcrumbs">
+  @if (detalhe) {
+    <span class="agency-status" [class]="`agency-status ${classeStatus}`">
+      <span class="agency-status__marker" aria-hidden="true"></span>
+      {{ rotuloStatus }}
+    </span>
+  }
+</app-page-header>
 
 @if (erro) { <app-alert type="error" [message]="erro" /> }
 @if (sucesso) { <app-alert type="success" [message]="sucesso" /> }
 
 @if (detalhe) {
-  <section class="cards" aria-label="Posição financeira da agência">
-    <article><small>Saldo atual</small><strong>{{ detalhe.agencia.saldoAtual | currency:'BRL' }}</strong></article>
-    <article><small>Entradas hoje</small><strong>{{ detalhe.valorEntradasHoje | currency:'BRL' }}</strong></article>
-    <article><small>Saídas hoje</small><strong>{{ detalhe.valorSaidasHoje | currency:'BRL' }}</strong></article>
-    <article><small>Saldo previsto</small><strong>{{ detalhe.saldoPrevistoAposAbastecimentoAprovado | currency:'BRL' }}</strong></article>
+  <div class="financial-reference">
+    <span>Posição em {{ detalhe.dataReferencia | date:'dd/MM/yyyy':'UTC' }}</span>
+    @if (consultadoEm) {
+      <span>Dados consultados às {{ consultadoEm | date:'HH:mm' }}</span>
+    }
+  </div>
+
+  <section class="financial-cards" aria-label="Posição financeira da agência">
+    <article class="financial-card financial-card--primary">
+      <small>Saldo atual</small>
+      <strong>{{ detalhe.agencia.saldoAtual | currency:'BRL' }}</strong>
+      <p>Numerário disponível na agência</p>
+    </article>
+    <article class="financial-card">
+      <small>Entradas hoje</small>
+      <strong>{{ detalhe.valorEntradasHoje | currency:'BRL' }}</strong>
+      <p><span class="operation-symbol" aria-hidden="true">+</span> Valores recebidos no dia</p>
+    </article>
+    <article class="financial-card">
+      <small>Saídas hoje</small>
+      <strong>{{ detalhe.valorSaidasHoje | currency:'BRL' }}</strong>
+      <p><span class="operation-symbol" aria-hidden="true">−</span> Valores retirados no dia</p>
+    </article>
+    <article class="financial-card financial-card--forecast">
+      <small>Saldo previsto</small>
+      <strong>{{ detalhe.saldoPrevistoAposAbastecimentoAprovado | currency:'BRL' }}</strong>
+      <p>Saldo atual + abastecimentos aprovados</p>
+      @if (detalhe.valorAbastecimentoAprovado > 0) {
+        <span class="forecast-detail">
+          Inclui {{ detalhe.valorAbastecimentoAprovado | currency:'BRL' }} aprovado
+        </span>
+      }
+    </article>
   </section>
 
-  <section class="form-panel" aria-labelledby="edit-agency-title">
-    <h2 id="edit-agency-title">Editar agência</h2>
-    <div class="form">
-      <label class="field"><span>Nome</span><input [(ngModel)]="edicao.nome" required></label>
-      <label class="field"><span>Cidade</span><input [(ngModel)]="edicao.cidade" required></label>
-      <label class="field"><span>Limite mínimo</span><input appCurrencyInput [(ngModel)]="edicao.limiteMinimo" inputmode="numeric" required></label>
-      <button type="button" (click)="salvar()" [disabled]="salvando">Salvar alterações</button>
-      <button type="button" class="outline danger" (click)="confirmarDesativacao()">Desativar agência</button>
+  <section class="agency-panel" aria-labelledby="agency-data-title">
+    <div class="panel-heading">
+      <div>
+        <h2 id="agency-data-title">{{ emEdicao ? 'Editar agência' : 'Dados da agência' }}</h2>
+        @if (emEdicao) {
+          <p>Revise os dados antes de salvar as alterações.</p>
+        }
+      </div>
+      @if (!emEdicao && detalhe.agencia.ativo) {
+        <button type="button" class="outline" (click)="iniciarEdicao()">Editar</button>
+      }
     </div>
+
+    @if (!emEdicao) {
+      <dl class="agency-data">
+        <div><dt>Nome</dt><dd>{{ detalhe.agencia.nome }}</dd></div>
+        <div><dt>Cidade</dt><dd>{{ detalhe.agencia.cidade }}</dd></div>
+        <div><dt>Limite mínimo</dt><dd>{{ detalhe.agencia.limiteMinimo | currency:'BRL' }}</dd></div>
+      </dl>
+    } @else {
+      <form class="agency-form" (ngSubmit)="salvar()" #agencyForm="ngForm">
+        <label class="field">
+          <span>Nome da agência</span>
+          <input name="nome" [(ngModel)]="edicao.nome" maxlength="120" autocomplete="organization" required>
+        </label>
+        <label class="field">
+          <span>Cidade</span>
+          <input name="cidade" [(ngModel)]="edicao.cidade" maxlength="100" autocomplete="address-level2" required>
+        </label>
+        <label class="field field--currency">
+          <span>Limite mínimo</span>
+          <input
+            name="limiteMinimo"
+            appCurrencyInput
+            [(ngModel)]="edicao.limiteMinimo"
+            inputmode="numeric"
+            aria-describedby="minimum-limit-help minimum-limit-error"
+            [attr.aria-invalid]="erroLimite ? true : null"
+            required>
+          <small id="minimum-limit-help">Valor usado para identificar agências que precisam de reposição.</small>
+          @if (erroLimite) {
+            <small id="minimum-limit-error" class="field-error" role="alert">{{ erroLimite }}</small>
+          }
+        </label>
+        <div class="form-actions">
+          <button type="button" class="outline" (click)="cancelarEdicao()" [disabled]="salvando">Cancelar</button>
+          <button type="submit" [disabled]="salvando || !agencyForm.valid">
+            {{ salvando ? 'Salvando…' : 'Salvar alterações' }}
+          </button>
+        </div>
+      </form>
+    }
+  </section>
+
+  <section class="management-panel" aria-labelledby="agency-management-title">
+    <div>
+      <h2 id="agency-management-title">Gerenciamento da agência</h2>
+      @if (detalhe.agencia.ativo) {
+        <h3>Desativar agência</h3>
+        <p>A agência deixará de participar dos cálculos e não poderá receber novas solicitações de abastecimento. Os dados e o histórico serão preservados.</p>
+      } @else {
+        <h3>Agência inativa</h3>
+        <p>Esta agência não participa dos cálculos e não pode receber novas solicitações de abastecimento.</p>
+      }
+    </div>
+    @if (detalhe.agencia.ativo) {
+      <button type="button" class="danger-button" (click)="confirmarDesativacao()" [disabled]="desativando">
+        Desativar agência
+      </button>
+    }
   </section>
 } @else if (!erro) {
   <p class="empty">Carregando detalhe da agência...</p>
 }
-<app-confirmation-dialog #confirmacaoEdicao title="Confirmar alterações"
-  message="Confirma a edição dos dados desta agência?" confirmLabel="Salvar"
+
+<app-confirmation-dialog
+  #confirmacaoEdicao
+  title="Salvar alterações?"
+  message="Os novos dados passarão a valer para a agência."
+  confirmLabel="Salvar alterações"
   (confirmed)="confirmarEdicao()" />
-<app-confirmation-dialog #confirmacaoDesativacao title="Desativar agência"
-  message="A agência deixará de operar. Confirma a desativação?" confirmLabel="Desativar"
-  [danger]="true" (confirmed)="desativar()" />
+
+<app-confirmation-dialog
+  #confirmacaoDesativacao
+  [title]="`Desativar a agência ${detalhe?.agencia?.codigo || ''}?`"
+  message="A agência deixará de aparecer entre as agências ativas e não poderá receber novas solicitações. Os dados e o histórico serão preservados."
+  confirmLabel="Desativar agência"
+  [danger]="true"
+  (confirmed)="desativar()" />

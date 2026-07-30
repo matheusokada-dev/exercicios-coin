@@ -1,48 +1,100 @@
 # Gestão de Numerário
 
-Este é o ponto de entrada da documentação do projeto. Para retomar o trabalho, comece por [docs/LEIA_PRIMEIRO.md](docs/LEIA_PRIMEIRO.md).
+Este arquivo é o ponto de entrada da documentação do projeto. Para contexto de
+execução e retomada, consulte [docs/LEIA_PRIMEIRO.md](docs/LEIA_PRIMEIRO.md).
+A documentação navegável começa no índice
+[docs/DOCUMENTACAO_COMPLETA.html](docs/DOCUMENTACAO_COMPLETA.html) e está
+separada por aplicação:
 
-Documento consolidado e navegável: [docs/DOCUMENTACAO_COMPLETA.html](docs/DOCUMENTACAO_COMPLETA.html).
+- [Frontend — porta 4200](docs/DOCUMENTACAO_FRONTEND_4200.html)
+- [BFF — porta 8080](docs/DOCUMENTACAO_BFF_8080.html)
+- [API — porta 8081](docs/DOCUMENTACAO_API_8081.html)
+- [Relatórios — porta 8082](docs/DOCUMENTACAO_RELATORIO_8082.html)
+
+Cada HTML descreve o fluxo completo da porta e cataloga as classes, arquivos,
+dependências, mappings e métodos do respectivo projeto.
 
 ## Estado atual
 
-- API criada em `api-numerario`, com Java 21, Maven, Spring Boot 3.5.14 e arquitetura hexagonal.
-- Migrations Flyway V1 a V6 disponíveis; V4 a V6 permanecem desabilitadas por
-  padrão até a execução do procedimento de backup e migração segura.
-- Autenticação com JWT curto, refresh token rotativo, cookies HttpOnly e CSRF.
-- Login protegido por bloqueio de 15 minutos após cinco senhas incorretas consecutivas.
-- Primeiro usuário gestor já foi criado diretamente no MySQL.
-- BFF criado em `bff-numerario`, porta 8080, encaminhando chamadas para a API na porta 8081.
-- Frontend Angular com login, dashboard, agências, solicitações, operações,
-  movimentações, tesouraria e livro-caixa.
-- Contratos existentes e fluxo evoluído mantidos sob o prefixo `/api/v1`.
-- Script local `scripts/iniciar-tudo.ps1` criado para iniciar API, BFF e frontend.
+- API em Java 21, Spring Boot 3.5.14, Maven e arquitetura hexagonal, na porta
+  `8081`.
+- BFF Spring Boot na porta `8080`, responsável por encaminhar os contratos
+  `/api/v1` para a API.
+- Serviço centralizado de relatórios na porta `8082`, responsável por receber
+  dados tabulares e devolver arquivos `.xlsx` em Base64.
+- Frontend Angular na porta `4200`, consumindo somente o BFF.
+- MySQL 8.4 com `V1__create_schema.sql` para estrutura e
+  `database/scripts/seed-dados-dev.sql` para a massa local opcional.
+- A nova baseline pressupõe schema vazio, não cria `unidade_operacional` nem
+  tabela de refresh token.
+- Autenticação stateless com access token JWT Bearer válido por 8 horas.
+- O navegador guarda `coin.accessToken` e `coin.sessao` no `localStorage`.
+- Não existem renovação automática, refresh token, cookies de autenticação ou
+  endpoint de refresh.
+- Cinco tentativas de login inválidas bloqueiam o usuário por 15 minutos.
+- Operações financeiras usam controle otimista, transação, histórico e
+  idempotência.
 
-## Próxima etapa
+## Inicialização local
 
-Validar o fluxo completo após a migração local concluída em Flyway V6:
+1. Inicie o MySQL e confirme que `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` e
+   `JWT_SECRET` estão configurados.
+2. Para um banco recém-resetado, habilite `FLYWAY_ENABLED=true` na primeira
+   inicialização da API para aplicar a V1.
+3. Depois da criação do schema, volte `FLYWAY_ENABLED=false`.
+4. Somente em desenvolvimento, aplique manualmente
+   `database/scripts/seed-dados-dev.sql` para criar os cenários locais.
+5. Inicie API, serviço de relatórios, BFF e frontend, nessa ordem.
 
-1. Iniciar API, BFF e frontend.
-2. Acessar `/login`.
-3. Conferir dashboard e contratos existentes.
-4. Validar solicitações, operações, movimentações e tesouraria.
-5. Registrar eventuais ajustes encontrados na navegação.
+O script `scripts/iniciar-tudo.ps1` automatiza a inicialização dos quatro
+processos, mas não recria o banco.
 
-Para migrar outro ambiente, repetir integralmente
-`docs/MIGRACAO_BANCO_SEGURA.md`; o backup local não deve ser reutilizado.
+## Portas
+
+| Componente | Porta | Endereço principal |
+| --- | ---: | --- |
+| Frontend | 4200 | `http://localhost:4200` |
+| BFF | 8080 | `http://localhost:8080` |
+| API | 8081 | `http://localhost:8081` |
+| Serviço de relatórios | 8082 | `http://localhost:8082` |
+
+## OpenAPI
+
+| Serviço | Swagger UI | JSON OpenAPI |
+| --- | --- | --- |
+| BFF | `http://localhost:8080/swagger-ui.html` | `http://localhost:8080/v3/api-docs` |
+| API | `http://localhost:8081/swagger-ui.html` | `http://localhost:8081/v3/api-docs` |
+
+Todos os controllers implementam uma interface `*Api`, responsável pela tag,
+resumo e descrição das operações. Os contratos gerados também possuem
+identificador, respostas comuns e indicação de segurança. Execute
+`node scripts/validar-openapi.mjs` com API e BFF ativos para auditar os dois
+contratos.
 
 ## Documentos
 
-- [Padrão de frontend Bradesco](docs/PADRAO_FRONTEND_BRADESCO.md)
-- [Massa de dados de desenvolvimento](docs/MASSA_DADOS.md)
-- [Análise das stories do COINCAD](docs/ANALISE_STORIES_COINCAD.md)
-- [Contexto e decisões](docs/LEIA_PRIMEIRO.md)
-- [Arquitetura da API](docs/ARQUITETURA.md)
-- [Requisitos rastreáveis](docs/REQUISITOS.md)
+- [Índice HTML por porta](docs/DOCUMENTACAO_COMPLETA.html)
+- [Frontend — porta 4200](docs/DOCUMENTACAO_FRONTEND_4200.html)
+- [BFF — porta 8080](docs/DOCUMENTACAO_BFF_8080.html)
+- [API — porta 8081](docs/DOCUMENTACAO_API_8081.html)
+- [Relatórios — porta 8082](docs/DOCUMENTACAO_RELATORIO_8082.html)
+- [Contexto e execução](docs/LEIA_PRIMEIRO.md)
+- [Arquitetura](docs/ARQUITETURA.md)
+- [Requisitos](docs/REQUISITOS.md)
 - [Modelo de dados](docs/MODELO_DADOS.md)
-- [Contratos de API](docs/CONTRATOS_API.md)
-- [Diário de implementação](docs/DIARIO_IMPLEMENTACAO.md)
+- [Contratos da API e do BFF](docs/CONTRATOS_API.md)
+- [Regras da solicitação de numerário](docs/REGRAS_SOLICITACAO_NUMERARIO.md)
+- [Erros da API](docs/ERROS_API.md)
+- [Massa local de desenvolvimento](docs/MASSA_DADOS.md)
+- [Padrão visual do frontend](docs/PADRAO_FRONTEND_BRADESCO.md)
+- [Diário histórico](docs/DIARIO_IMPLEMENTACAO.md)
 
-## Regra de manutenção
+## Manutenção
 
-Antes de uma nova etapa, consultar os documentos aplicáveis. Após a etapa, atualizar o diário e o documento técnico afetado. Nada que seja apenas uma proposta será tratado como decisão confirmada sem aprovação explícita do usuário.
+A V1 é a baseline consolidada para o reset atual. Depois que ela for aplicada
+em um ambiente compartilhado, não deve ser alterada; toda evolução posterior
+deve receber uma nova versão Flyway.
+
+O diário registra decisões e estados históricos e pode mencionar estruturas
+anteriores. Documentos operacionais, README e documentação consolidada devem
+sempre descrever o estado executável atual.

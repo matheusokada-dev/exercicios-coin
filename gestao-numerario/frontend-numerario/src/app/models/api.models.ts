@@ -28,6 +28,27 @@ export interface DetalheAgencia {
   saldoPrevistoAposAbastecimentoAprovado: number;
 }
 
+export interface GerarRelatorioResponse {
+  conteudo: string;
+  nomeArquivo: string;
+  formato: string;
+  dataGeracao: string;
+}
+
+export interface CriarAgenciaRequest {
+  codigo: string;
+  nome: string;
+  cidade: string;
+  saldoAtual: number | string;
+  limiteMinimo: number | string;
+}
+
+export interface AtualizarAgenciaRequest {
+  nome: string;
+  cidade: string;
+  limiteMinimo: number;
+}
+
 export type StatusSolicitacao = 'PENDENTE' | 'APROVADA' | 'REJEITADA' | 'ATENDIDA';
 
 export interface Solicitacao {
@@ -57,13 +78,13 @@ export type TipoMovimentacao =
 export interface Movimentacao {
   id: number;
   agenciaId: number;
-  solicitacaoId?: number;
+  solicitacaoId: number | null;
   tipo: TipoMovimentacao;
   entrada: boolean;
   valor: number;
   saldoAnterior: number;
   saldoPosterior: number;
-  descricao?: string;
+  descricao: string | null;
   dataMovimento: string;
   usuarioId: number;
 }

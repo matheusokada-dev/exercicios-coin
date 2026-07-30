@@ -33,23 +33,34 @@ class SolicitacaoControllerTest {
 
     @Test
     void criarRetornaStatusCreated() throws Exception {
-        mockMvc.perform(post("/api/v1/solicitacoes")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+        mockMvc.perform(
+                post("/api/v1/solicitacoes").header(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer token"
+                )
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"agenciaId":1,"valor":1000.00,"motivo":"Reposicao","dataDesejada":"2099-01-01"}
-                                """))
+                                """)
+        )
                 .andExpect(status().isCreated());
 
-        verify(service).criar(anyString(), any());
+        verify(service).criar(
+                anyString(),
+                any()
+        );
     }
 
     @Test
     void rejeitaDecisaoSemJustificativaAntesDeChamarService() throws Exception {
-        mockMvc.perform(put("/api/v1/solicitacoes/1/rejeitar")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+        mockMvc.perform(
+                put("/api/v1/solicitacoes/1/rejeitar").header(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer token"
+                )
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"justificativaDecisao\":\"\"}"))
+                        .content("{\"justificativaDecisao\":\"\"}")
+        )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.codError").value(1000))
                 .andExpect(jsonPath("$.value").value("justificativaDecisao"));
@@ -57,10 +68,14 @@ class SolicitacaoControllerTest {
 
     @Test
     void naoAceitaAcaoGenerica() throws Exception {
-        mockMvc.perform(put("/api/v1/solicitacoes/1/acao-inexistente")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+        mockMvc.perform(
+                put("/api/v1/solicitacoes/1/acao-inexistente").header(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer token"
+                )
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                        .content("{}")
+        )
                 .andExpect(status().isNotFound());
     }
 }

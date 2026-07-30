@@ -2,7 +2,16 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, RefreshCw } from 'lucide-angular';
+import {
+  Building2,
+  ChevronRight,
+  CircleDollarSign,
+  ClipboardCheck,
+  Landmark,
+  LucideAngularModule,
+  PackageCheck,
+  RefreshCw
+} from 'lucide-angular';
 import { DashboardResponse } from '../../../models/api.models';
 import { AuthService } from '../../../services/auth.service';
 import { AlertComponent } from '../../shared/alert/alert.component';
@@ -28,7 +37,14 @@ export class DashboardComponent implements OnInit {
   resumo?: DashboardResponse;
   erro = '';
   carregando = false;
+  ultimaAtualizacao?: Date;
   readonly isGestor: boolean;
+  readonly Building2 = Building2;
+  readonly ChevronRight = ChevronRight;
+  readonly CircleDollarSign = CircleDollarSign;
+  readonly ClipboardCheck = ClipboardCheck;
+  readonly Landmark = Landmark;
+  readonly PackageCheck = PackageCheck;
   readonly RefreshCw = RefreshCw;
   readonly breadcrumbs: BreadcrumbItem[] = [
     { label: 'COIN Home', link: '/menu' },
@@ -44,6 +60,11 @@ export class DashboardComponent implements OnInit {
     this.carregar();
   }
 
+  get totalPendencias(): number {
+    return (this.resumo?.quantidadeAgenciasEmAlerta ?? 0)
+      + (this.resumo?.quantidadeSolicitacoesPendentes ?? 0);
+  }
+
   carregar() {
     this.erro = '';
     this.carregando = true;
@@ -51,6 +72,7 @@ export class DashboardComponent implements OnInit {
     this.http.get<DashboardResponse>('/api/v1/dashboard').subscribe({
       next: resumo => {
         this.resumo = resumo;
+        this.ultimaAtualizacao = new Date();
         this.carregando = false;
       },
       error: (error: HttpErrorResponse) => {

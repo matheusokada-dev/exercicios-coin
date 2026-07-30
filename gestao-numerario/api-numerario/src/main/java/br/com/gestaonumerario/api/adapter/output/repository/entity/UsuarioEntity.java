@@ -9,11 +9,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.Instant;
 
 @Getter
 @Entity
@@ -25,26 +24,47 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 120)
+    @Column(
+            nullable = false,
+            length = 120
+    )
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 80)
+    @Column(
+            nullable = false,
+            unique = true,
+            length = 80
+    )
     private String login;
 
-    @Column(name = "senha_hash", nullable = false, length = 255)
+    @Column(
+            name = "senha_hash",
+            nullable = false,
+            length = 255
+    )
     private String senhaHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(
+            nullable = false,
+            length = 20
+    )
     private PerfilUsuario perfil;
 
     @Column(nullable = false)
     private boolean ativo;
 
-    @Column(name = "criado_em", nullable = false, updatable = false)
+    @Column(
+            name = "criado_em",
+            nullable = false,
+            updatable = false
+    )
     private Instant criadoEm;
 
-    @Column(name = "tentativas_login_falhas", nullable = false)
+    @Column(
+            name = "tentativas_login_falhas",
+            nullable = false
+    )
     private int tentativasLoginFalhas;
 
     @Column(name = "bloqueado_ate")
@@ -59,8 +79,7 @@ public class UsuarioEntity {
             boolean ativo,
             Instant criadoEm,
             int tentativasLoginFalhas,
-            Instant bloqueadoAte
-    ) {
+            Instant bloqueadoAte) {
         this.id = id;
         this.nome = nome;
         this.login = login;

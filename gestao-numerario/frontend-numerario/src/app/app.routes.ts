@@ -6,14 +6,12 @@ import { AgenciasComponent } from './components/pages/agencias/consulta/agencias
 import { SolicitacoesComponent } from './components/pages/solicitacoes/consulta/solicitacoes.component';
 import { SolicitacoesMenuComponent } from './components/pages/solicitacoes/menu/solicitacoes-menu.component';
 import { NovaSolicitacaoComponent } from './components/pages/solicitacoes/cadastro/nova-solicitacao.component';
-import { MovimentacoesComponent } from './components/pages/movimentacoes/consulta/movimentacoes.component';
 import { AgenciaDetalheComponent } from './components/pages/agencias/detalhe/agencia-detalhe.component';
 import { AgenciasMenuComponent } from './components/pages/agencias/menu/agencias-menu.component';
 import { NovaAgenciaComponent } from './components/pages/agencias/cadastro/nova-agencia.component';
-import { MovimentacoesMenuComponent } from './components/pages/movimentacoes/menu/movimentacoes-menu.component';
-import { NovaMovimentacaoComponent } from './components/pages/movimentacoes/cadastro/nova-movimentacao.component';
 import { authGuard } from './guards/auth.guard';
 import { gestorGuard } from './guards/gestor.guard';
+import { unsavedChangesGuard } from './guards/unsaved-changes.guard';
 import { MenuComponent } from './components/pages/menu/menu.component';
 import { ErrorComponent } from './components/pages/error/error.component';
 
@@ -36,13 +34,15 @@ export const routes: Routes = [
       { path: 'agencias', component: AgenciasMenuComponent, canActivate: [gestorGuard] },
       { path: 'agencias/consultar', component: AgenciasComponent, canActivate: [gestorGuard] },
       { path: 'agencias/nova', component: NovaAgenciaComponent, canActivate: [gestorGuard] },
-      { path: 'agencias/:id', component: AgenciaDetalheComponent, canActivate: [gestorGuard] },
-      { path: 'solicitacoes', component: SolicitacoesMenuComponent },
-      { path: 'solicitacoes/consultar', component: SolicitacoesComponent },
-      { path: 'solicitacoes/nova', component: NovaSolicitacaoComponent },
-      { path: 'movimentacoes', component: MovimentacoesMenuComponent },
-      { path: 'movimentacoes/consultar', component: MovimentacoesComponent },
-      { path: 'movimentacoes/nova', component: NovaMovimentacaoComponent },
+      {
+        path: 'agencias/:id',
+        component: AgenciaDetalheComponent,
+        canActivate: [gestorGuard],
+        canDeactivate: [unsavedChangesGuard]
+      },
+      { path: 'solicitacoes', component: SolicitacoesMenuComponent, canActivate: [gestorGuard] },
+      { path: 'solicitacoes/consultar', component: SolicitacoesComponent, canActivate: [gestorGuard] },
+      { path: 'solicitacoes/nova', component: NovaSolicitacaoComponent, canActivate: [gestorGuard] },
       {
         path: 'livro-caixa',
         loadComponent: () => import('./components/pages/livro-caixa/livro-caixa.component')

@@ -14,12 +14,7 @@ export class LayoutComponent {
   constructor(private auth: AuthService, private router: Router) {}
 
   logout() {
-    this.auth.sair().subscribe({
-      next: () => this.router.navigateByUrl('/login'),
-      error: () => {
-        this.auth.limparSessao();
-        this.router.navigateByUrl('/login');
-      }
-    });
+    this.auth.sair();
+    this.router.navigateByUrl('/login');
   }
 }

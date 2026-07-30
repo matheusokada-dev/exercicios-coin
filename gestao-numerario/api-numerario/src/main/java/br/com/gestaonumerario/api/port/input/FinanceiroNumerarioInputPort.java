@@ -6,5 +6,6 @@ import br.com.gestaonumerario.api.core.domain.model.command.CargaInicialTesourar
 
 public interface FinanceiroNumerarioInputPort {
     UnidadeOperacional realizarCargaInicial(CargaInicialTesourariaCommand command);
+
     UnidadeOperacional ajustarDivergencia(AjustarDivergenciaCommand command);
 }

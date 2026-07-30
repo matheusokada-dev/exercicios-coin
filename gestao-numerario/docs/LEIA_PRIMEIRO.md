@@ -8,7 +8,13 @@ Alterações de interface devem consultar `PADRAO_FRONTEND_BRADESCO.md`. O guia
 separa regras extraídas do Liquid Bradesco, adaptações Angular e lacunas ainda
 dependentes de documentação oficial.
 
-Para uma visão consolidada e navegável, abrir `DOCUMENTACAO_COMPLETA.html`.
+Para a documentação navegável, abrir `DOCUMENTACAO_COMPLETA.html`. Esse arquivo
+é o índice para quatro documentos independentes: frontend `4200`, BFF `8080`,
+API `8081` e relatórios `8082`. Cada documento explica o fluxo da aplicação e
+seu catálogo de classes, arquivos e métodos.
+
+Com API e BFF em execução, `node scripts/validar-openapi.mjs` verifica se todos
+os controllers e operações continuam documentados no OpenAPI.
 
 ## Ordem de precedência
 
@@ -54,8 +60,10 @@ Para uma visão consolidada e navegável, abrir `DOCUMENTACAO_COMPLETA.html`.
 
 - API base compila em referência anterior com `./mvnw.cmd clean compile`.
 - API conecta ao MySQL e inicia em 8081 com o profile `local` padrão, após preencher `application-local.properties`.
-- Migrations V1, V2 e V3 existem.
-- JWT Bearer foi implementado na API, com validade de 60 minutos e sem refresh token.
+- A baseline Flyway possui `V1__create_schema.sql` (estrutura). A massa local
+  opcional fica em `database/scripts/seed-dados-dev.sql`, sem unidade operacional ou
+  tabela de refresh token.
+- JWT Bearer foi implementado na API, com validade de 8 horas e sem refresh token.
 - O login bloqueia a conta por 15 minutos após cinco senhas incorretas consecutivas e persiste esse controle no MySQL.
 - O primeiro gestor já foi criado diretamente no MySQL.
 - BFF encaminha login e chamadas autenticadas para a API.
@@ -65,32 +73,41 @@ Para uma visão consolidada e navegável, abrir `DOCUMENTACAO_COMPLETA.html`.
 - Valores monetários exibidos pelo Angular usam `CurrencyPipe` com locale `pt-BR` e moeda `BRL`.
 - O padrão visual do frontend passa a seguir `PADRAO_FRONTEND_BRADESCO.md`; tipografia, paginação, donut, alert e modal possuem referência recebida, enquanto Card e paleta institucional completa continuam pendentes de fonte oficial.
 - A camada frontend reconhece `COIN0001` a `COIN0006` e mapeia temporariamente `GESTOR/OPERADOR` para `COIN0001/COIN0003`.
-- Tesouraria abre um menu com Dashboard, Solicitações, Agências, Movimentações e Livro Caixa.
+- OpenAPI concluído no padrão `interface *Api` → `Controller implements *Api`:
+  34 operações na API e 32 no BFF, com bearer JWT, login público, tags,
+  descrições e respostas comuns.
+- Tesouraria abre um menu com Dashboard, Solicitações, Agências e Livro Caixa.
 - Cadastros abre a página de erro porque ainda não foi desenvolvido.
 - O header autenticado possui somente logout; telas internas usam breadcrumbs e botão Voltar.
-- Livro Caixa gera XLSX por agência e período usando os endpoints existentes de agências e movimentações. A rota exige gestor porque a listagem de agências já possui essa restrição na API.
-- Consulta de pontos, importação e relatórios XLSX não foram implementados.
-- A massa local V1 possui 7 usuários, 30 agências, 176 solicitações e 540 movimentações identificadas; composição e validações estão em `MASSA_DADOS.md`.
+- Livro Caixa gera XLSX por agência e período. O BFF consulta agências e
+  movimentações, monta o contrato tabular e chama o `relatorio-numerario` na
+  porta `8082`; o frontend apenas baixa o Base64 retornado.
+- A rota de Livro Caixa exige gestor porque a listagem de agências já possui
+  essa restrição na API.
+- Consulta de pontos, importação e os demais relatórios XLSX não foram
+  implementados.
+- A V1 cria o schema; o seed manual cria credenciais e dados de exemplo locais.
 - O build de produção do frontend foi validado em 23/07/2026.
 
 ## Próxima ação
 
 Executar validação manual do fluxo pelo navegador:
 
-1. Subir API, BFF e frontend.
-2. Aplicar `database/scripts/upsert-gestor-dev.sql` para garantir a credencial local conhecida.
-3. Aplicar `database/scripts/seed-dados-dev.sql` no MySQL local, se for necessário carregar dados de exemplo.
+1. Subir API, serviço de relatórios, BFF e frontend.
+2. Em um banco resetado, habilitar Flyway uma vez para aplicar a V1.
+3. Somente em desenvolvimento, aplicar `database/scripts/seed-dados-dev.sql`.
+4. Confirmar a credencial local criada pelo seed.
 4. Fazer login com `gestor` / `admin123`.
 5. Conferir se o token é salvo e enviado nas chamadas.
 6. Navegar pelo COIN Home e menu de Tesouraria.
-7. Conferir dashboard, agências, solicitações, movimentações e Livro Caixa.
+7. Conferir dashboard, agências, solicitações e Livro Caixa.
 8. Ajustar os problemas encontrados nas telas e nos contratos BFF/API.
 
-Com PowerShell, uma forma prática de aplicar o seed é:
+Com PowerShell, uma forma prática de aplicar as migrations é:
 
 ```powershell
-Get-Content .\database\scripts\upsert-gestor-dev.sql | mysql -u root -p gestao_numerario
-Get-Content .\database\scripts\seed-dados-dev.sql | mysql -u root -p gestao_numerario
+$env:FLYWAY_ENABLED='true'
+.\api-numerario\mvnw.cmd -f .\api-numerario\pom.xml spring-boot:run
 ```
 
 A credencial `gestor` / `admin123` é exclusiva para desenvolvimento local e não deve ser usada em outros ambientes.

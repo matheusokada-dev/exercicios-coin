@@ -19,7 +19,10 @@ public final class ValorMonetario {
             throw new ValorMonetarioObrigatorioException();
         }
 
-        return valor.setScale(ESCALA, ARREDONDAMENTO);
+        return valor.setScale(
+                ESCALA,
+                ARREDONDAMENTO
+        );
     }
 
     public static BigDecimal exigirPositivo(BigDecimal valor) {
@@ -43,6 +46,9 @@ public final class ValorMonetario {
     }
 
     public static BigDecimal zero() {
-        return BigDecimal.ZERO.setScale(ESCALA, ARREDONDAMENTO);
+        return BigDecimal.ZERO.setScale(
+                ESCALA,
+                ARREDONDAMENTO
+        );
     }
 }

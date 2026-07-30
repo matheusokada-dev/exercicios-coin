@@ -2,10 +2,9 @@ package br.com.gestaonumerario.api.port.output;
 
 import br.com.gestaonumerario.api.core.domain.model.Agencia;
 import br.com.gestaonumerario.api.core.domain.model.FiltroAgencia;
-
+import br.com.gestaonumerario.api.core.domain.model.Pagina;
 import java.util.List;
 import java.util.Optional;
-import br.com.gestaonumerario.api.core.domain.model.Pagina;
 
 public interface AgenciaOutputPort {
 
@@ -21,5 +20,3 @@ public interface AgenciaOutputPort {
 
     Agencia salvar(Agencia agencia);
 }
-
-

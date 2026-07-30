@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>COIN — Frontend Angular — Porta 4200</title>
+  <style>
+    :root{--accent:#c11435;--accent2:#7b0d24;--ink:#17202e;--muted:#667085;--line:#dfe3e8;--soft:#f5f6f8;--paper:#fff;--nav:#161d2a}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.65 "Segoe UI",Arial,sans-serif}
+    a{color:var(--accent2)}code{font:13px/1.55 Consolas,monospace}.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+    aside{position:sticky;top:0;height:100vh;overflow:auto;background:var(--nav);color:#d0d5dd;padding:24px 18px}.brand{padding:8px 10px 22px;border-bottom:1px solid #344054}.brand b{display:block;color:#fff;font-size:21px}.brand span{font-size:13px;color:#98a2b3}
+    nav{padding-top:18px}nav a{display:block;color:#d0d5dd;text-decoration:none;padding:9px 11px;border-radius:8px}nav a:hover,nav a.active{background:#293446;color:#fff}.aside-meta{margin:22px 10px;font-size:12px;color:#98a2b3}
+    main{min-width:0}.hero{padding:52px clamp(24px,5vw,74px);background:linear-gradient(125deg,var(--accent2),var(--accent));color:#fff}.hero-inner,.content{max-width:1260px;margin:auto}.kicker{text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:800;opacity:.84}
+    h1{font-size:clamp(34px,5vw,58px);line-height:1.05;margin:10px 0 15px}.hero p{max-width:880px;font-size:18px;color:#fff1f4}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.badge{padding:5px 10px;border:1px solid #ffffff66;border-radius:99px;background:#ffffff16}
+    .content{padding:38px clamp(18px,4vw,58px) 80px}section{margin-bottom:50px;scroll-margin-top:16px}.section-head{display:flex;justify-content:space-between;gap:25px;align-items:end;border-bottom:2px solid var(--line);padding-bottom:12px;margin-bottom:20px}.section-head h2{font-size:28px;margin:0}.section-head p{max-width:650px;color:var(--muted);margin:0}
+    .grid{display:grid;gap:15px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:19px;box-shadow:0 1px 2px #10182808}.card h3{margin:0 0 8px}.card p{margin:5px 0;color:#475467}.metric strong{display:block;font-size:30px;color:var(--accent2)}
+    .flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.step{background:#fff;border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:15px}.step b{display:block;margin-bottom:5px}.step p{margin:0;color:#475467}.callout{border-left:4px solid var(--accent);background:#fff;padding:17px 19px;border-radius:8px}
+    table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:11px;border:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f8fafc;color:#475467;font-size:12px;text-transform:uppercase}
+    .toolbar{position:sticky;top:8px;z-index:3;display:flex;gap:9px;padding:10px;background:#f5f6f8eF;border:1px solid var(--line);border-radius:10px;backdrop-filter:blur(8px)}.toolbar input{flex:1;min-width:220px;padding:10px;border:1px solid #98a2b3;border-radius:7px}.button{padding:9px 12px;border:1px solid #98a2b3;border-radius:7px;background:#fff;cursor:pointer}
+    .catalog-group{margin:26px 0}.catalog-group>h3{display:flex;justify-content:space-between}.tag{font-size:12px;padding:3px 8px;border-radius:99px;background:#eef0f3;color:#344054}.file{background:#fff;border:1px solid var(--line);border-radius:9px;margin:8px 0;overflow:hidden}.file>summary{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 15px;cursor:pointer}.file>summary:hover{background:#fafafa}.file>summary small{display:block;color:var(--muted);font-weight:400}.file-path{display:block;font:600 13px/1.45 Consolas,monospace;overflow-wrap:anywhere}.file-body{border-top:1px solid var(--line);padding:16px}
+    .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.facts>div{padding:12px;background:#f8fafc;border-radius:8px}.facts b{color:#344054}.facts p{margin:5px 0;color:#475467;overflow-wrap:anywhere}.method-list{display:grid;gap:9px}.method{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px}.method-head{display:flex;justify-content:space-between}.method-head span{font-size:12px;color:var(--muted)}.signature{display:block;margin:7px 0;padding:7px 9px;background:#f7f8fa;border-radius:5px;overflow-wrap:anywhere}.method p{margin:5px 0;color:#475467}.empty{color:var(--muted);font-style:italic}.footer{text-align:center;color:var(--muted);padding-top:25px}
+    @media(max-width:980px){.layout{display:block}aside{position:relative;height:auto}nav{display:flex;overflow:auto}nav a{white-space:nowrap}.aside-meta{display:none}.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.g2,.g3,.flow,.facts{grid-template-columns:1fr}.hero{padding:36px 20px}.content{padding:25px 14px}.section-head{display:block}.section-head p{margin-top:7px}.toolbar{position:relative;flex-wrap:wrap}.toolbar input{width:100%}}
+    @media print{aside,.toolbar{display:none!important}.layout{display:block}.hero{background:#fff!important;color:#111;padding:20px 0;border-bottom:3px solid var(--accent)}.hero p{color:#444}.content{padding:20px 0}.file{break-inside:avoid}details.file:not([open]) .file-body{display:block}}
+  </style>
+</head>
+<body data-files="79" data-methods="30">
+<div class="layout">
+  <aside>
+    <div class="brand"><b>COIN · 4200</b><span>Frontend Angular</span></div>
+    <nav><a href="#visao">Visão da porta</a><a href="#fluxo">Fluxo minucioso</a><a href="#entradas">Entradas e saídas</a><a href="#arquitetura">Camadas</a><a href="#catalogo">Classes e métodos</a><a href="#execucao">Execução</a></nav>
+    <div class="aside-meta">Documento autocontido<br>Angular · TypeScript · HTML · CSS<br>Gerado em 30 de julho de 2026 às 13:54</div>
+  </aside>
+  <main>
+    <header class="hero"><div class="hero-inner">
+      <div class="kicker">Documentação técnica por aplicação</div>
+      <h1>Frontend Angular · porta 4200</h1>
+      <p>Interface utilizada pelo operador. Apresenta telas, valida formulários, controla navegação e consome exclusivamente o BFF.</p>
+      <div class="badges"><span class="badge">Angular · TypeScript · HTML · CSS</span><span class="badge">79 arquivos</span><span class="badge">24 tipos/classes</span><span class="badge">30 métodos</span></div>
+    </div></header>
+    <div class="content">
+      <section id="visao">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">01</div><h2>Visão da porta 4200</h2></div><p>Responsabilidade e limite arquitetural desta aplicação.</p></div>
+        <div class="grid g2"><div class="card"><h3>O que faz</h3><p>Interface utilizada pelo operador. Apresenta telas, valida formulários, controla navegação e consome exclusivamente o BFF.</p></div><div class="card"><h3>O que não faz</h3><p>Não acessa banco, API de domínio ou Apache POI diretamente. Toda comunicação de negócio sai por HTTP para a porta 8080.</p></div></div>
+        <div class="grid g3" style="margin-top:15px"><div class="card metric"><strong>79</strong><span>arquivos documentados</span></div><div class="card metric"><strong>24</strong><span>classes, interfaces, records e enums</span></div><div class="card metric"><strong>30</strong><span>métodos explicados</span></div></div>
+      </section>
+      <section id="fluxo">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">02</div><h2>Fluxo minucioso</h2></div><p>Ordem real das responsabilidades desde a entrada até a resposta.</p></div>
+        <div class="flow"><article class="step"><b>1. Bootstrap</b><p>main.ts inicia o Angular com app.config.ts, roteamento, interceptors e providers globais.</p></article><article class="step"><b>2. Navegação</b><p>app.routes.ts resolve a URL; guards consultam AuthService antes de liberar telas protegidas.</p></article><article class="step"><b>3. Interação</b><p>O componente mantém estado visual, coleta filtros ou formulário e chama um serviço Angular.</p></article><article class="step"><b>4. Requisição</b><p>AuthInterceptor inclui Authorization: Bearer quando existe sessão; HttpFeedbackInterceptor controla loading e erros.</p></article><article class="step"><b>5. BFF</b><p>O navegador envia a requisição somente para localhost:8080, preservando o contrato /api/v1.</p></article><article class="step"><b>6. Resposta</b><p>O serviço converte o JSON em modelos TypeScript e o componente atualiza tabela, cards, modal ou paginação.</p></article><article class="step"><b>7. Excel</b><p>No Livro Caixa, o Base64 devolvido pelo BFF vira um Blob XLSX; o navegador dispara o download sem biblioteca JS de planilha.</p></article></div>
+        <div class="callout" style="margin-top:15px"><b>Encadeamento entre portas</b><br>4200 Angular → 8080 BFF → 8081 API/MySQL. Para Excel: 8080 BFF → 8082 Relatório Numerário → 8080 BFF → 4200 Angular.</div>
+      </section>
+      <section id="entradas">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">03</div><h2>Entradas, saídas e integrações</h2></div><p>Pontos pelos quais esta aplicação participa do sistema.</p></div>
+        <table><thead><tr><th>Origem/capacidade</th><th>Entrada ou destino</th><th>Comportamento</th></tr></thead><tbody><tr><td>Navegação</td><td>Rotas Angular</td><td>Carrega telas públicas e autenticadas; guards impedem navegação incompatível com a sessão.</td></tr><tr><td>Integração</td><td>HttpClient → :8080/api/v1</td><td>Serviços tipados enviam filtros e comandos ao BFF.</td></tr><tr><td>Relatório</td><td>POST /api/v1/relatorios/livro-caixa</td><td>Recebe Base64 do BFF, converte para Blob e inicia o download do XLSX.</td></tr></tbody></table>
+      </section>
+      <section id="arquitetura">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">04</div><h2>Distribuição por camada</h2></div><p>Como os arquivos se distribuem dentro da responsabilidade da porta.</p></div>
+        <div class="grid g3"><div class="card metric"><strong>24</strong><span>Configuração e apoio</span></div><div class="card metric"><strong>47</strong><span>Entrada e apresentação</span></div><div class="card metric"><strong>2</strong><span>Infraestrutura e integração</span></div><div class="card metric"><strong>2</strong><span>Modelo e contratos</span></div><div class="card metric"><strong>4</strong><span>Aplicação</span></div></div>
+      </section>
+      <section id="catalogo">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">05</div><h2>Cada classe, arquivo e método</h2></div><p>Inventário gerado diretamente de frontend-numerario, com responsabilidade, posição no fluxo, dependências, mappings e explicação de cada método detectado.</p></div>
+        <div class="toolbar"><input id="search" type="search" placeholder="Filtrar classe, arquivo, método ou dependência…" aria-label="Filtrar catálogo"><button class="button" id="expand">Expandir visíveis</button><button class="button" id="collapse">Recolher</button><button class="button" onclick="window.print()">Imprimir / PDF</button></div>
+        <div id="catalog"><div class="catalog-group"><h3>Configuração e apoio <span class="tag">24 arquivos</span></h3><details class="file" data-search="frontend-numerario/angular.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/angular.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/package-lock.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/package-lock.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/package.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/package.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/proxy.conf.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/proxy.conf.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/readme.md configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/README.md</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/app.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/app.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/app.config.ts componente typescript módulo typescript implementa a responsabilidade indicada por app.config no frontend. ./interceptors/auth.interceptor ./interceptors/http-feedback.interceptor ./app.routes">
+    <summary><span><span class="file-path">frontend-numerario/src/app/app.config.ts</span><small>módulo TypeScript</small></span><span class="tag">Componente TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Implementa a responsabilidade indicada por app.config no frontend.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p><code>./interceptors/auth.interceptor</code><br><code>./interceptors/http-feedback.interceptor</code><br><code>./app.routes</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/app.routes.ts componente typescript módulo typescript implementa a responsabilidade indicada por app.routes no frontend. ./components/pages/login/login.component ./components/pages/dashboard/dashboard.component ./components/layout/layout.component ./components/pages/agencias/consulta/agencias.component ./components/pages/solicitacoes/consulta/solicitacoes.component ./components/pages/solicitacoes/menu/solicitacoes-menu.component ./components/pages/solicitacoes/cadastro/nova-solicitacao.component ./components/pages/agencias/detalhe/agencia-detalhe.component ./components/pages/agencias/menu/agencias-menu.component ./components/pages/agencias/cadastro/nova-agencia.component ./guards/auth.guard ./guards/gestor.guard ./components/pages/menu/menu.component ./components/pages/error/error.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/app.routes.ts</span><small>módulo TypeScript</small></span><span class="tag">Componente TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Implementa a responsabilidade indicada por app.routes no frontend.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p><code>./components/pages/login/login.component</code><br><code>./components/pages/dashboard/dashboard.component</code><br><code>./components/layout/layout.component</code><br><code>./components/pages/agencias/consulta/agencias.component</code><br><code>./components/pages/solicitacoes/consulta/solicitacoes.component</code><br><code>./components/pages/solicitacoes/menu/solicitacoes-menu.component</code><br><code>./components/pages/solicitacoes/cadastro/nova-solicitacao.component</code><br><code>./components/pages/agencias/detalhe/agencia-detalhe.component</code><br><code>./components/pages/agencias/menu/agencias-menu.component</code><br><code>./components/pages/agencias/cadastro/nova-agencia.component</code><br><code>./guards/auth.guard</code><br><code>./guards/gestor.guard</code><br><code>./components/pages/menu/menu.component</code><br><code>./components/pages/error/error.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/dashboard/dashboard.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/dashboard/dashboard.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/error/error.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/error/error.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/menu/menu.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/menu/menu.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/alert/alert.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/alert/alert.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/loading/loading.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/loading/loading.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/page-header/page-header.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/page-header/page-header.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/pagination/pagination.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/pagination/pagination.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/toast/toast.component.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/toast/toast.component.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/directives/currency-input.directive.ts componente typescript class currencyinputdirective implementa a responsabilidade indicada por currency-input.directive no frontend. setdisabledstate format">
+    <summary><span><span class="file-path">frontend-numerario/src/app/directives/currency-input.directive.ts</span><small>class CurrencyInputDirective</small></span><span class="tag">Componente TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Implementa a responsabilidade indicada por currency-input.directive no frontend.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (2)</h4>
+      <div class="method-list">
+        <article class="method">
+          <div class="method-head"><strong>setDisabledState</strong><span>Linha 24</span></div>
+          <code class="signature">setDisabledState(disabled:boolean){this.element.nativeElement.disabled=disabled;} @HostListener(&#39;input&#39;,[&#39;$event.target.value&#39;]) onInput(raw:string)</code>
+          <p>Executa “setDisabledState” como parte de CurrencyInputDirective; recebe os parâmetros da assinatura, utiliza as dependências da classe e devolve ou aplica o resultado declarado.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>format</strong><span>Linha 34</span></div>
+          <code class="signature">private format(value:number){return value.toLocaleString(&#39;pt-BR&#39;,{style:&#39;currency&#39;,currency:&#39;BRL&#39;});} private decimalFromDigits(digits:string)</code>
+          <p>Normaliza ou valida os dados utilizados por CurrencyInputDirective; rejeita ou ajusta valores antes da etapa seguinte do fluxo.</p>
+        </article></div>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/main.ts componente typescript módulo typescript implementa a responsabilidade indicada por main no frontend. ./app/app.config ./app/app.component">
+    <summary><span><span class="file-path">frontend-numerario/src/main.ts</span><small>módulo TypeScript</small></span><span class="tag">Componente TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Implementa a responsabilidade indicada por main no frontend.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p><code>./app/app.config</code><br><code>./app/app.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/styles.css estilo visual arquivo declarativo define apresentação, responsividade e estados visuais do componente ou da aplicação.">
+    <summary><span><span class="file-path">frontend-numerario/src/styles.css</span><small>arquivo declarativo</small></span><span class="tag">Estilo visual</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define apresentação, responsividade e estados visuais do componente ou da aplicação.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/tsconfig.app.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/tsconfig.app.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/tsconfig.json configuração ou apoio arquivo declarativo configura ou documenta uma parte necessária para construir e executar frontend angular.">
+    <summary><span><span class="file-path">frontend-numerario/tsconfig.json</span><small>arquivo declarativo</small></span><span class="tag">Configuração ou apoio</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Configura ou documenta uma parte necessária para construir e executar Frontend Angular.</p></div>
+        <div><b>Papel no fluxo</b><p>Prepara build, runtime, aparência ou documentação necessária para o fluxo funcionar.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details></div><div class="catalog-group"><h3>Entrada e apresentação <span class="tag">47 arquivos</span></h3><details class="file" data-search="frontend-numerario/src/app/app.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/app.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/app.component.ts componente angular class appcomponent controla estado, eventos e dados da tela app. ./components/shared/loading/loading.component ./components/shared/toast/toast.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/app.component.ts</span><small>class AppComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela app.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>./components/shared/loading/loading.component</code><br><code>./components/shared/toast/toast.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/layout/layout.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/layout/layout.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/layout/layout.component.ts componente angular class layoutcomponent controla estado, eventos e dados da tela layout. ../../services/auth.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/layout/layout.component.ts</span><small>class LayoutComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela layout.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../services/auth.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/cadastro/nova-agencia.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/cadastro/nova-agencia.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/cadastro/nova-agencia.component.ts componente angular class novaagenciacomponent controla estado, eventos e dados da tela nova-agencia. ../../../shared/alert/alert.component ../../../shared/page-header/page-header.component ../../../shared/confirmation-dialog/confirmation-dialog.component ../../../../directives/currency-input.directive ../../../../services/agencias.service voltar">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/cadastro/nova-agencia.component.ts</span><small>class NovaAgenciaComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela nova-agencia.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../shared/alert/alert.component</code><br><code>../../../shared/page-header/page-header.component</code><br><code>../../../shared/confirmation-dialog/confirmation-dialog.component</code><br><code>../../../../directives/currency-input.directive</code><br><code>../../../../services/agencias.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (1)</h4>
+      <div class="method-list">
+        <article class="method">
+          <div class="method-head"><strong>voltar</strong><span>Linha 63</span></div>
+          <code class="signature">voltar(){this.router.navigate([&#39;/agencias&#39;]);} } function excedeLimiteMonetario(valor:number|string):boolean</code>
+          <p>Executa a ação de tela “voltar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article></div>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/consulta/agencias.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/consulta/agencias.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/consulta/agencias.component.ts componente angular interface novaagencia controla estado, eventos e dados da tela agencias. ../../../../models/api.models ../../../../services/auth.service ../../../shared/alert/alert.component ../../../shared/confirmation-dialog/confirmation-dialog.component ../../../shared/page-header/page-header.component ../../../shared/pagination/pagination.component ../../../../services/agencias.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/consulta/agencias.component.ts</span><small>interface NovaAgencia</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela agencias.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../../models/api.models</code><br><code>../../../../services/auth.service</code><br><code>../../../shared/alert/alert.component</code><br><code>../../../shared/confirmation-dialog/confirmation-dialog.component</code><br><code>../../../shared/page-header/page-header.component</code><br><code>../../../shared/pagination/pagination.component</code><br><code>../../../../services/agencias.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/detalhe/agencia-detalhe.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/detalhe/agencia-detalhe.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/detalhe/agencia-detalhe.component.ts componente angular interface edicaoagencia controla estado, eventos e dados da tela agencia-detalhe. ../../../../models/api.models ../../../shared/alert/alert.component ../../../shared/page-header/page-header.component ../../../shared/confirmation-dialog/confirmation-dialog.component ../../../../directives/currency-input.directive ../../../../services/agencias.service confirmardesativacao confirmardesativacao">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/detalhe/agencia-detalhe.component.ts</span><small>interface EdicaoAgencia</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela agencia-detalhe.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../../models/api.models</code><br><code>../../../shared/alert/alert.component</code><br><code>../../../shared/page-header/page-header.component</code><br><code>../../../shared/confirmation-dialog/confirmation-dialog.component</code><br><code>../../../../directives/currency-input.directive</code><br><code>../../../../services/agencias.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (2)</h4>
+      <div class="method-list">
+        <article class="method">
+          <div class="method-head"><strong>confirmarDesativacao</strong><span>Linha 96</span></div>
+          <code class="signature">confirmarDesativacao() { this.confirmacaoDesativacao.open(); } desativar()</code>
+          <p>Executa a ação de tela “confirmarDesativacao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>confirmarDesativacao</strong><span>Linha 97</span></div>
+          <code class="signature">confirmarDesativacao() { this.confirmacaoDesativacao.open(); } desativar()</code>
+          <p>Executa a ação de tela “confirmarDesativacao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article></div>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/menu/agencias-menu.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/menu/agencias-menu.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/agencias/menu/agencias-menu.component.ts componente angular class agenciasmenucomponent controla estado, eventos e dados da tela agencias-menu. ../../../shared/page-back/page-back.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/agencias/menu/agencias-menu.component.ts</span><small>class AgenciasMenuComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela agencias-menu.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../shared/page-back/page-back.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/dashboard/dashboard.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/dashboard/dashboard.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/dashboard/dashboard.component.ts componente angular class dashboardcomponent controla estado, eventos e dados da tela dashboard. ../../../models/api.models ../../../services/auth.service ../../shared/alert/alert.component ../../shared/page-header/page-header.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/dashboard/dashboard.component.ts</span><small>class DashboardComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela dashboard.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../models/api.models</code><br><code>../../../services/auth.service</code><br><code>../../shared/alert/alert.component</code><br><code>../../shared/page-header/page-header.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/error/error.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/error/error.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/error/error.component.ts componente angular type errortype controla estado, eventos e dados da tela error. ../../../services/auth.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/error/error.component.ts</span><small>type ErrorType</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela error.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../services/auth.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.ts componente angular class livrocaixacomponent controla estado, eventos e dados da tela livro-caixa. ../../../interceptors/http-feedback.interceptor ../../../models/api.models ../../../services/loading.service ../../../services/notification.service ../../shared/alert/alert.component ../../shared/page-header/page-header.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/livro-caixa/livro-caixa.component.ts</span><small>class LivroCaixaComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela livro-caixa.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../interceptors/http-feedback.interceptor</code><br><code>../../../models/api.models</code><br><code>../../../services/loading.service</code><br><code>../../../services/notification.service</code><br><code>../../shared/alert/alert.component</code><br><code>../../shared/page-header/page-header.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/login/login.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/login/login.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/login/login.component.ts componente angular class logincomponent controla estado, eventos e dados da tela login. ../../../services/auth.service ../../shared/alert/alert.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/login/login.component.ts</span><small>class LoginComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela login.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../services/auth.service</code><br><code>../../shared/alert/alert.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/menu/menu.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/menu/menu.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/menu/menu.component.ts componente angular class menucomponent controla estado, eventos e dados da tela menu.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/menu/menu.component.ts</span><small>class MenuComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela menu.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/cadastro/nova-solicitacao.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/cadastro/nova-solicitacao.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/cadastro/nova-solicitacao.component.ts componente angular class novasolicitacaocomponent controla estado, eventos e dados da tela nova-solicitacao. ../../../../models/api.models ../../../../services/agencias.service ../../../shared/alert/alert.component ../../../shared/page-header/page-header.component ../../../shared/confirmation-dialog/confirmation-dialog.component ../../../../directives/currency-input.directive voltar">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/cadastro/nova-solicitacao.component.ts</span><small>class NovaSolicitacaoComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela nova-solicitacao.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../../models/api.models</code><br><code>../../../../services/agencias.service</code><br><code>../../../shared/alert/alert.component</code><br><code>../../../shared/page-header/page-header.component</code><br><code>../../../shared/confirmation-dialog/confirmation-dialog.component</code><br><code>../../../../directives/currency-input.directive</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (1)</h4>
+      <div class="method-list">
+        <article class="method">
+          <div class="method-head"><strong>voltar</strong><span>Linha 66</span></div>
+          <code class="signature">voltar(){this.router.navigate([&#39;/solicitacoes&#39;]);} } function dataLocalIso(data:Date):string</code>
+          <p>Executa a ação de tela “voltar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article></div>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.ts componente angular type acao controla estado, eventos e dados da tela solicitacoes. ../../../../models/api.models ../../../../services/agencias.service ../../../../directives/currency-input.directive ../../../shared/alert/alert.component ../../../shared/confirmation-dialog/confirmation-dialog.component ../../../shared/page-header/page-header.component ../../../shared/pagination/pagination.component ngoninit carregaragencias listar limpar carregarunidades criar detalhar fechardetalhe abriracao executarsimples confirmaracao irparapagina alterartamanho versaounidade unidadesdarota nomeunidade codigounidade rotulostatus rotulooperacao rotuloevento tituloacao mensagemconfirmacao acaoperigosa falha">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/consulta/solicitacoes.component.ts</span><small>type Acao</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela solicitacoes.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../../models/api.models</code><br><code>../../../../services/agencias.service</code><br><code>../../../../directives/currency-input.directive</code><br><code>../../../shared/alert/alert.component</code><br><code>../../../shared/confirmation-dialog/confirmation-dialog.component</code><br><code>../../../shared/page-header/page-header.component</code><br><code>../../../shared/pagination/pagination.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (24)</h4>
+      <div class="method-list">
+        <article class="method">
+          <div class="method-head"><strong>ngOnInit</strong><span>Linha 41</span></div>
+          <code class="signature">ngOnInit(){this.status=this.route.snapshot.queryParamMap.get(&#39;status&#39;)||&#39;&#39;;</code>
+          <p>Executa a ação de tela “ngOnInit”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>carregarAgencias</strong><span>Linha 53</span></div>
+          <code class="signature">carregarAgencias(){this.agenciasService.listar(&#39;&#39;,&#39;&#39;,&#39;CODIGO&#39;,&#39;ASC&#39;,0,100).subscribe(</code>
+          <p>Executa a ação de tela “carregarAgencias”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>listar</strong><span>Linha 57</span></div>
+          <code class="signature">listar(reset=true){if(reset)this.pagina=0;this.carregando=true;let p=new HttpParams().set(&#39;pagina&#39;,this.pagina).set(&#39;tamanho&#39;,this.tamanho);</code>
+          <p>Executa a ação de tela “listar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>limpar</strong><span>Linha 60</span></div>
+          <code class="signature">limpar(){this.agenciaId=this.tipo=this.status=this.dataInicio=this.dataFim=&#39;&#39;;this.listar();} carregarUnidades(){this.http.get&lt;UnidadeOperacional[]&gt;(&#39;/api/v1/unidades-operacionais&#39;).subscribe({next:r=&gt;this.unidades=r,error:e=&gt;this.falha(e,&#39;Não foi possível carregar as unidades.&#39;)});} criar(){const n=this.nova;if(!n.agenciaId||!n.valor||!n.motivo||!n.dataDesejada){this.erro=&#39;Preencha todos os campos da solicitação.&#39;;return;} this.enviar(&#39;post&#39;,&#39;/api/v1/solicitacoes-numerario&#39;,{...n,agenciaId:Number(n.agenciaId),valor:Number(n.valor)},false,&#39;Solicitação criada com sucesso.&#39;,()=&gt;{this.nova={tipoOperacao:&#39;SUPRIMENTO&#39;,agenciaId:&#39;&#39;,valor:&#39;&#39;,motivo:&#39;&#39;,dataDesejada:&#39;&#39;};this.listar();});} detalhar(id:number){this.http.get&lt;DetalheSolicitacaoNumerario&gt;(`/api/v1/solicitacoes-numerario/${id}`).subscribe({next:r=&gt;{this.detalhe=r;this.acao=&#39;&#39;;queueMicrotask(()=&gt;{if(!this.detalheDialog.nativeElement.open)this.detalheDialog.nativeElement.showModal();});},error:e=&gt;this.falha(e,&#39;Não foi possível carregar o detalhe.&#39;)});} fecharDetalhe(){if(this.detalheDialog?.nativeElement.open)this.detalheDialog.nativeElement.close();this.detalhe=undefined;this.acao=&#39;&#39;;this.erroAcao=&#39;&#39;;} abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “limpar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>carregarUnidades</strong><span>Linha 61</span></div>
+          <code class="signature">carregarUnidades(){this.http.get&lt;UnidadeOperacional[]&gt;(&#39;/api/v1/unidades-operacionais&#39;).subscribe({next:r=&gt;this.unidades=r,error:e=&gt;this.falha(e,&#39;Não foi possível carregar as unidades.&#39;)});} criar(){const n=this.nova;if(!n.agenciaId||!n.valor||!n.motivo||!n.dataDesejada){this.erro=&#39;Preencha todos os campos da solicitação.&#39;;return;} this.enviar(&#39;post&#39;,&#39;/api/v1/solicitacoes-numerario&#39;,{...n,agenciaId:Number(n.agenciaId),valor:Number(n.valor)},false,&#39;Solicitação criada com sucesso.&#39;,()=&gt;{this.nova={tipoOperacao:&#39;SUPRIMENTO&#39;,agenciaId:&#39;&#39;,valor:&#39;&#39;,motivo:&#39;&#39;,dataDesejada:&#39;&#39;};this.listar();});} detalhar(id:number){this.http.get&lt;DetalheSolicitacaoNumerario&gt;(`/api/v1/solicitacoes-numerario/${id}`).subscribe({next:r=&gt;{this.detalhe=r;this.acao=&#39;&#39;;queueMicrotask(()=&gt;{if(!this.detalheDialog.nativeElement.open)this.detalheDialog.nativeElement.showModal();});},error:e=&gt;this.falha(e,&#39;Não foi possível carregar o detalhe.&#39;)});} fecharDetalhe(){if(this.detalheDialog?.nativeElement.open)this.detalheDialog.nativeElement.close();this.detalhe=undefined;this.acao=&#39;&#39;;this.erroAcao=&#39;&#39;;} abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “carregarUnidades”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>criar</strong><span>Linha 62</span></div>
+          <code class="signature">criar(){const n=this.nova;if(!n.agenciaId||!n.valor||!n.motivo||!n.dataDesejada){this.erro=&#39;Preencha todos os campos da solicitação.&#39;;return;} this.enviar(&#39;post&#39;,&#39;/api/v1/solicitacoes-numerario&#39;,{...n,agenciaId:Number(n.agenciaId),valor:Number(n.valor)},false,&#39;Solicitação criada com sucesso.&#39;,()=&gt;{this.nova={tipoOperacao:&#39;SUPRIMENTO&#39;,agenciaId:&#39;&#39;,valor:&#39;&#39;,motivo:&#39;&#39;,dataDesejada:&#39;&#39;};this.listar();});} detalhar(id:number){this.http.get&lt;DetalheSolicitacaoNumerario&gt;(`/api/v1/solicitacoes-numerario/${id}`).subscribe({next:r=&gt;{this.detalhe=r;this.acao=&#39;&#39;;queueMicrotask(()=&gt;{if(!this.detalheDialog.nativeElement.open)this.detalheDialog.nativeElement.showModal();});},error:e=&gt;this.falha(e,&#39;Não foi possível carregar o detalhe.&#39;)});} fecharDetalhe(){if(this.detalheDialog?.nativeElement.open)this.detalheDialog.nativeElement.close();this.detalhe=undefined;this.acao=&#39;&#39;;this.erroAcao=&#39;&#39;;} abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “criar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>detalhar</strong><span>Linha 64</span></div>
+          <code class="signature">detalhar(id:number){this.http.get&lt;DetalheSolicitacaoNumerario&gt;(`/api/v1/solicitacoes-numerario/${id}`).subscribe({next:r=&gt;{this.detalhe=r;this.acao=&#39;&#39;;queueMicrotask(()=&gt;{if(!this.detalheDialog.nativeElement.open)this.detalheDialog.nativeElement.showModal();});},error:e=&gt;this.falha(e,&#39;Não foi possível carregar o detalhe.&#39;)});} fecharDetalhe(){if(this.detalheDialog?.nativeElement.open)this.detalheDialog.nativeElement.close();this.detalhe=undefined;this.acao=&#39;&#39;;this.erroAcao=&#39;&#39;;} abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “detalhar”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>fecharDetalhe</strong><span>Linha 65</span></div>
+          <code class="signature">fecharDetalhe(){if(this.detalheDialog?.nativeElement.open)this.detalheDialog.nativeElement.close();this.detalhe=undefined;this.acao=&#39;&#39;;this.erroAcao=&#39;&#39;;} abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “fecharDetalhe”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>abrirAcao</strong><span>Linha 66</span></div>
+          <code class="signature">abrirAcao(a:Acao){this.acao=a;this.erroAcao=&#39;&#39;;this.form={texto:&#39;&#39;,unidadeId:&#39;&#39;,valor:&#39;&#39;,entrada:true,idempotencyKey:crypto.randomUUID()};if(a===&#39;receber&#39;&amp;&amp;this.detalhe?.operacao)this.form.valor=this.detalhe.operacao.valorExpedido??&#39;&#39;;if(a===&#39;ajustar&#39;&amp;&amp;this.detalhe?.operacao){this.form.valor=Math.abs(this.detalhe.operacao.valorDivergencia??0)||&#39;&#39;;this.form.unidadeId=this.detalhe.operacao.destinoId;}} executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “abrirAcao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>executarSimples</strong><span>Linha 67</span></div>
+          <code class="signature">executarSimples(a:&#39;separar&#39;|&#39;expedir&#39;){this.abrirAcao(a);this.solicitarConfirmacao();} solicitarConfirmacao()</code>
+          <p>Executa a ação de tela “executarSimples”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>confirmarAcao</strong><span>Linha 89</span></div>
+          <code class="signature">confirmarAcao(){if(!this.detalhe||!this.acao)return;const id=this.detalhe.solicitacao.id,o=this.detalhe.operacao,a=this.acao;let body:CorpoComando={},key=false;</code>
+          <p>Executa a ação de tela “confirmarAcao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>irParaPagina</strong><span>Linha 107</span></div>
+          <code class="signature">irParaPagina(p:number){this.pagina=p;this.listar(false);} alterarTamanho(tamanho:number){this.tamanho=tamanho;this.pagina=0;this.listar(false);} divergenciaPrevista()</code>
+          <p>Executa a ação de tela “irParaPagina”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>alterarTamanho</strong><span>Linha 108</span></div>
+          <code class="signature">alterarTamanho(tamanho:number){this.tamanho=tamanho;this.pagina=0;this.listar(false);} divergenciaPrevista()</code>
+          <p>Executa a ação de tela “alterarTamanho”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>versaoUnidade</strong><span>Linha 113</span></div>
+          <code class="signature">versaoUnidade(id?:number){return this.unidades.find(u=&gt;u.id===id)?.versao??0;} unidadesDaRota(){const o=this.detalhe?.operacao;return this.unidades.filter(u=&gt;u.id===o?.origemId||u.id===o?.destinoId);} agenciasParaProgramacao()</code>
+          <p>Executa a ação de tela “versaoUnidade”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>unidadesDaRota</strong><span>Linha 114</span></div>
+          <code class="signature">unidadesDaRota(){const o=this.detalhe?.operacao;return this.unidades.filter(u=&gt;u.id===o?.origemId||u.id===o?.destinoId);} agenciasParaProgramacao()</code>
+          <p>Executa a ação de tela “unidadesDaRota”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>nomeUnidade</strong><span>Linha 120</span></div>
+          <code class="signature">nomeUnidade(id?:number){if(!id)return &#39;-&#39;;const u=this.unidades.find(x=&gt;x.id===id);return u?`${u.codigo} — ${u.nome}`:`Unidade ${id}`;} codigoUnidade(id?:number){if(!id)return &#39;-&#39;;return this.unidades.find(x=&gt;x.id===id)?.codigo??String(id);} rotuloStatus(s:string){return ({PENDENTE:&#39;Pendente&#39;,APROVADA:&#39;Aprovada&#39;,REJEITADA:&#39;Rejeitada&#39;,CANCELADA:&#39;Cancelada&#39;,EM_EXECUCAO:&#39;Em execução&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCLUIDA:&#39;Concluída&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloOperacao(s:string){return ({PROGRAMADA:&#39;Programada&#39;,EM_SEPARACAO:&#39;Em separação&#39;,EM_TRANSITO:&#39;Em trânsito&#39;,RECEBIDA:&#39;Recebida&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCILIADA:&#39;Conciliada&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloEvento(e:string){return e.toLowerCase().replaceAll(&#39;_&#39;,&#39; &#39;).replace(/^./,c=&gt;c.toUpperCase());} tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “nomeUnidade”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>codigoUnidade</strong><span>Linha 121</span></div>
+          <code class="signature">codigoUnidade(id?:number){if(!id)return &#39;-&#39;;return this.unidades.find(x=&gt;x.id===id)?.codigo??String(id);} rotuloStatus(s:string){return ({PENDENTE:&#39;Pendente&#39;,APROVADA:&#39;Aprovada&#39;,REJEITADA:&#39;Rejeitada&#39;,CANCELADA:&#39;Cancelada&#39;,EM_EXECUCAO:&#39;Em execução&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCLUIDA:&#39;Concluída&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloOperacao(s:string){return ({PROGRAMADA:&#39;Programada&#39;,EM_SEPARACAO:&#39;Em separação&#39;,EM_TRANSITO:&#39;Em trânsito&#39;,RECEBIDA:&#39;Recebida&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCILIADA:&#39;Conciliada&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloEvento(e:string){return e.toLowerCase().replaceAll(&#39;_&#39;,&#39; &#39;).replace(/^./,c=&gt;c.toUpperCase());} tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “codigoUnidade”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>rotuloStatus</strong><span>Linha 122</span></div>
+          <code class="signature">rotuloStatus(s:string){return ({PENDENTE:&#39;Pendente&#39;,APROVADA:&#39;Aprovada&#39;,REJEITADA:&#39;Rejeitada&#39;,CANCELADA:&#39;Cancelada&#39;,EM_EXECUCAO:&#39;Em execução&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCLUIDA:&#39;Concluída&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloOperacao(s:string){return ({PROGRAMADA:&#39;Programada&#39;,EM_SEPARACAO:&#39;Em separação&#39;,EM_TRANSITO:&#39;Em trânsito&#39;,RECEBIDA:&#39;Recebida&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCILIADA:&#39;Conciliada&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloEvento(e:string){return e.toLowerCase().replaceAll(&#39;_&#39;,&#39; &#39;).replace(/^./,c=&gt;c.toUpperCase());} tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “rotuloStatus”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>rotuloOperacao</strong><span>Linha 123</span></div>
+          <code class="signature">rotuloOperacao(s:string){return ({PROGRAMADA:&#39;Programada&#39;,EM_SEPARACAO:&#39;Em separação&#39;,EM_TRANSITO:&#39;Em trânsito&#39;,RECEBIDA:&#39;Recebida&#39;,COM_DIVERGENCIA:&#39;Com divergência&#39;,CONCILIADA:&#39;Conciliada&#39;} as Record&lt;string,string&gt;)[s]??s;} rotuloEvento(e:string){return e.toLowerCase().replaceAll(&#39;_&#39;,&#39; &#39;).replace(/^./,c=&gt;c.toUpperCase());} tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “rotuloOperacao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>rotuloEvento</strong><span>Linha 124</span></div>
+          <code class="signature">rotuloEvento(e:string){return e.toLowerCase().replaceAll(&#39;_&#39;,&#39; &#39;).replace(/^./,c=&gt;c.toUpperCase());} tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “rotuloEvento”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>tituloAcao</strong><span>Linha 125</span></div>
+          <code class="signature">tituloAcao(){return ({aprovar:&#39;Aprovar solicitação&#39;,rejeitar:&#39;Rejeitar solicitação&#39;,cancelar:&#39;Cancelar solicitação&#39;,programar:&#39;Programar operação&#39;,separar:&#39;Iniciar separação&#39;,expedir:&#39;Expedir numerário&#39;,ocorrencia:&#39;Registrar ocorrência&#39;,receber:&#39;Confirmar recebimento&#39;,conciliar:&#39;Conciliar divergência&#39;,ajustar:&#39;Registrar ajuste financeiro&#39;} as Partial&lt;Record&lt;Acao,string&gt;&gt;)[this.acao]??this.acao;} mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “tituloAcao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>mensagemConfirmacao</strong><span>Linha 126</span></div>
+          <code class="signature">mensagemConfirmacao(){return `Confirma a ação “${this.tituloAcao()}” na solicitação #${this.detalhe?.solicitacao.id}?`;} acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “mensagemConfirmacao”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>acaoPerigosa</strong><span>Linha 127</span></div>
+          <code class="signature">acaoPerigosa(){return this.acao===&#39;rejeitar&#39;||this.acao===&#39;cancelar&#39;||this.acao===&#39;ajustar&#39;;} private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “acaoPerigosa”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article>
+        <article class="method">
+          <div class="method-head"><strong>falha</strong><span>Linha 128</span></div>
+          <code class="signature">private falha(e:HttpErrorResponse,f:string){this.erro=e.error?.msgError||e.error?.message||f;this.carregando=false;} }</code>
+          <p>Executa a ação de tela “falha”, coordena estado de carregamento, dados visíveis e feedback ao usuário e chama o serviço Angular quando a ação exige integração.</p>
+        </article></div>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/menu/solicitacoes-menu.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/menu/solicitacoes-menu.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/solicitacoes/menu/solicitacoes-menu.component.ts componente angular class solicitacoesmenucomponent controla estado, eventos e dados da tela solicitacoes-menu. ../../../shared/page-back/page-back.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/solicitacoes/menu/solicitacoes-menu.component.ts</span><small>class SolicitacoesMenuComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela solicitacoes-menu.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../shared/page-back/page-back.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/tesouraria/tesouraria-menu.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/tesouraria/tesouraria-menu.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/pages/tesouraria/tesouraria-menu.component.ts componente angular class tesourariamenucomponent controla estado, eventos e dados da tela tesouraria-menu. ../../shared/page-back/page-back.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/pages/tesouraria/tesouraria-menu.component.ts</span><small>class TesourariaMenuComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela tesouraria-menu.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../shared/page-back/page-back.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/alert/alert.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/alert/alert.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/alert/alert.component.ts componente angular type alerttype controla estado, eventos e dados da tela alert.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/alert/alert.component.ts</span><small>type AlertType</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela alert.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.ts componente angular class confirmationdialogcomponent controla estado, eventos e dados da tela confirmation-dialog.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/confirmation-dialog/confirmation-dialog.component.ts</span><small>class ConfirmationDialogComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela confirmation-dialog.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/loading/loading.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/loading/loading.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/loading/loading.component.ts componente angular class loadingcomponent controla estado, eventos e dados da tela loading. ../../../services/loading.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/loading/loading.component.ts</span><small>class LoadingComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela loading.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../services/loading.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/page-back/page-back.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/page-back/page-back.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/page-back/page-back.component.ts componente angular class pagebackcomponent controla estado, eventos e dados da tela page-back.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/page-back/page-back.component.ts</span><small>class PageBackComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela page-back.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/page-header/page-header.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/page-header/page-header.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/page-header/page-header.component.ts componente angular interface breadcrumbitem controla estado, eventos e dados da tela page-header. ../page-back/page-back.component">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/page-header/page-header.component.ts</span><small>interface BreadcrumbItem</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela page-header.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../page-back/page-back.component</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/pagination/pagination.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/pagination/pagination.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/pagination/pagination.component.ts componente angular class paginationcomponent controla estado, eventos e dados da tela pagination.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/pagination/pagination.component.ts</span><small>class PaginationComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela pagination.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/toast/toast.component.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/toast/toast.component.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/components/shared/toast/toast.component.ts componente angular class toastcomponent controla estado, eventos e dados da tela toast. ../../../services/notification.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/components/shared/toast/toast.component.ts</span><small>class ToastComponent</small></span><span class="tag">Componente Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Controla estado, eventos e dados da tela toast.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../../../services/notification.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/guards/auth.guard.ts guard de rota módulo typescript decide se uma rota pode ser ativada a partir da sessão e do perfil atual. ../services/auth.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/guards/auth.guard.ts</span><small>módulo TypeScript</small></span><span class="tag">Guard de rota</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Decide se uma rota pode ser ativada a partir da sessão e do perfil atual.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../services/auth.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/guards/gestor.guard.ts guard de rota módulo typescript decide se uma rota pode ser ativada a partir da sessão e do perfil atual. ../services/auth.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/guards/gestor.guard.ts</span><small>módulo TypeScript</small></span><span class="tag">Guard de rota</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Decide se uma rota pode ser ativada a partir da sessão e do perfil atual.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p><code>../services/auth.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/index.html template angular arquivo declarativo declara a estrutura visual e os bindings da tela associada.">
+    <summary><span><span class="file-path">frontend-numerario/src/index.html</span><small>arquivo declarativo</small></span><span class="tag">Template Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Declara a estrutura visual e os bindings da tela associada.</p></div>
+        <div><b>Papel no fluxo</b><p>É acionado no início da interação desta porta ou define como a entrada é apresentada e aceita.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details></div><div class="catalog-group"><h3>Infraestrutura e integração <span class="tag">2 arquivos</span></h3><details class="file" data-search="frontend-numerario/src/app/interceptors/auth.interceptor.ts interceptor http módulo typescript aplica comportamento transversal às chamadas, como bearer, loading e tratamento de falhas. ../services/auth.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/interceptors/auth.interceptor.ts</span><small>módulo TypeScript</small></span><span class="tag">Interceptor HTTP</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Aplica comportamento transversal às chamadas, como Bearer, loading e tratamento de falhas.</p></div>
+        <div><b>Papel no fluxo</b><p>Conecta a aplicação a HTTP, persistência ou outra tecnologia externa.</p></div>
+        <div><b>Dependências internas</b><p><code>../services/auth.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/interceptors/http-feedback.interceptor.ts interceptor http módulo typescript aplica comportamento transversal às chamadas, como bearer, loading e tratamento de falhas. ../services/loading.service ../services/notification.service">
+    <summary><span><span class="file-path">frontend-numerario/src/app/interceptors/http-feedback.interceptor.ts</span><small>módulo TypeScript</small></span><span class="tag">Interceptor HTTP</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Aplica comportamento transversal às chamadas, como Bearer, loading e tratamento de falhas.</p></div>
+        <div><b>Papel no fluxo</b><p>Conecta a aplicação a HTTP, persistência ou outra tecnologia externa.</p></div>
+        <div><b>Dependências internas</b><p><code>../services/loading.service</code><br><code>../services/notification.service</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details></div><div class="catalog-group"><h3>Modelo e contratos <span class="tag">2 arquivos</span></h3><details class="file" data-search="frontend-numerario/src/app/models/api.models.ts modelo typescript interface paginaresponse define tipos usados pelo frontend para manter compatibilidade com o bff em compilação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/models/api.models.ts</span><small>interface PaginaResponse</small></span><span class="tag">Modelo TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define tipos usados pelo frontend para manter compatibilidade com o BFF em compilação.</p></div>
+        <div><b>Papel no fluxo</b><p>Define os dados e valores compartilhados entre etapas, tornando o fluxo explícito e tipado.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/models/perfil-coin.ts modelo typescript type perfilcoincodigo define tipos usados pelo frontend para manter compatibilidade com o bff em compilação.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/models/perfil-coin.ts</span><small>type PerfilCoinCodigo</small></span><span class="tag">Modelo TypeScript</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Define tipos usados pelo frontend para manter compatibilidade com o BFF em compilação.</p></div>
+        <div><b>Papel no fluxo</b><p>Define os dados e valores compartilhados entre etapas, tornando o fluxo explícito e tipado.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details></div><div class="catalog-group"><h3>Aplicação <span class="tag">4 arquivos</span></h3><details class="file" data-search="frontend-numerario/src/app/services/agencias.service.ts serviço angular class agenciasservice centraliza integração http ou estado compartilhado para evitar lógica duplicada nas telas. ../models/api.models">
+    <summary><span><span class="file-path">frontend-numerario/src/app/services/agencias.service.ts</span><small>class AgenciasService</small></span><span class="tag">Serviço Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Centraliza integração HTTP ou estado compartilhado para evitar lógica duplicada nas telas.</p></div>
+        <div><b>Papel no fluxo</b><p>Coordena a sequência depois da entrada e antes dos detalhes de infraestrutura.</p></div>
+        <div><b>Dependências internas</b><p><code>../models/api.models</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/services/auth.service.ts serviço angular interface sessaousuario centraliza integração http ou estado compartilhado para evitar lógica duplicada nas telas. ../models/perfil-coin">
+    <summary><span><span class="file-path">frontend-numerario/src/app/services/auth.service.ts</span><small>interface SessaoUsuario</small></span><span class="tag">Serviço Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Centraliza integração HTTP ou estado compartilhado para evitar lógica duplicada nas telas.</p></div>
+        <div><b>Papel no fluxo</b><p>Coordena a sequência depois da entrada e antes dos detalhes de infraestrutura.</p></div>
+        <div><b>Dependências internas</b><p><code>../models/perfil-coin</code></p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/services/loading.service.ts serviço angular class loadingservice centraliza integração http ou estado compartilhado para evitar lógica duplicada nas telas.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/services/loading.service.ts</span><small>class LoadingService</small></span><span class="tag">Serviço Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Centraliza integração HTTP ou estado compartilhado para evitar lógica duplicada nas telas.</p></div>
+        <div><b>Papel no fluxo</b><p>Coordena a sequência depois da entrada e antes dos detalhes de infraestrutura.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details><details class="file" data-search="frontend-numerario/src/app/services/notification.service.ts serviço angular type notificationtype centraliza integração http ou estado compartilhado para evitar lógica duplicada nas telas.">
+    <summary><span><span class="file-path">frontend-numerario/src/app/services/notification.service.ts</span><small>type NotificationType</small></span><span class="tag">Serviço Angular</span></summary>
+    <div class="file-body">
+      <div class="facts">
+        <div><b>Responsabilidade</b><p>Centraliza integração HTTP ou estado compartilhado para evitar lógica duplicada nas telas.</p></div>
+        <div><b>Papel no fluxo</b><p>Coordena a sequência depois da entrada e antes dos detalhes de infraestrutura.</p></div>
+        <div><b>Dependências internas</b><p>Nenhuma importação interna explícita.</p></div>
+        <div><b>Entradas HTTP</b><p>Não expõe mapping HTTP diretamente.</p></div>
+      </div>
+      <h4>Métodos identificados (0)</h4>
+      <p class="empty">Este arquivo não declara método executável próprio; sua contribuição ocorre por configuração, marcação, tipos ou estrutura visual.</p>
+    </div>
+  </details></div></div>
+      </section>
+      <section id="execucao">
+        <div class="section-head"><div><div class="kicker" style="color:#c11435">06</div><h2>Execução local</h2></div><p>Identidade operacional preservada pelo script central.</p></div>
+        <div class="card"><h3>Frontend Angular</h3><p>Diretório: <code>frontend-numerario</code></p><p>Porta: <code>4200</code></p><p>Inicialização conjunta: <code>powershell -ExecutionPolicy Bypass -File .\scripts\iniciar-tudo.ps1</code></p></div>
+      </section>
+      <div class="footer">COIN · Frontend Angular · porta 4200 · gerado em 30 de julho de 2026 às 13:54</div>
+    </div>
+  </main>
+</div>
+<script>
+  const search=document.querySelector("#search");
+  const files=[...document.querySelectorAll("details.file")];
+  const groups=[...document.querySelectorAll(".catalog-group")];
+  function filter(){const value=search.value.trim().toLowerCase();files.forEach(file=>file.hidden=Boolean(value)&&!file.dataset.search.includes(value));groups.forEach(group=>group.hidden=![...group.querySelectorAll("details.file")].some(file=>!file.hidden));}
+  search.addEventListener("input",filter);
+  document.querySelector("#expand").addEventListener("click",()=>files.filter(file=>!file.hidden).forEach(file=>file.open=true));
+  document.querySelector("#collapse").addEventListener("click",()=>files.forEach(file=>file.open=false));
+  const links=[...document.querySelectorAll("nav a")];
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)links.forEach(link=>link.classList.toggle("active",link.hash==="#"+entry.target.id));}),{rootMargin:"-15% 0px -75% 0px"});
+  document.querySelectorAll("main section[id]").forEach(section=>observer.observe(section));
+</script>
+</body>
+</html>

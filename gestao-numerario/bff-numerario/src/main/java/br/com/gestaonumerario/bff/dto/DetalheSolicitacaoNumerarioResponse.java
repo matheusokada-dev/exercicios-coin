@@ -6,8 +6,18 @@ import java.util.List;
 public record DetalheSolicitacaoNumerarioResponse(
         SolicitacaoNumerarioResponse solicitacao,
         OperacaoResumo operacao,
-        List<HistoricoSolicitacaoResponse> historico) {
-    public record OperacaoResumo(Long id,String status,Long origemId,Long destinoId,
-            BigDecimal valorProgramado,BigDecimal valorExpedido,BigDecimal valorRecebido,
-            BigDecimal valorDivergencia,long versao) {}
+        List<HistoricoSolicitacaoResponse> historico
+) {
+    public record OperacaoResumo(
+            Long id,
+            String status,
+            Long origemId,
+            Long destinoId,
+            BigDecimal valorProgramado,
+            BigDecimal valorExpedido,
+            BigDecimal valorRecebido,
+            BigDecimal valorDivergencia,
+            long versao
+    ) {
+    }
 }

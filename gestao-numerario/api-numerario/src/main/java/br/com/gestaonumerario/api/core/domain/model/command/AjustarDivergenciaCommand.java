@@ -11,4 +11,5 @@ public record AjustarDivergenciaCommand(
         long versaoUnidade,
         Long usuarioId,
         String idempotencyKey
-) {}
+) {
+}

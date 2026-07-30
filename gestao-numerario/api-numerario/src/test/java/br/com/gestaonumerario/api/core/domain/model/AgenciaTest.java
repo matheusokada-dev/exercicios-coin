@@ -1,9 +1,8 @@
 package br.com.gestaonumerario.api.core.domain.model;
 
 import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,7 +28,11 @@ class AgenciaTest {
 
         assertThrows(
                 RegraOperacaoNumerarioException.class,
-                () -> agencia.atualizarDados("Novo nome", "São Paulo", new BigDecimal("20.00"))
+                () -> agencia.atualizarDados(
+                        "Novo nome",
+                        "São Paulo",
+                        new BigDecimal("20.00")
+                )
         );
     }
 

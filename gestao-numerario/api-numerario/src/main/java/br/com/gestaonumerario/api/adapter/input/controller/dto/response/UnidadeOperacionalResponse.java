@@ -12,4 +12,5 @@ public record UnidadeOperacionalResponse(
         BigDecimal saldoAtual,
         long versao,
         Instant atualizadoEm
-) {}
+) {
+}

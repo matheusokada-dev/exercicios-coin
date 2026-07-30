@@ -5,7 +5,14 @@ import br.com.gestaonumerario.api.core.domain.enums.TipoOperacaoNumerario;
 import java.time.LocalDate;
 
 public record FiltroSolicitacaoNumerario(
-        Long agenciaId, TipoOperacaoNumerario tipo, StatusSolicitacaoNumerario status,
-        Long origemId, Long destinoId, LocalDate dataInicio, LocalDate dataFim,
-        int pagina, int tamanho) {
+        Long agenciaId,
+        TipoOperacaoNumerario tipo,
+        StatusSolicitacaoNumerario status,
+        Long origemId,
+        Long destinoId,
+        LocalDate dataInicio,
+        LocalDate dataFim,
+        int pagina,
+        int tamanho
+) {
 }

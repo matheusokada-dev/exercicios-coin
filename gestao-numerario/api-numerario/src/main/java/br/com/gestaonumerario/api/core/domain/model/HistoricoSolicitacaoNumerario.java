@@ -3,9 +3,9 @@ package br.com.gestaonumerario.api.core.domain.model;
 import br.com.gestaonumerario.api.core.domain.enums.EventoHistoricoSolicitacao;
 import br.com.gestaonumerario.api.core.exception.CampoObrigatorioException;
 import java.time.Instant;
-import java.util.Map;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public record HistoricoSolicitacaoNumerario(
         Long id,
@@ -20,8 +20,7 @@ public record HistoricoSolicitacaoNumerario(
         Map<String, Object> dadosComplementares
 ) {
     public HistoricoSolicitacaoNumerario {
-        if (evento == null || statusNovo == null || statusNovo.isBlank()
-                || usuarioId == null || dataEvento == null) {
+        if (evento == null || statusNovo == null || statusNovo.isBlank() || usuarioId == null || dataEvento == null) {
             throw new CampoObrigatorioException();
         }
         statusAnterior = textoOpcional(statusAnterior);

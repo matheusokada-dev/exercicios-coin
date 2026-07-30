@@ -8,4 +8,5 @@ public record CargaInicialTesourariaCommand(
         long versaoUnidade,
         Long usuarioId,
         String idempotencyKey
-) {}
+) {
+}

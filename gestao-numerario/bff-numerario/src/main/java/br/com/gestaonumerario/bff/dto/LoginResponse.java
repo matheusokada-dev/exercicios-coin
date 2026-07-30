@@ -6,9 +6,8 @@ public record LoginResponse(
         String accessToken,
         String tokenType,
         Instant expiraEm,
-        String refreshToken,
-        Instant refreshExpiraEm,
         Long usuarioId,
         String nome,
-        String perfil) {
+        String perfil
+) {
 }

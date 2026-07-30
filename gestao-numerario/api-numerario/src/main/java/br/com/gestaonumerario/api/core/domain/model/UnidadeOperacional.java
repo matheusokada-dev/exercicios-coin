@@ -21,23 +21,47 @@ public class UnidadeOperacional {
     private long versao;
     private Instant atualizadoEm;
 
-    public UnidadeOperacional(Long id, TipoUnidadeOperacional tipo, String codigo,
-                             String nome, boolean controlaSaldo, BigDecimal saldoAtual,
-                             boolean ativo, long versao, Instant criadoEm, Instant atualizadoEm) {
+    public UnidadeOperacional(
+            Long id,
+            TipoUnidadeOperacional tipo,
+            String codigo,
+            String nome,
+            boolean controlaSaldo,
+            BigDecimal saldoAtual,
+            boolean ativo,
+            long versao,
+            Instant criadoEm,
+            Instant atualizadoEm) {
         this.id = id;
-        this.tipo = obrigatorio(tipo, "tipo");
-        this.codigo = textoObrigatorio(codigo, "codigo");
-        this.nome = textoObrigatorio(nome, "nome");
+        this.tipo = obrigatorio(
+                tipo,
+                "tipo"
+        );
+        this.codigo = textoObrigatorio(
+                codigo,
+                "codigo"
+        );
+        this.nome = textoObrigatorio(
+                nome,
+                "nome"
+        );
         this.controlaSaldo = controlaSaldo;
         this.saldoAtual = ValorMonetario.exigirNaoNegativo(saldoAtual);
         if (!controlaSaldo && this.saldoAtual.signum() != 0) {
             throw new RegraOperacaoNumerarioException(
-                    "Uma unidade que não controla saldo deve possuir saldo igual a zero.");
+                    "Uma unidade que não controla saldo deve possuir saldo igual a zero."
+            );
         }
         this.ativo = ativo;
         this.versao = versao;
-        this.criadoEm = obrigatorio(criadoEm, "criadoEm");
-        this.atualizadoEm = obrigatorio(atualizadoEm, "atualizadoEm");
+        this.criadoEm = obrigatorio(
+                criadoEm,
+                "criadoEm"
+        );
+        this.atualizadoEm = obrigatorio(
+                atualizadoEm,
+                "atualizadoEm"
+        );
     }
 
     public void debitar(BigDecimal valor, long versaoEsperada, Instant agora) {
@@ -58,9 +82,17 @@ public class UnidadeOperacional {
 
     public void ajustar(BigDecimal valor, boolean entrada, long versaoEsperada, Instant agora) {
         if (entrada) {
-            creditar(valor, versaoEsperada, agora);
+            creditar(
+                    valor,
+                    versaoEsperada,
+                    agora
+            );
         } else {
-            debitar(valor, versaoEsperada, agora);
+            debitar(
+                    valor,
+                    versaoEsperada,
+                    agora
+            );
         }
     }
 
@@ -69,7 +101,8 @@ public class UnidadeOperacional {
             throw new RegraOperacaoNumerarioException(
                     !ativo
                             ? "A unidade operacional está inativa."
-                            : "A unidade operacional não permite movimentação de saldo.");
+                            : "A unidade operacional não permite movimentação de saldo."
+            );
         }
         if (versao != versaoEsperada) {
             throw new ConflitoVersaoException();
@@ -77,7 +110,10 @@ public class UnidadeOperacional {
     }
 
     private void avancarVersao(Instant agora) {
-        atualizadoEm = obrigatorio(agora, "agora");
+        atualizadoEm = obrigatorio(
+                agora,
+                "agora"
+        );
     }
 
     private static String textoObrigatorio(String valor, String campo) {
@@ -94,14 +130,43 @@ public class UnidadeOperacional {
         return valor;
     }
 
-    public Long getId() { return id; }
-    public TipoUnidadeOperacional getTipo() { return tipo; }
-    public String getCodigo() { return codigo; }
-    public String getNome() { return nome; }
-    public boolean isControlaSaldo() { return controlaSaldo; }
-    public BigDecimal getSaldoAtual() { return saldoAtual; }
-    public boolean isAtivo() { return ativo; }
-    public long getVersao() { return versao; }
-    public Instant getCriadoEm() { return criadoEm; }
-    public Instant getAtualizadoEm() { return atualizadoEm; }
+    public Long getId() {
+        return id;
+    }
+
+    public TipoUnidadeOperacional getTipo() {
+        return tipo;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public boolean isControlaSaldo() {
+        return controlaSaldo;
+    }
+
+    public BigDecimal getSaldoAtual() {
+        return saldoAtual;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public long getVersao() {
+        return versao;
+    }
+
+    public Instant getCriadoEm() {
+        return criadoEm;
+    }
+
+    public Instant getAtualizadoEm() {
+        return atualizadoEm;
+    }
 }

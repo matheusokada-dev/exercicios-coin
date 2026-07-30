@@ -89,7 +89,13 @@
       </tbody>
     </table>
   </div>
-  <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
+  <app-pagination
+    [page]="pagina"
+    [pageSize]="tamanho"
+    [totalItems]="resultado!.totalItens"
+    [totalPages]="totalPaginas"
+    (pageChange)="irParaPagina($event)"
+    (pageSizeChange)="alterarTamanho($event)" />
 } @else if (resultado) {
   <p class="empty">Nenhuma agência encontrada para os filtros informados.</p>
 }

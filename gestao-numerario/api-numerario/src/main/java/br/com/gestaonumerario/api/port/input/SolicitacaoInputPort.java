@@ -10,9 +10,12 @@ import br.com.gestaonumerario.api.core.domain.model.command.SolicitarAbastecimen
 
 public interface SolicitacaoInputPort {
     SolicitacaoAbastecimento solicitar(SolicitarAbastecimentoCommand command);
+
     SolicitacaoAbastecimento aprovar(AprovarSolicitacaoCommand command);
+
     SolicitacaoAbastecimento rejeitar(RejeitarSolicitacaoCommand command);
+
     SolicitacaoAbastecimento atender(AtenderSolicitacaoCommand command);
+
     Pagina<SolicitacaoAbastecimento> consultar(FiltroSolicitacao filtro);
 }
-

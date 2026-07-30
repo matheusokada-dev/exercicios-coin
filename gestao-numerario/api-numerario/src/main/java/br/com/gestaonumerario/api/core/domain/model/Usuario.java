@@ -26,8 +26,7 @@ public class Usuario {
             boolean ativo,
             Instant criadoEm,
             int tentativasLoginFalhas,
-            Instant bloqueadoAte
-    ) {
+            Instant bloqueadoAte) {
         this.id = id;
         this.nome = textoObrigatorio(nome);
         this.login = textoObrigatorio(login);
@@ -35,7 +34,10 @@ public class Usuario {
         this.perfil = perfilObrigatorio(perfil);
         this.ativo = ativo;
         this.criadoEm = criadoEm == null ? Instant.now() : criadoEm;
-        this.tentativasLoginFalhas = Math.max(0, tentativasLoginFalhas);
+        this.tentativasLoginFalhas = Math.max(
+                0,
+                tentativasLoginFalhas
+        );
         this.bloqueadoAte = bloqueadoAte;
     }
 
@@ -84,18 +86,47 @@ public class Usuario {
     }
 
     public int tentativasLoginRestantes(int limiteTentativas) {
-        return Math.max(0, limiteTentativas - tentativasLoginFalhas);
+        return Math.max(
+                0,
+                limiteTentativas - tentativasLoginFalhas
+        );
     }
 
-    public Long getId() { return id; }
-    public String getNome() { return nome; }
-    public String getLogin() { return login; }
-    public String getSenhaHash() { return senhaHash; }
-    public PerfilUsuario getPerfil() { return perfil; }
-    public boolean isAtivo() { return ativo; }
-    public Instant getCriadoEm() { return criadoEm; }
-    public int getTentativasLoginFalhas() { return tentativasLoginFalhas; }
-    public Instant getBloqueadoAte() { return bloqueadoAte; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getSenhaHash() {
+        return senhaHash;
+    }
+
+    public PerfilUsuario getPerfil() {
+        return perfil;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public Instant getCriadoEm() {
+        return criadoEm;
+    }
+
+    public int getTentativasLoginFalhas() {
+        return tentativasLoginFalhas;
+    }
+
+    public Instant getBloqueadoAte() {
+        return bloqueadoAte;
+    }
 
     private static String textoObrigatorio(String valor) {
         if (valor == null || valor.isBlank()) {

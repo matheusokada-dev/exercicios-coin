@@ -5,7 +5,4 @@ import br.com.gestaonumerario.api.core.domain.model.command.AutenticarCommand;
 
 public interface AutenticarInputPort {
     SessaoAutenticacao autenticar(AutenticarCommand command);
-    SessaoAutenticacao renovar(String refreshToken);
-    void encerrar(String refreshToken);
 }
-

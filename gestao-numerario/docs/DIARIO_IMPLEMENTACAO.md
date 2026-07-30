@@ -1,5 +1,37 @@
 # Diário de implementação
 
+## 30/07/2026 - OpenAPI completo e inicialização validada
+
+- Centralizada a documentação funcional nas interfaces `*Api`; todos os
+  controllers da API e do BFF implementam seu respectivo contrato.
+- As 34 operações da API e as 32 operações do BFF passaram a possuir resumo,
+  descrição e `operationId` no JSON OpenAPI.
+- API e BFF publicam o esquema `bearerAuth`; o login foi explicitamente
+  documentado como público.
+- Respostas `400`, `401`, `403` e `500` foram padronizadas. O BFF também
+  documenta `503` e `504` para dependências indisponíveis ou com timeout.
+- Criado `scripts/validar-openapi.mjs`, que audita as 66 operações diretamente
+  nos endpoints `/v3/api-docs`.
+- `scripts/iniciar-tudo.ps1` passou a validar `.env`, Maven Wrapper, Angular
+  local e disponibilidade das quatro portas antes da inicialização.
+- O inicializador agora exibe os links do frontend, Swagger da API, Swagger do
+  BFF, serviço de relatórios e comando de validação.
+
+## 29/07/2026 - Geração centralizada do Livro Caixa
+
+- Removida a geração de Excel do navegador e mantido o frontend sem biblioteca
+  JavaScript de planilhas.
+- O BFF passou a montar colunas, linhas, totalizadores e metadados do Livro
+  Caixa e chamar `POST /v1/relatorios/gerar`.
+- Criado o microsserviço Java `relatorio-numerario`, na porta `8082`, compatível com
+  o contrato documentado e responsável por gerar `.xlsx` com Apache POI.
+- O script `scripts/iniciar-tudo.ps1` passou a iniciar API, serviço de
+  relatórios, BFF e frontend.
+- O download do Angular passou a manter a URL temporária ativa até o navegador
+  iniciar o recebimento do arquivo.
+- Validações concluídas: arquivo XLSX real com assinatura `PK`, testes do novo
+  serviço, 39 testes do BFF, TypeScript estrito e build de produção Angular.
+
 ## 24/07/2026 - Referência Bradesco/Liquid para o frontend
 
 - Analisado o material fornecido sobre Pagination, Chart Donut, Alert, Modal Dialog e Typography.

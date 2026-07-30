@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { finalize, Observable, of, shareReplay, tap, throwError } from 'rxjs';
+import { Observable, of, tap, throwError } from 'rxjs';
 import { normalizarPerfilCoin, PERFIS_COIN, PerfilCoin } from '../models/perfil-coin';
 
 export interface SessaoUsuario {
@@ -13,18 +13,14 @@ export interface SessaoUsuario {
 interface RespostaAutenticacao extends SessaoUsuario {
   accessToken: string;
   tokenType: string;
-  refreshToken: string;
-  refreshExpiraEm: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private static readonly ACCESS_TOKEN = 'coin.accessToken';
-  private static readonly REFRESH_TOKEN = 'coin.refreshToken';
   private static readonly SESSAO = 'coin.sessao';
 
   private readonly sessaoAtual = signal<SessaoUsuario | null>(this.lerSessao());
-  private renovacaoEmAndamento?: Observable<SessaoUsuario>;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -43,32 +39,8 @@ export class AuthService {
       .pipe(tap(resposta => this.persistirSessao(resposta)));
   }
 
-  renovar(): Observable<SessaoUsuario> {
-    const refreshToken = localStorage.getItem(AuthService.REFRESH_TOKEN);
-    if (!refreshToken) {
-      return throwError(() => new Error('Refresh token ausente.'));
-    }
-    if (!this.renovacaoEmAndamento) {
-      this.renovacaoEmAndamento = this.http.post<RespostaAutenticacao>(
-        '/api/v1/auth/refresh',
-        { refreshToken }
-      ).pipe(
-        tap(resposta => this.persistir(resposta)),
-        finalize(() => this.renovacaoEmAndamento = undefined),
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
-    }
-    return this.renovacaoEmAndamento;
-  }
-
-  sair(): Observable<void> {
-    const refreshToken = localStorage.getItem(AuthService.REFRESH_TOKEN);
-    if (!refreshToken) {
-      this.limparSessao();
-      return of(undefined);
-    }
-    return this.http.post<void>('/api/v1/auth/logout', { refreshToken })
-      .pipe(finalize(() => this.limparSessao()));
+  sair(): void {
+    this.limparSessao();
   }
 
   autenticado(): boolean {
@@ -91,13 +63,11 @@ export class AuthService {
   limparSessao(): void {
     this.sessaoAtual.set(null);
     localStorage.removeItem(AuthService.ACCESS_TOKEN);
-    localStorage.removeItem(AuthService.REFRESH_TOKEN);
     localStorage.removeItem(AuthService.SESSAO);
   }
 
   private persistir(resposta: RespostaAutenticacao): void {
     localStorage.setItem(AuthService.ACCESS_TOKEN, resposta.accessToken);
-    localStorage.setItem(AuthService.REFRESH_TOKEN, resposta.refreshToken);
     this.persistirSessao({
       usuarioId: resposta.usuarioId,
       nome: resposta.nome,

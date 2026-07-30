@@ -46,18 +46,26 @@
 @if (carregando) { <p class="empty">Carregando solicitações...</p> }
 @else if (resultado?.itens?.length) {
   <div class="table-wrap"><table>
-    <thead><tr><th>#</th><th>Tipo</th><th>Agência</th><th>Valor</th><th>Data desejada</th><th>Status</th><th>Ações</th></tr></thead>
+    <thead><tr><th>#</th><th>Tipo</th><th>Agência origem</th><th>Agência destino</th><th>Valor</th><th>Data desejada</th><th>Status</th><th>Ações</th></tr></thead>
     <tbody>@for (s of resultado!.itens; track s.id) {
       <tr>
         <td>{{ s.id }}</td><td>{{ s.tipoOperacao === 'SUPRIMENTO' ? 'Suprimento' : 'Recolhimento' }}</td>
-        <td>{{ nomeAgencia(s.agenciaId) }}</td><td>{{ s.valorSolicitado | currency:'BRL' }}</td>
+        <td class="code-cell">{{ codigoUnidade(s.origemId) }}</td>
+        <td class="code-cell">{{ codigoUnidade(s.destinoId) }}</td>
+        <td>{{ s.valorSolicitado | currency:'BRL' }}</td>
         <td>{{ s.dataDesejada | date:'dd/MM/yyyy':'UTC' }}</td>
         <td><span class="status-badge" [class.status-badge--attention]="s.status==='PENDENTE'||s.status==='COM_DIVERGENCIA'">{{ rotuloStatus(s.status) }}</span></td>
         <td class="actions"><button type="button" class="outline" (click)="detalhar(s.id)">Detalhar</button></td>
       </tr>
     }</tbody>
   </table></div>
-  <app-pagination [page]="pagina" [totalPages]="totalPaginas" (pageChange)="irParaPagina($event)" />
+  <app-pagination
+    [page]="pagina"
+    [pageSize]="tamanho"
+    [totalItems]="resultado!.totalItens"
+    [totalPages]="totalPaginas"
+    (pageChange)="irParaPagina($event)"
+    (pageSizeChange)="alterarTamanho($event)" />
 } @else if (resultado) { <p class="empty">Nenhuma solicitação encontrada.</p> }
 
 <dialog #detalheDialog class="detail-dialog" (close)="fecharDetalhe()">
@@ -89,25 +97,44 @@
         <button (click)="abrirAcao('conciliar')">Conciliar</button><button class="outline" (click)="abrirAcao('ajustar')">Ajuste financeiro</button>
       }
     </div>
-    @if (acao) {
+    @if (erroAcao) { <app-alert type="error" [message]="erroAcao" /> }
+    @if (acao && acao !== 'separar' && acao !== 'expedir') {
       <div class="form action-form">
         <h3>{{ tituloAcao() }}</h3>
         @if (acao === 'programar') {
-          <label class="field field--wide"><span>Unidade que completa a rota</span><select [(ngModel)]="form.unidadeId">
-            <option value="">Selecione</option>@for (u of unidades; track u.id) { <option [ngValue]="u.id">{{ u.codigo }} — {{ u.nome }}</option> }
+          <label class="field field--wide"><span>Agência que completa a rota</span><select [(ngModel)]="form.unidadeId" required>
+            <option value="">Selecione</option>@for (u of agenciasParaProgramacao(); track u.id) { <option [ngValue]="u.id">{{ u.codigo }} — {{ u.nome }}</option> }
           </select></label>
         }
-        @if (acao === 'receber' || acao === 'ajustar') {
-          <label class="field"><span>Valor</span><input [(ngModel)]="form.valor" type="number" min=".01" step=".01"></label>
+        @if (acao === 'receber') {
+          <div class="receiving-summary">
+            <div><small>Valor expedido</small><strong>{{ detalhe.operacao?.valorExpedido | currency:'BRL' }}</strong></div>
+            <div [class.receiving-summary__divergence]="divergenciaPrevista() > 0">
+              <small>Divergência prevista</small><strong>{{ divergenciaPrevista() | currency:'BRL' }}</strong>
+            </div>
+          </div>
+          <label class="field field--wide"><span>Valor recebido</span>
+            <input appCurrencyInput [(ngModel)]="form.valor" inputmode="numeric" required>
+            <small>Se for menor que o valor expedido, a solicitação ficará com divergência.</small>
+          </label>
         }
         @if (acao === 'ajustar') {
-          <label class="field"><span>Unidade</span><select [(ngModel)]="form.unidadeId">@for (u of unidadesDaRota(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }</select></label>
+          <label class="field"><span>Valor do ajuste</span><input appCurrencyInput [(ngModel)]="form.valor" inputmode="numeric" required></label>
+        }
+        @if (acao === 'ajustar') {
+          <label class="field"><span>Unidade</span><select [(ngModel)]="form.unidadeId" required>@for (u of unidadesDaRota(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }</select></label>
           <label class="field"><span>Direção</span><select [(ngModel)]="form.entrada"><option [ngValue]="true">Entrada</option><option [ngValue]="false">Saída</option></select></label>
         }
         @if (acao !== 'programar') {
-          <label class="field field--wide"><span>{{ acao === 'ocorrencia' ? 'Descrição' : 'Justificativa' }}</span><textarea [(ngModel)]="form.texto" rows="3"></textarea></label>
+          <label class="field field--wide"><span>{{ acao === 'ocorrencia' ? 'Descrição' : acao === 'receber' ? 'Justificativa da divergência' : 'Justificativa' }}</span>
+            <textarea [(ngModel)]="form.texto" rows="3" maxlength="500" [required]="acao !== 'receber'"></textarea>
+            @if (acao === 'receber') { <small>Obrigatória quando o valor recebido for menor que o expedido.</small> }
+          </label>
         }
-        <button (click)="confirmarAcao()" [disabled]="salvando">Confirmar</button><button class="outline" (click)="acao=''">Voltar</button>
+        <div class="action-form__actions">
+          <button (click)="solicitarConfirmacao()" [disabled]="salvando">Continuar</button>
+          <button class="outline" (click)="acao='';erroAcao=''">Voltar</button>
+        </div>
       </div>
     }
     <h3>Histórico</h3>
@@ -117,3 +144,10 @@
   </section>
 }
 </dialog>
+
+<app-confirmation-dialog #confirmacaoAcao
+  [title]="tituloAcao()"
+  [message]="mensagemConfirmacao()"
+  confirmLabel="Confirmar"
+  [danger]="acaoPerigosa()"
+  (confirmed)="confirmarAcao()" />

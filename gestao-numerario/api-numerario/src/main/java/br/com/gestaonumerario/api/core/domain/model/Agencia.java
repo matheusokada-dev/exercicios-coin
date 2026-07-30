@@ -24,12 +24,20 @@ public class Agencia {
             BigDecimal saldoAtual,
             BigDecimal limiteMinimo,
             boolean ativo,
-            long versao
-    ) {
+            long versao) {
         this.id = id;
-        this.codigo = textoObrigatorio(codigo, "codigo");
-        this.nome = textoObrigatorio(nome, "nome");
-        this.cidade = textoObrigatorio(cidade, "cidade");
+        this.codigo = textoObrigatorio(
+                codigo,
+                "codigo"
+        );
+        this.nome = textoObrigatorio(
+                nome,
+                "nome"
+        );
+        this.cidade = textoObrigatorio(
+                cidade,
+                "cidade"
+        );
         this.saldoAtual = ValorMonetario.exigirNaoNegativo(saldoAtual);
         this.limiteMinimo = ValorMonetario.exigirNaoNegativo(limiteMinimo);
         this.ativo = ativo;
@@ -66,8 +74,14 @@ public class Agencia {
 
     public void atualizarDados(String nome, String cidade, BigDecimal limiteMinimo) {
         exigirAtiva();
-        this.nome = textoObrigatorio(nome, "nome");
-        this.cidade = textoObrigatorio(cidade, "cidade");
+        this.nome = textoObrigatorio(
+                nome,
+                "nome"
+        );
+        this.cidade = textoObrigatorio(
+                cidade,
+                "cidade"
+        );
         this.limiteMinimo = ValorMonetario.exigirNaoNegativo(limiteMinimo);
     }
 
@@ -82,18 +96,42 @@ public class Agencia {
     public void exigirAtiva() {
         if (!ativo) {
             throw new RegraOperacaoNumerarioException(
-                    "A agência está inativa e não pode participar desta operação.");
+                    "A agência está inativa e não pode participar desta operação."
+            );
         }
     }
 
-    public Long getId() { return id; }
-    public String getCodigo() { return codigo; }
-    public String getNome() { return nome; }
-    public String getCidade() { return cidade; }
-    public BigDecimal getSaldoAtual() { return saldoAtual; }
-    public BigDecimal getLimiteMinimo() { return limiteMinimo; }
-    public boolean isAtivo() { return ativo; }
-    public long getVersao() { return versao; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public BigDecimal getSaldoAtual() {
+        return saldoAtual;
+    }
+
+    public BigDecimal getLimiteMinimo() {
+        return limiteMinimo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public long getVersao() {
+        return versao;
+    }
 
     private static String textoObrigatorio(String valor, String campo) {
         if (valor == null || valor.isBlank()) {

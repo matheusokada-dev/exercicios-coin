@@ -23,25 +23,45 @@ public class AgenciaService {
             String ordenarPor,
             String direcao,
             int pagina,
-            int tamanho
-    ) {
+            int tamanho) {
         return apiNumerarioClient.listarAgencias(
-                authorization, busca, ativo, alerta, ordenarPor, direcao, pagina, tamanho);
+                authorization,
+                busca,
+                ativo,
+                alerta,
+                ordenarPor,
+                direcao,
+                pagina,
+                tamanho
+        );
     }
 
     public DetalheAgenciaResponse detalhar(String authorization, Long id) {
-        return apiNumerarioClient.detalharAgencia(authorization, id);
+        return apiNumerarioClient.detalharAgencia(
+                authorization,
+                id
+        );
     }
 
     public AgenciaResponse criar(String authorization, CriarAgenciaRequest request) {
-        return apiNumerarioClient.criarAgencia(authorization, request);
+        return apiNumerarioClient.criarAgencia(
+                authorization,
+                request
+        );
     }
 
     public AgenciaResponse atualizar(String authorization, Long id, AtualizarAgenciaRequest request) {
-        return apiNumerarioClient.atualizarAgencia(authorization, id, request);
+        return apiNumerarioClient.atualizarAgencia(
+                authorization,
+                id,
+                request
+        );
     }
 
     public void desativar(String authorization, Long id) {
-        apiNumerarioClient.desativarAgencia(authorization, id);
+        apiNumerarioClient.desativarAgencia(
+                authorization,
+                id
+        );
     }
 }

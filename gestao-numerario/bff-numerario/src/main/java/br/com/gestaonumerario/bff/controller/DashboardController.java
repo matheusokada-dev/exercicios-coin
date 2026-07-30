@@ -1,5 +1,6 @@
 package br.com.gestaonumerario.bff.controller;
 
+import br.com.gestaonumerario.bff.contract.DashboardApi;
 import br.com.gestaonumerario.bff.dto.DashboardResponse;
 import br.com.gestaonumerario.bff.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-public class DashboardController {
+public class DashboardController implements DashboardApi {
 
     private final DashboardService dashboardService;
 
     @GetMapping
+    @Override
     public DashboardResponse consultar(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
         return dashboardService.consultar(authorization);
     }

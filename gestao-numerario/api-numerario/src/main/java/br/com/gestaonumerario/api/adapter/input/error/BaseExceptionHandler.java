@@ -6,6 +6,8 @@ import br.com.gestaonumerario.api.core.exception.ErrorEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import java.time.Instant;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,9 +20,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.time.Instant;
-import java.util.List;
-
 @Slf4j
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -30,7 +29,12 @@ public class BaseExceptionHandler {
     public ResponseEntity<ErrorObject<Void>> handleConflitoOtimista(
             ObjectOptimisticLockingFailureException exception,
             HttpServletRequest request) {
-        return resposta(ErrorEnum.CONFLITO_VERSAO, null, null, request);
+        return resposta(
+                ErrorEnum.CONFLITO_VERSAO,
+                null,
+                null,
+                request
+        );
     }
 
     @ExceptionHandler(CredenciaisInvalidasException.class)
@@ -41,8 +45,14 @@ public class BaseExceptionHandler {
                 ? null
                 : new DetalheFalhaAutenticacao(
                         exception.getTentativasRestantes(),
-                        exception.getBloqueadoAte());
-        return resposta(exception.getErrorEnum(), detalhe, null, request);
+                        exception.getBloqueadoAte()
+                );
+        return resposta(
+                exception.getErrorEnum(),
+                detalhe,
+                null,
+                request
+        );
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -54,8 +64,14 @@ public class BaseExceptionHandler {
         return resposta(
                 ErrorEnum.CAMPO_INVALIDO,
                 campo,
-                List.of(new FieldErrorObject(campo, mensagem)),
-                request);
+                List.of(
+                        new FieldErrorObject(
+                                campo,
+                                mensagem
+                        )
+                ),
+                request
+        );
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
@@ -67,83 +83,132 @@ public class BaseExceptionHandler {
         return resposta(
                 ErrorEnum.CAMPO_OBRIGATORIO,
                 campo,
-                List.of(new FieldErrorObject(campo, mensagem)),
-                request);
+                List.of(
+                        new FieldErrorObject(
+                                campo,
+                                mensagem
+                        )
+                ),
+                request
+        );
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorObject<Void>> handleConstraintViolationException(
             ConstraintViolationException exception,
             HttpServletRequest request) {
-        List<FieldErrorObject> fields = exception.getConstraintViolations().stream()
+        List<FieldErrorObject> fields = exception.getConstraintViolations()
+                .stream()
                 .map(this::paraErroDeCampo)
                 .toList();
-        return resposta(ErrorEnum.CAMPO_INVALIDO, null, fields, request);
+        return resposta(
+                ErrorEnum.CAMPO_INVALIDO,
+                null,
+                fields,
+                request
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorObject<String>> handleValidationException(
             MethodArgumentNotValidException exception,
             HttpServletRequest request) {
-        List<FieldErrorObject> fields = exception.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> new FieldErrorObject(
-                        fieldError.getField(),
-                        mensagemValidacao(
+        List<FieldErrorObject> fields = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(
+                        fieldError -> new FieldErrorObject(
                                 fieldError.getField(),
-                                fieldError.getCode(),
-                                fieldError.getDefaultMessage())))
+                                mensagemValidacao(
+                                        fieldError.getField(),
+                                        fieldError.getCode(),
+                                        fieldError.getDefaultMessage()
+                                )
+                        )
+                )
                 .toList();
-        String campo = fields.isEmpty() ? null : fields.getFirst().field();
-        return resposta(ErrorEnum.CAMPO_INVALIDO, campo, fields, request);
+        String campo = fields.isEmpty()
+                ? null
+                : fields.getFirst()
+                        .field();
+        return resposta(
+                ErrorEnum.CAMPO_INVALIDO,
+                campo,
+                fields,
+                request
+        );
     }
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorObject<Void>> handleBaseException(
-            BaseException exception,
-            HttpServletRequest request) {
+    public ResponseEntity<ErrorObject<Void>> handleBaseException(BaseException exception, HttpServletRequest request) {
         ErrorEnum erro = exception.getErrorEnum();
-        log.warn("Erro de negócio. código={}, mensagem={}",
-                erro.getErrorCode(), exception.getMessage());
+        log.warn(
+                "Erro de negócio. código={}, mensagem={}",
+                erro.getErrorCode(),
+                exception.getMessage()
+        );
 
         List<FieldErrorObject> fields = exception.getField() == null
                 ? null
-                : List.of(new FieldErrorObject(exception.getField(), exception.getMessage()));
-        return resposta(erro, null, fields, request, exception.getMessage());
+                : List.of(
+                        new FieldErrorObject(
+                                exception.getField(),
+                                exception.getMessage()
+                        )
+                );
+        return resposta(
+                erro,
+                null,
+                fields,
+                request,
+                exception.getMessage()
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorObject<Void>> handleUnexpectedException(
             Exception exception,
             HttpServletRequest request) {
-        log.error("Erro inesperado.", exception);
-        return resposta(ErrorEnum.ERRO_GENERICO, null, null, request);
+        log.error(
+                "Erro inesperado.",
+                exception
+        );
+        return resposta(
+                ErrorEnum.ERRO_GENERICO,
+                null,
+                null,
+                request
+        );
     }
 
     private FieldErrorObject paraErroDeCampo(ConstraintViolation<?> violation) {
-        String path = violation.getPropertyPath().toString();
+        String path = violation.getPropertyPath()
+                .toString();
         int ultimoSeparador = path.lastIndexOf('.');
         String campo = ultimoSeparador >= 0 ? path.substring(ultimoSeparador + 1) : path;
-        return new FieldErrorObject(campo, violation.getMessage());
+        return new FieldErrorObject(
+                campo,
+                violation.getMessage()
+        );
     }
 
     private String mensagemValidacao(String campo, String codigo, String mensagemPadrao) {
         return switch (codigo == null ? "" : codigo) {
-            case "NotNull", "NotBlank", "NotEmpty" ->
-                    "O campo '" + campo + "' é obrigatório.";
-            case "Positive" ->
-                    "O campo '" + campo + "' deve ser maior que zero.";
-            case "PositiveOrZero" ->
-                    "O campo '" + campo + "' não pode ser negativo.";
-            case "DecimalMin" ->
-                    "O campo '" + campo + "' deve respeitar o valor mínimo permitido.";
-            case "Digits" ->
-                    "O campo '" + campo + "' possui precisão ou casas decimais inválidas.";
-            case "Size" ->
-                    "O campo '" + campo + "' possui tamanho inválido.";
-            case "Future", "FutureOrPresent" ->
-                    "O campo '" + campo + "' não pode estar no passado.";
-            case "Min", "Max" ->
-                    "O campo '" + campo + "' está fora do intervalo permitido.";
+            case "NotNull", "NotBlank", "NotEmpty" -> "O campo '" + campo + "' é obrigatório.";
+            case "Positive" -> "O campo '" + campo + "' deve ser maior que zero.";
+            case "PositiveOrZero" -> "O campo '" + campo + "' não pode ser negativo.";
+            case "DecimalMin" -> "O campo '" + campo + "' deve respeitar o valor mínimo permitido.";
+            case "DecimalMax" -> mensagemPadrao == null
+                    ? "O campo '" + campo + "' excede o valor máximo permitido."
+                    : mensagemPadrao;
+            case "Digits" -> "O campo '" + campo + "' possui precisão ou casas decimais inválidas.";
+            case "Pattern" -> mensagemPadrao == null ? "O campo '" + campo + "' possui formato inválido." : mensagemPadrao;
+            case "Size" -> "O campo '" + campo + "' possui tamanho inválido.";
+            case "Future", "FutureOrPresent" -> "O campo '" + campo + "' não pode estar no passado.";
+            case "Past", "PastOrPresent" -> mensagemPadrao == null
+                    ? "O campo '" + campo + "' não pode estar no futuro."
+                    : mensagemPadrao;
+            case "Min", "Max" -> "O campo '" + campo + "' está fora do intervalo permitido.";
             default -> mensagemPadrao == null ? "Valor inválido." : mensagemPadrao;
         };
     }
@@ -153,7 +218,13 @@ public class BaseExceptionHandler {
             T value,
             List<FieldErrorObject> fields,
             HttpServletRequest request) {
-        return resposta(erro, value, fields, request, erro.getErrorMessage());
+        return resposta(
+                erro,
+                value,
+                fields,
+                request,
+                erro.getErrorMessage()
+        );
     }
 
     private <T> ResponseEntity<ErrorObject<T>> resposta(
@@ -163,17 +234,20 @@ public class BaseExceptionHandler {
             HttpServletRequest request,
             String mensagem) {
         HttpStatus status = HttpStatus.valueOf(erro.getHttpStatus());
-        return ResponseEntity.status(status).body(ErrorObject.<T>builder()
-                .codError(erro.getErrorCode())
-                .msgError(mensagem)
-                .value(value)
-                .timestamp(Instant.now())
-                .status(status.value())
-                .error(status.getReasonPhrase())
-                .code(erro.name())
-                .message(mensagem)
-                .path(request.getRequestURI())
-                .fields(fields == null || fields.isEmpty() ? null : fields)
-                .build());
+        return ResponseEntity.status(status)
+                .body(
+                        ErrorObject.<T>builder()
+                                .codError(erro.getErrorCode())
+                                .msgError(mensagem)
+                                .value(value)
+                                .timestamp(Instant.now())
+                                .status(status.value())
+                                .error(status.getReasonPhrase())
+                                .code(erro.name())
+                                .message(mensagem)
+                                .path(request.getRequestURI())
+                                .fields(fields == null || fields.isEmpty() ? null : fields)
+                                .build()
+                );
     }
 }

@@ -2,23 +2,23 @@ package br.com.gestaonumerario.api.core.usecase.solicitacao;
 
 import br.com.gestaonumerario.api.core.domain.enums.TipoMovimentacao;
 import br.com.gestaonumerario.api.core.domain.model.Agencia;
+import br.com.gestaonumerario.api.core.domain.model.FiltroSolicitacao;
 import br.com.gestaonumerario.api.core.domain.model.Movimentacao;
+import br.com.gestaonumerario.api.core.domain.model.Pagina;
 import br.com.gestaonumerario.api.core.domain.model.SolicitacaoAbastecimento;
 import br.com.gestaonumerario.api.core.domain.model.Usuario;
-import br.com.gestaonumerario.api.core.exception.AgenciaNaoEncontradaException;
-import br.com.gestaonumerario.api.core.exception.CampoObrigatorioException;
-import br.com.gestaonumerario.api.core.exception.IdempotencyKeyDuplicadaException;
-import br.com.gestaonumerario.api.core.exception.SolicitacaoAbertaDuplicadaException;
-import br.com.gestaonumerario.api.core.exception.SolicitacaoNaoEncontradaException;
-import br.com.gestaonumerario.api.core.exception.UsuarioNaoEncontradoException;
-import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
-import br.com.gestaonumerario.api.port.input.SolicitacaoInputPort;
-import br.com.gestaonumerario.api.core.domain.model.FiltroSolicitacao;
-import br.com.gestaonumerario.api.core.domain.model.Pagina;
 import br.com.gestaonumerario.api.core.domain.model.command.AprovarSolicitacaoCommand;
 import br.com.gestaonumerario.api.core.domain.model.command.AtenderSolicitacaoCommand;
 import br.com.gestaonumerario.api.core.domain.model.command.RejeitarSolicitacaoCommand;
 import br.com.gestaonumerario.api.core.domain.model.command.SolicitarAbastecimentoCommand;
+import br.com.gestaonumerario.api.core.exception.AgenciaNaoEncontradaException;
+import br.com.gestaonumerario.api.core.exception.CampoObrigatorioException;
+import br.com.gestaonumerario.api.core.exception.IdempotencyKeyDuplicadaException;
+import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
+import br.com.gestaonumerario.api.core.exception.SolicitacaoAbertaDuplicadaException;
+import br.com.gestaonumerario.api.core.exception.SolicitacaoNaoEncontradaException;
+import br.com.gestaonumerario.api.core.exception.UsuarioNaoEncontradoException;
+import br.com.gestaonumerario.api.port.input.SolicitacaoInputPort;
 import br.com.gestaonumerario.api.port.output.AgenciaOutputPort;
 import br.com.gestaonumerario.api.port.output.MovimentacaoOutputPort;
 import br.com.gestaonumerario.api.port.output.RelogioOutputPort;
@@ -36,12 +36,13 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
     private final RelogioOutputPort relogioPort;
     private final TransacaoOutputPort transacaoPort;
 
-    public SolicitacaoUseCase(AgenciaOutputPort agenciaPort,
-                              UsuarioOutputPort usuarioPort,
-                              SolicitacaoAbastecimentoOutputPort solicitacaoPort,
-                              MovimentacaoOutputPort movimentacaoPort,
-                              RelogioOutputPort relogioPort,
-                              TransacaoOutputPort transacaoPort) {
+    public SolicitacaoUseCase(
+            AgenciaOutputPort agenciaPort,
+            UsuarioOutputPort usuarioPort,
+            SolicitacaoAbastecimentoOutputPort solicitacaoPort,
+            MovimentacaoOutputPort movimentacaoPort,
+            RelogioOutputPort relogioPort,
+            TransacaoOutputPort transacaoPort) {
         this.agenciaPort = agenciaPort;
         this.usuarioPort = usuarioPort;
         this.solicitacaoPort = solicitacaoPort;
@@ -51,48 +52,46 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
     }
 
     @Override
-    public SolicitacaoAbastecimento solicitar(
-            SolicitarAbastecimentoCommand command
-    ) {
-        validar(command, command == null ? null : command.agenciaId(),
-                command == null ? null : command.solicitanteId());
+    public SolicitacaoAbastecimento solicitar(SolicitarAbastecimentoCommand command) {
+        validar(
+                command,
+                command == null ? null : command.agenciaId(),
+                command == null ? null : command.solicitanteId()
+        );
 
         return transacaoPort.executar(() -> {
             Agencia agencia = buscarAgencia(command.agenciaId());
             Usuario solicitante = buscarUsuario(command.solicitanteId());
             agencia.exigirAtiva();
 
-            if (solicitacaoPort.existeSolicitacaoAbertaParaAgencia(
-                    command.agenciaId()
-            )) {
+            if (solicitacaoPort.existeSolicitacaoAbertaParaAgencia(command.agenciaId())) {
                 throw new SolicitacaoAbertaDuplicadaException();
             }
 
-            SolicitacaoAbastecimento solicitacao =
-                    SolicitacaoAbastecimento.criar(
-                            agencia,
-                            command.valor(),
-                            command.motivo(),
-                            command.dataDesejada(),
-                            solicitante,
-                            relogioPort.hoje(),
-                            relogioPort.agora()
-                    );
+            SolicitacaoAbastecimento solicitacao = SolicitacaoAbastecimento.criar(
+                    agencia,
+                    command.valor(),
+                    command.motivo(),
+                    command.dataDesejada(),
+                    solicitante,
+                    relogioPort.hoje(),
+                    relogioPort.agora()
+            );
 
             return solicitacaoPort.salvar(solicitacao);
         });
     }
 
     @Override
-    public SolicitacaoAbastecimento aprovar(
-            AprovarSolicitacaoCommand command
-    ) {
-        validar(command, command == null ? null : command.solicitacaoId(),
-                command == null ? null : command.decisorId());
+    public SolicitacaoAbastecimento aprovar(AprovarSolicitacaoCommand command) {
+        validar(
+                command,
+                command == null ? null : command.solicitacaoId(),
+                command == null ? null : command.decisorId()
+        );
 
         return transacaoPort.executar(() -> {
-            SolicitacaoAbastecimento solicitacao =
-                    buscarSolicitacao(command.solicitacaoId());
+            SolicitacaoAbastecimento solicitacao = buscarSolicitacao(command.solicitacaoId());
 
             Usuario decisor = buscarUsuario(command.decisorId());
 
@@ -108,15 +107,15 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
     }
 
     @Override
-    public SolicitacaoAbastecimento rejeitar(
-            RejeitarSolicitacaoCommand command
-    ) {
-        validar(command, command == null ? null : command.solicitacaoId(),
-                command == null ? null : command.decisorId());
+    public SolicitacaoAbastecimento rejeitar(RejeitarSolicitacaoCommand command) {
+        validar(
+                command,
+                command == null ? null : command.solicitacaoId(),
+                command == null ? null : command.decisorId()
+        );
 
         return transacaoPort.executar(() -> {
-            SolicitacaoAbastecimento solicitacao =
-                    buscarSolicitacao(command.solicitacaoId());
+            SolicitacaoAbastecimento solicitacao = buscarSolicitacao(command.solicitacaoId());
 
             Usuario decisor = buscarUsuario(command.decisorId());
 
@@ -131,21 +130,23 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
     }
 
     @Override
-    public SolicitacaoAbastecimento atender(
-            AtenderSolicitacaoCommand command
-    ) {
-        validar(command, command == null ? null : command.solicitacaoId(),
-                command == null ? null : command.usuarioId());
+    public SolicitacaoAbastecimento atender(AtenderSolicitacaoCommand command) {
+        validar(
+                command,
+                command == null ? null : command.solicitacaoId(),
+                command == null ? null : command.usuarioId()
+        );
 
         return transacaoPort.executar(() -> {
-            SolicitacaoAbastecimento solicitacao =
-                    buscarSolicitacao(command.solicitacaoId());
+            SolicitacaoAbastecimento solicitacao = buscarSolicitacao(command.solicitacaoId());
 
             Usuario usuario = buscarUsuario(command.usuarioId());
 
             Agencia agencia = agenciaPort.buscarPorIdParaAtualizacao(
-                    solicitacao.getAgencia().getId()
-            ).orElseThrow(AgenciaNaoEncontradaException::new);
+                    solicitacao.getAgencia()
+                            .getId()
+            )
+                    .orElseThrow(AgenciaNaoEncontradaException::new);
 
             String idempotencyKey = textoObrigatorio(command.idempotencyKey());
 
@@ -223,5 +224,3 @@ public class SolicitacaoUseCase implements SolicitacaoInputPort {
         return valor.trim();
     }
 }
-
-
