@@ -10,11 +10,10 @@ import br.com.gestaonumerario.bff.service.AuthService;
 import br.com.gestaonumerario.bff.service.DashboardService;
 import br.com.gestaonumerario.bff.service.MovimentacaoService;
 import br.com.gestaonumerario.bff.service.SolicitacaoService;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,8 +34,10 @@ class MvcArchitectureTest {
                 .map(Field::getType)
                 .toList();
 
-        assertThat(dependencies)
-                .allMatch(type -> type.getPackageName().equals("br.com.gestaonumerario.bff.service"));
+        assertThat(dependencies).allMatch(
+                type -> type.getPackageName()
+                        .equals("br.com.gestaonumerario.bff.service")
+        );
     }
 
     @Test
@@ -54,7 +55,9 @@ class MvcArchitectureTest {
                 .map(Field::getType)
                 .toList();
 
-        assertThat(dependencies)
-                .allMatch(type -> type.getPackageName().equals("br.com.gestaonumerario.bff.client"));
+        assertThat(dependencies).allMatch(
+                type -> type.getPackageName()
+                        .equals("br.com.gestaonumerario.bff.client")
+        );
     }
 }

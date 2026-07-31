@@ -10,13 +10,22 @@ import org.springframework.stereotype.Component;
 public class UsuarioRestMapper {
 
     public CriarUsuarioCommand toCommand(CriarUsuarioRequest request) {
-        return new CriarUsuarioCommand(request.nome(), request.login(), request.senha(), request.perfil());
+        return new CriarUsuarioCommand(
+                request.nome(),
+                request.login(),
+                request.senha(),
+                request.perfil()
+        );
     }
 
     public UsuarioResponse toResponse(Usuario usuario) {
-        return new UsuarioResponse(usuario.getId(), usuario.getNome(), usuario.getLogin(), usuario.getPerfil(),
-                usuario.isAtivo(), usuario.getCriadoEm());
+        return new UsuarioResponse(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getLogin(),
+                usuario.getPerfil(),
+                usuario.isAtivo(),
+                usuario.getCriadoEm()
+        );
     }
 }
-
-

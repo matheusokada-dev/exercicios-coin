@@ -4,10 +4,9 @@ import br.com.gestaonumerario.api.adapter.output.mapper.UsuarioPersistenceMapper
 import br.com.gestaonumerario.api.adapter.output.repository.UsuarioJpaRepository;
 import br.com.gestaonumerario.api.core.domain.model.Usuario;
 import br.com.gestaonumerario.api.port.output.UsuarioOutputPort;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -18,12 +17,14 @@ public class UsuarioPersistenceAdapter implements UsuarioOutputPort {
 
     @Override
     public Optional<Usuario> buscarPorId(Long id) {
-        return repository.findById(id).map(mapper::toDomain);
+        return repository.findById(id)
+                .map(mapper::toDomain);
     }
 
     @Override
     public Optional<Usuario> buscarPorLogin(String login) {
-        return repository.findByLogin(login).map(mapper::toDomain);
+        return repository.findByLogin(login)
+                .map(mapper::toDomain);
     }
 
     @Override
@@ -36,5 +37,3 @@ public class UsuarioPersistenceAdapter implements UsuarioOutputPort {
         return mapper.toDomain(repository.save(mapper.toEntity(usuario)));
     }
 }
-
-

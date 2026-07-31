@@ -1,0 +1,12 @@
+<dialog #dialog class="confirmation-dialog" (close)="handleClose()">
+  <div class="confirmation-dialog__content">
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+    <div class="confirmation-dialog__actions">
+      <button type="button" class="outline" (click)="close()">Cancelar</button>
+      <button type="button" [class.danger]="danger" (click)="confirm()">
+        {{ confirmLabel }}
+      </button>
+    </div>
+  </div>
+</dialog>

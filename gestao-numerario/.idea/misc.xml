@@ -6,6 +6,8 @@
       <list>
         <option value="$PROJECT_DIR$/api-numerario/pom.xml" />
         <option value="$PROJECT_DIR$/bff-numerario/pom.xml" />
+        <option value="$PROJECT_DIR$/coin-srv-relatorios/pom.xml" />
+        <option value="$PROJECT_DIR$/relatorio-numerario/pom.xml" />
       </list>
     </option>
   </component>

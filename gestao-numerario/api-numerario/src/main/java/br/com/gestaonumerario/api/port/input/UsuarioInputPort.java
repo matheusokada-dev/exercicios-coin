@@ -5,7 +5,6 @@ import br.com.gestaonumerario.api.core.domain.model.command.CriarUsuarioCommand;
 
 public interface UsuarioInputPort {
     Usuario criar(CriarUsuarioCommand command);
+
     Usuario buscarPorId(Long id);
 }
-
-

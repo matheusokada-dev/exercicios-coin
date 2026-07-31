@@ -5,4 +5,3 @@ import br.com.gestaonumerario.api.core.domain.model.ResumoDashboard;
 public interface ConsultarDashboardInputPort {
     ResumoDashboard consultar();
 }
-

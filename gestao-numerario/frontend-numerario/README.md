@@ -7,26 +7,32 @@ Aplicação Angular 19 da Gestão de Numerário.
 - A raiz `/` redireciona para a tela de login em `/login`.
 - Rotas internas protegidas por `authGuard`.
 - COIN Home em `/menu`, separando Tesouraria e Cadastros.
-- Tesouraria direciona para `/tesouraria`, com cards para Dashboard, Solicitações, Agências, Movimentações e Livro Caixa.
+- Tesouraria direciona para `/tesouraria`, com cards para Dashboard, Solicitações, Agências e Livro Caixa.
 - Cadastros direciona para a página de erro porque o módulo ainda não foi desenvolvido.
 - O header autenticado contém somente o botão Sair.
 - Telas internas possuem breadcrumbs e botão Voltar conforme a hierarquia de navegação.
-- Livro Caixa em `/livro-caixa`: seleciona agência e período e gera relatório `.xlsx`.
-- Token JWT salvo no `localStorage` com a chave `numerario_access_token`.
+- Livro Caixa em `/livro-caixa`: seleciona agência e período e solicita ao BFF
+  a geração centralizada do relatório `.xlsx`.
+- Access token salvo no `localStorage` na chave `coin.accessToken`; o resumo da
+  sessão usa `coin.sessao`.
 - Interceptor HTTP envia `Authorization: Bearer <token>` nas chamadas ao BFF.
 - Interceptor global exibe loading e toast em chamadas HTTP.
 - Rotas de agência usam `gestorGuard`.
 - A página `/erro` trata URL inválida, acesso indevido e indisponibilidade da API/BFF.
-- Rotas disponíveis: menu, tesouraria, dashboard, agências, detalhe da agência, solicitações, movimentações e livro caixa.
+- Rotas disponíveis: menu, tesouraria, dashboard, agências, detalhe da agência,
+  solicitações e livro caixa.
 
 ## Livro Caixa
 
-O relatório usa somente contratos existentes:
+O frontend usa os seguintes contratos:
 
 - `GET /api/v1/agencias` para seleção da agência.
-- `GET /api/v1/movimentacoes` com agência, data inicial, data final e paginação.
+- `POST /api/v1/relatorios/livro-caixa` para solicitar o relatório.
 
-O frontend consolida todas as páginas e gera o XLSX com saldos, entradas, saídas e totalizadores. Como a listagem de agências exige perfil gestor na API atual, `/livro-caixa` usa `gestorGuard`.
+O BFF consulta todas as páginas de movimentações na API, monta colunas, linhas,
+totais e metadados e chama o `relatorio-numerario`. O frontend apenas converte
+o Base64 retornado em arquivo para download. Como a listagem de agências exige
+perfil gestor na API atual, `/livro-caixa` usa `gestorGuard`.
 
 ## Perfis COIN
 
@@ -52,6 +58,16 @@ Portas esperadas:
 - BFF: `http://localhost:8080`
 - API: `http://localhost:8081`
 
+Validação do frontend:
+
+```powershell
+npm ci
+npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters
+npm run build
+```
+
+Não há suíte automatizada de frontend no estado atual.
+
 ## Dados de exemplo
 
 Antes do seed, crie ou redefina o gestor local com uma senha conhecida:
@@ -72,6 +88,5 @@ O seed cria usuários locais e popula agências, solicitações e movimentaçõe
 
 ## Pendências
 
-- Evoluir formulários de agências, solicitações e movimentações.
+- Evoluir formulários de agências e solicitações.
 - Substituir IDs de agência digitados manualmente por seleção pesquisável.
-- Adicionar testes automatizados para os componentes e interceptores globais.

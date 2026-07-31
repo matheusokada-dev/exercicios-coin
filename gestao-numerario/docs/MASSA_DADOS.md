@@ -1,107 +1,47 @@
-# Massa de dados de desenvolvimento
+# Massa de dados
 
-Atualizado em: 23/07/2026.
+A massa local fica fora do Flyway em
+`database/scripts/seed-dados-dev.sql`. Ela é aplicada manualmente, somente em
+desenvolvimento, depois que a V1 tiver criado um schema vazio.
 
-## Escopo atual
+## Credenciais
 
-A massa cobre somente as tabelas ja implementadas:
+Todos os usuários usam a senha `admin123`.
 
-- `usuario`
-- `agencia`
-- `solicitacao_abastecimento`
-- `movimentacao`
+- `gestor` e `gestor.aprovador`: perfil `GESTOR`;
+- `operador.sp`, `operador.sul`, `operador.nordeste` e `operador.centro`:
+  perfil `OPERADOR`;
+- `operador.inativo`: cenário de usuário inativo.
 
-Cliente, Ponto, Cofre e Frequencia ficam fora desta fase porque ainda nao existem no modelo.
+Essas credenciais são exclusivas para desenvolvimento.
 
-## Script
+## Cobertura
 
-Arquivo executavel:
+- 7 usuários: 2 gestores, 4 operadores ativos e 1 operador inativo;
+- 30 agências: 26 ativas e 4 inativas;
+- 11 agências ativas abaixo do limite e 2 exatamente no limite;
+- 14 solicitações: duas de cada status, entre suprimento e recolhimento;
+- 8 operações cobrindo todos os seis estados operacionais;
+- 14 movimentações com débito na origem, crédito no destino, saque, depósito e
+  ajuste;
+- 26 eventos de histórico;
+- 8 comandos idempotentes.
 
-`database/scripts/seed-dados-dev.sql`
+## Aplicação
 
-O script e exclusivo para desenvolvimento local, deterministico e idempotente. Ele pode ser reaplicado sem duplicar os registros identificados pela massa.
-
-Todos os usuarios criados pelo script usam a senha local `admin123`. Essa credencial nao deve ser usada em homologacao ou producao.
-
-## Composicao esperada
-
-### Usuarios
-
-Sete usuarios identificados pelo seed:
-
-- Dois gestores ativos.
-- Quatro operadores ativos.
-- Um operador inativo para teste de acesso.
-
-### Agencias
-
-Trinta agencias com codigos entre `0101` e `0130`:
-
-- 26 ativas.
-- 4 inativas.
-- 11 ativas abaixo do limite minimo.
-- 2 ativas exatamente no limite minimo.
-- Demais agencias acima do limite.
-- Cidades distribuidas por diferentes regioes do Brasil.
-
-### Solicitacoes
-
-176 solicitacoes identificadas pelo prefixo `[SEED-MASSA-V1-`:
-
-| Status | Quantidade |
-| --- | ---: |
-| `APROVADA` | 8 |
-| `ATENDIDA` | 90 |
-| `PENDENTE` | 18 |
-| `REJEITADA` | 60 |
-
-A massa inclui valores acima de R$ 500.000,00 com justificativa especial e respeita a regra de no maximo uma solicitacao aberta por agencia.
-
-### Movimentacoes
-
-540 movimentacoes identificadas pelo prefixo `seed-mass-v1-`:
-
-| Tipo | Direcao | Quantidade |
-| --- | --- | ---: |
-| `ABASTECIMENTO` | Entrada | 90 |
-| `DEPOSITO` | Entrada | 90 |
-| `AJUSTE` | Saida | 90 |
-| `RECOLHIMENTO` | Saida | 90 |
-| `SAQUE` | Saida | 180 |
-
-Cada agencia possui 18 movimentos distribuidos em tres ciclos historicos. Os saldos formam uma cadeia continua e o ultimo saldo coincide com `agencia.saldo_atual`.
-
-Os abastecimentos estao ligados a solicitacoes atendidas.
-
-## Aplicacao manual
-
-Com o cliente MySQL no `PATH`:
+Primeiro, use o Flyway somente para criar o schema:
 
 ```powershell
-Get-Content .\database\scripts\seed-dados-dev.sql |
-    mysql -u root -p gestao_numerario
+$env:FLYWAY_ENABLED='true'
+.\api-numerario\mvnw.cmd -f .\api-numerario\pom.xml spring-boot:run
 ```
 
-Como o cliente local desta maquina nao esta no `PATH`, tambem pode ser usado:
+Depois da primeira inicialização, volte `FLYWAY_ENABLED=false`. O antigo
+seed pode então ser aplicado explicitamente:
 
 ```powershell
-Get-Content .\database\scripts\seed-dados-dev.sql |
-    & 'C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe' -u root -p gestao_numerario
+Get-Content .\database\scripts\seed-dados-dev.sql | mysql -u root -p gestao_numerario
 ```
 
-## Validacoes realizadas
-
-O script foi aplicado duas vezes no MySQL local em 23/07/2026. Os totais permaneceram iguais na segunda execucao.
-
-As consultas de verificacao retornaram zero para:
-
-- Abastecimentos sem solicitacao vinculada.
-- Solicitacoes acima de R$ 500.000,00 sem justificativa especial.
-- Agencias com mais de uma solicitacao aberta.
-- Quebras na cadeia de saldos das movimentacoes.
-- Divergencia entre o ultimo saldo da cadeia e o saldo atual da agencia.
-
-## Observacao sobre totais globais
-
-Os totais acima consideram apenas os registros da massa V1. Registros locais anteriores, como as agencias `0001` a `0004`, podem continuar no banco; por isso, a contagem global das tabelas pode ser maior.
-
+Nunca aplique esse arquivo em homologação ou produção: ele contém credenciais
+conhecidas e dados determinísticos de demonstração.

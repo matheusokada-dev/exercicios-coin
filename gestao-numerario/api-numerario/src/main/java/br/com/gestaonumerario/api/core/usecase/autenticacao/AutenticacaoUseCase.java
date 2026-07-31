@@ -1,13 +1,13 @@
 package br.com.gestaonumerario.api.core.usecase.autenticacao;
 
+import br.com.gestaonumerario.api.core.domain.model.SessaoAutenticacao;
+import br.com.gestaonumerario.api.core.domain.model.command.AutenticarCommand;
 import br.com.gestaonumerario.api.core.exception.CredenciaisInvalidasException;
 import br.com.gestaonumerario.api.port.input.AutenticarInputPort;
-import br.com.gestaonumerario.api.core.domain.model.command.AutenticarCommand;
 import br.com.gestaonumerario.api.port.output.CodificadorSenhaOutputPort;
 import br.com.gestaonumerario.api.port.output.RelogioOutputPort;
 import br.com.gestaonumerario.api.port.output.TokenJwtOutputPort;
 import br.com.gestaonumerario.api.port.output.UsuarioOutputPort;
-
 import java.time.Duration;
 
 public class AutenticacaoUseCase implements AutenticarInputPort {
@@ -17,13 +17,13 @@ public class AutenticacaoUseCase implements AutenticarInputPort {
     private final RelogioOutputPort relogioPort;
     private final int limiteTentativas;
     private final Duration duracaoBloqueio;
-
-    public AutenticacaoUseCase(UsuarioOutputPort usuarioPort,
-                               CodificadorSenhaOutputPort codificadorSenhaPort,
-                               TokenJwtOutputPort tokenJwtPort,
-                               RelogioOutputPort relogioPort,
-                               int limiteTentativas,
-                               Duration duracaoBloqueio) {
+    public AutenticacaoUseCase(
+            UsuarioOutputPort usuarioPort,
+            CodificadorSenhaOutputPort codificadorSenhaPort,
+            TokenJwtOutputPort tokenJwtPort,
+            RelogioOutputPort relogioPort,
+            int limiteTentativas,
+            Duration duracaoBloqueio) {
         this.usuarioPort = usuarioPort;
         this.codificadorSenhaPort = codificadorSenhaPort;
         this.tokenJwtPort = tokenJwtPort;
@@ -33,11 +33,14 @@ public class AutenticacaoUseCase implements AutenticarInputPort {
     }
 
     @Override
-    public br.com.gestaonumerario.api.core.domain.model.TokenAcesso autenticar(AutenticarCommand command) {
+    public SessaoAutenticacao autenticar(AutenticarCommand command) {
         if (command == null || command.login() == null || command.senha() == null) {
             throw new CredenciaisInvalidasException();
         }
-        var usuario = usuarioPort.buscarPorLogin(command.login().trim())
+        var usuario = usuarioPort.buscarPorLogin(
+                command.login()
+                        .trim()
+        )
                 .orElseThrow(CredenciaisInvalidasException::new);
 
         var agora = relogioPort.agora();
@@ -46,11 +49,21 @@ public class AutenticacaoUseCase implements AutenticarInputPort {
         }
 
         if (usuario.estaBloqueado(agora)) {
-            throw new CredenciaisInvalidasException(0, usuario.getBloqueadoAte());
+            throw new CredenciaisInvalidasException(
+                    0,
+                    usuario.getBloqueadoAte()
+            );
         }
 
-        if (!codificadorSenhaPort.confere(command.senha(), usuario.getSenhaHash())) {
-            usuario.registrarFalhaLogin(agora, limiteTentativas, duracaoBloqueio);
+        if (!codificadorSenhaPort.confere(
+                command.senha(),
+                usuario.getSenhaHash()
+        )) {
+            usuario.registrarFalhaLogin(
+                    agora,
+                    limiteTentativas,
+                    duracaoBloqueio
+            );
             usuarioPort.salvar(usuario);
             throw new CredenciaisInvalidasException(
                     usuario.tentativasLoginRestantes(limiteTentativas),
@@ -63,9 +76,23 @@ public class AutenticacaoUseCase implements AutenticarInputPort {
             usuarioPort.salvar(usuario);
         }
 
-        return tokenJwtPort.gerar(usuario);
+        var acesso = tokenJwtPort.gerar(usuario);
+        return sessao(
+                usuario,
+                acesso
+        );
+    }
+
+    private SessaoAutenticacao sessao(
+            br.com.gestaonumerario.api.core.domain.model.Usuario usuario,
+            br.com.gestaonumerario.api.core.domain.model.TokenAcesso acesso) {
+        return new SessaoAutenticacao(
+                acesso.valor(),
+                acesso.expiraEm(),
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getPerfil()
+                        .name()
+        );
     }
 }
-
-
-

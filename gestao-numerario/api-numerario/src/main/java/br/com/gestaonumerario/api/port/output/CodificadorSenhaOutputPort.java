@@ -6,4 +6,3 @@ public interface CodificadorSenhaOutputPort {
 
     boolean confere(String senha, String senhaHash);
 }
-

@@ -1,9 +1,9 @@
 package br.com.gestaonumerario.api.adapter.input.controller;
 
-import br.com.gestaonumerario.api.adapter.input.mapper.UsuarioRestMapper;
+import br.com.gestaonumerario.api.adapter.input.contract.UsuarioApi;
 import br.com.gestaonumerario.api.adapter.input.controller.dto.request.CriarUsuarioRequest;
 import br.com.gestaonumerario.api.adapter.input.controller.dto.response.UsuarioResponse;
-import br.com.gestaonumerario.api.port.input.UsuarioInputPort;
+import br.com.gestaonumerario.api.adapter.input.mapper.UsuarioRestMapper;
 import br.com.gestaonumerario.api.port.input.UsuarioInputPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @RequiredArgsConstructor
-public class UsuarioController {
+public class UsuarioController implements UsuarioApi {
 
-    private final UsuarioInputPort criarUseCase;
-    private final UsuarioInputPort consultarUseCase;
+    private final UsuarioInputPort usuarioUseCase;
     private final UsuarioRestMapper mapper;
 
     @PostMapping
+    @Override
     public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody CriarUsuarioRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(criarUseCase.criar(mapper.toCommand(request))));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mapper.toResponse(usuarioUseCase.criar(mapper.toCommand(request))));
     }
 
     @GetMapping("/{usuarioId}")
+    @Override
     public UsuarioResponse buscarPorId(@PathVariable Long usuarioId) {
-        return mapper.toResponse(consultarUseCase.buscarPorId(usuarioId));
+        return mapper.toResponse(usuarioUseCase.buscarPorId(usuarioId));
     }
 }
-
-
-

@@ -1,0 +1,143 @@
+<app-page-header
+  title="Visão geral"
+  description="Acompanhe a posição de numerário e as pendências operacionais da rede."
+  backTo="/tesouraria"
+  [breadcrumbs]="breadcrumbs">
+  @if (resumo) {
+    <div class="reference">
+      <span>
+        <small>Dados de {{ resumo.dataReferencia | date:'dd/MM/yyyy':'UTC' }}</small>
+        @if (ultimaAtualizacao) {
+          <strong>Atualizado às {{ ultimaAtualizacao | date:"HH'h'mm" }}</strong>
+        }
+      </span>
+      <button
+        type="button"
+        class="icon-button"
+        title="Atualizar indicadores"
+        aria-label="Atualizar indicadores"
+        [disabled]="carregando"
+        (click)="carregar()">
+        <lucide-icon [img]="RefreshCw" [size]="18" aria-hidden="true" />
+      </button>
+    </div>
+  }
+</app-page-header>
+
+@if (erro) {
+  <app-alert
+    type="error"
+    title="Não foi possível carregar os indicadores"
+    [message]="erro">
+    <button type="button" class="outline" (click)="carregar()">Tentar novamente</button>
+  </app-alert>
+} @else if (resumo) {
+  <section class="summary-grid" aria-label="Resumo financeiro">
+    <article class="summary-card summary-card--featured">
+      <header class="summary-card__header">
+        <span class="summary-card__icon">
+          <lucide-icon [img]="Landmark" [size]="19" aria-hidden="true" />
+        </span>
+        <span class="summary-card__label">Numerário total</span>
+      </header>
+      <strong class="summary-card__value">{{ resumo.numerarioTotal | currency:'BRL' }}</strong>
+      <p>Saldo consolidado das agências ativas.</p>
+    </article>
+
+    <article class="summary-card">
+      <header class="summary-card__header">
+        <span class="summary-card__icon">
+          <lucide-icon [img]="PackageCheck" [size]="19" aria-hidden="true" />
+        </span>
+        <span class="summary-card__label">Operações hoje</span>
+      </header>
+      <strong class="summary-card__value">{{ resumo.quantidadeAbastecimentosHoje }}</strong>
+      <p>Abastecimentos realizados.</p>
+    </article>
+
+    <article class="summary-card">
+      <header class="summary-card__header">
+        <span class="summary-card__icon">
+          <lucide-icon [img]="CircleDollarSign" [size]="19" aria-hidden="true" />
+        </span>
+        <span class="summary-card__label">Valor movimentado hoje</span>
+      </header>
+      <strong class="summary-card__value">{{ resumo.valorAbastecidoHoje | currency:'BRL' }}</strong>
+      <p>Em operações de abastecimento.</p>
+    </article>
+  </section>
+
+  <section class="pending-panel" aria-labelledby="pending-title">
+    <header>
+      <div>
+        <h2 id="pending-title">Pendências operacionais</h2>
+        <p>Situações que precisam de acompanhamento.</p>
+      </div>
+      <strong class="pending-total" aria-live="polite">
+        {{ totalPendencias }}
+        {{ totalPendencias === 1 ? 'pendência' : 'pendências' }}
+      </strong>
+    </header>
+
+    <div class="pending-list">
+      @if (isGestor) {
+        <a
+          class="pending-item"
+          routerLink="/agencias/consultar"
+          aria-label="Ver agências abaixo do limite mínimo"
+            [queryParams]="{ alerta: true, origem: 'dashboard' }"
+          [state]="{ origem: 'dashboard' }">
+          <span class="pending-item__icon pending-item__icon--attention">
+            <lucide-icon [img]="Building2" [size]="19" aria-hidden="true" />
+          </span>
+          <span class="pending-item__copy">
+            <strong>Agências abaixo do limite mínimo</strong>
+            <small>Agências que podem precisar de reposição.</small>
+          </span>
+          <b>{{ resumo.quantidadeAgenciasEmAlerta }}</b>
+          <span class="pending-action">
+            Ver agências
+            <lucide-icon [img]="ChevronRight" [size]="17" aria-hidden="true" />
+          </span>
+        </a>
+      } @else {
+        <div class="pending-item pending-item--static">
+          <span class="pending-item__icon pending-item__icon--attention">
+            <lucide-icon [img]="Building2" [size]="19" aria-hidden="true" />
+          </span>
+          <span class="pending-item__copy">
+            <strong>Agências abaixo do limite mínimo</strong>
+            <small>Agências que podem precisar de reposição.</small>
+          </span>
+          <b>{{ resumo.quantidadeAgenciasEmAlerta }}</b>
+        </div>
+      }
+
+      <a
+        class="pending-item"
+        routerLink="/solicitacoes/consultar"
+        aria-label="Ver solicitações aguardando decisão"
+        [queryParams]="{ status: 'PENDENTE', origem: 'dashboard' }"
+        [state]="{ origem: 'dashboard' }">
+        <span class="pending-item__icon pending-item__icon--decision">
+          <lucide-icon [img]="ClipboardCheck" [size]="19" aria-hidden="true" />
+        </span>
+        <span class="pending-item__copy">
+          <strong>Solicitações aguardando decisão</strong>
+          <small>Solicitações que aguardam aprovação ou rejeição.</small>
+        </span>
+        <b>{{ resumo.quantidadeSolicitacoesPendentes }}</b>
+        <span class="pending-action">
+          Ver solicitações
+          <lucide-icon [img]="ChevronRight" [size]="17" aria-hidden="true" />
+        </span>
+      </a>
+    </div>
+  </section>
+} @else {
+  <section class="dashboard-skeleton" aria-label="Carregando indicadores">
+    <span></span>
+    <span></span>
+    <span></span>
+  </section>
+}

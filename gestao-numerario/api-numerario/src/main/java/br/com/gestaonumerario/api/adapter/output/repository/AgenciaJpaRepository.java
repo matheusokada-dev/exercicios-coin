@@ -2,16 +2,15 @@ package br.com.gestaonumerario.api.adapter.output.repository;
 
 import br.com.gestaonumerario.api.adapter.output.repository.entity.AgenciaEntity;
 import jakarta.persistence.LockModeType;
+import java.math.BigDecimal;
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.math.BigDecimal;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.Optional;
 
 public interface AgenciaJpaRepository extends JpaRepository<AgenciaEntity, Long> {
 
@@ -38,11 +37,9 @@ public interface AgenciaJpaRepository extends JpaRepository<AgenciaEntity, Long>
             @Param("busca") String busca,
             @Param("ativo") Boolean ativo,
             @Param("alerta") Boolean alerta,
-            Pageable pageable
-    );
+            Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select agencia from AgenciaEntity agencia where agencia.id = :id")
     Optional<AgenciaEntity> buscarPorIdParaAtualizacao(@Param("id") Long id);
 }
-

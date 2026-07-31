@@ -5,7 +5,10 @@ public enum TipoMovimentacao {
     DEPOSITO(true),
     RECOLHIMENTO(false),
     SAQUE(false),
-    AJUSTE(null);
+    AJUSTE(null),
+    SAIDA_PARA_TRANSITO(false),
+    ENTRADA_DE_TRANSITO(true),
+    AJUSTE_DIVERGENCIA(null);
 
     private final Boolean entradaPadrao;
 

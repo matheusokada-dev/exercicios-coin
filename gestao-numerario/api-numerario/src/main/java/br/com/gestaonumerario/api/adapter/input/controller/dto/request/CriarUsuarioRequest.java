@@ -12,4 +12,3 @@ public record CriarUsuarioRequest(
         @NotNull PerfilUsuario perfil
 ) {
 }
-

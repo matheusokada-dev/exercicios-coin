@@ -33,8 +33,7 @@ public class Movimentacao {
             String descricao,
             Instant dataMovimento,
             Usuario usuario,
-            String idempotencyKey
-    ) {
+            String idempotencyKey) {
         this.id = id;
         this.agencia = obrigatorio(agencia);
         this.solicitacao = solicitacao;
@@ -58,8 +57,7 @@ public class Movimentacao {
             String descricao,
             Instant dataMovimento,
             Usuario usuario,
-            String idempotencyKey
-    ) {
+            String idempotencyKey) {
         BigDecimal valorNormalizado = ValorMonetario.exigirPositivo(valor);
         BigDecimal saldoAnterior = agencia.getSaldoAtual();
         BigDecimal saldoPosterior = calcularSaldoPosterior(
@@ -92,13 +90,22 @@ public class Movimentacao {
             String descricao,
             Instant dataMovimento,
             Usuario usuario,
-            String idempotencyKey
-    ) {
+            String idempotencyKey) {
         Boolean entradaPadrao = obrigatorio(tipo).getEntradaPadrao();
         if (entradaPadrao == null) {
             throw new CampoObrigatorioException();
         }
-        return criar(agencia, solicitacao, tipo, entradaPadrao, valor, descricao, dataMovimento, usuario, idempotencyKey);
+        return criar(
+                agencia,
+                solicitacao,
+                tipo,
+                entradaPadrao,
+                valor,
+                descricao,
+                dataMovimento,
+                usuario,
+                idempotencyKey
+        );
     }
 
     public static Movimentacao reconstituir(
@@ -113,8 +120,7 @@ public class Movimentacao {
             String descricao,
             Instant dataMovimento,
             Usuario usuario,
-            String idempotencyKey
-    ) {
+            String idempotencyKey) {
         return new Movimentacao(
                 id,
                 agencia,
@@ -131,16 +137,10 @@ public class Movimentacao {
         );
     }
 
-    private static BigDecimal calcularSaldoPosterior(
-            boolean entrada,
-            BigDecimal saldoAnterior,
-            BigDecimal valor
-    ) {
+    private static BigDecimal calcularSaldoPosterior(boolean entrada, BigDecimal saldoAnterior, BigDecimal valor) {
         BigDecimal saldo = ValorMonetario.exigirNaoNegativo(saldoAnterior);
 
-        BigDecimal saldoPosterior = entrada
-                ? saldo.add(valor)
-                : saldo.subtract(valor);
+        BigDecimal saldoPosterior = entrada ? saldo.add(valor) : saldo.subtract(valor);
 
         if (saldoPosterior.signum() < 0) {
             throw new SaldoInsuficienteException();
@@ -161,16 +161,51 @@ public class Movimentacao {
         return valor;
     }
 
-    public Long getId() { return id; }
-    public Agencia getAgencia() { return agencia; }
-    public SolicitacaoAbastecimento getSolicitacao() { return solicitacao; }
-    public TipoMovimentacao getTipo() { return tipo; }
-    public boolean isEntrada() { return entrada; }
-    public BigDecimal getValor() { return valor; }
-    public BigDecimal getSaldoAnterior() { return saldoAnterior; }
-    public BigDecimal getSaldoPosterior() { return saldoPosterior; }
-    public String getDescricao() { return descricao; }
-    public Instant getDataMovimento() { return dataMovimento; }
-    public Usuario getUsuario() { return usuario; }
-    public String getIdempotencyKey() { return idempotencyKey; }
+    public Long getId() {
+        return id;
+    }
+
+    public Agencia getAgencia() {
+        return agencia;
+    }
+
+    public SolicitacaoAbastecimento getSolicitacao() {
+        return solicitacao;
+    }
+
+    public TipoMovimentacao getTipo() {
+        return tipo;
+    }
+
+    public boolean isEntrada() {
+        return entrada;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public BigDecimal getSaldoAnterior() {
+        return saldoAnterior;
+    }
+
+    public BigDecimal getSaldoPosterior() {
+        return saldoPosterior;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public Instant getDataMovimento() {
+        return dataMovimento;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
 }

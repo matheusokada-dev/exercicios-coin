@@ -17,5 +17,3 @@ public class SpringTransacaoAdapter implements TransacaoOutputPort {
         return new TransactionTemplate(transactionManager).execute(status -> acao.executar());
     }
 }
-
-

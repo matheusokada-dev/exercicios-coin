@@ -1,91 +1,71 @@
 # Modelo de dados
 
-## Fonte e adaptação
-
-O modelo vem do guia técnico e foi adaptado de SQL Server para MySQL 8.4.
-
-| Conceito do guia | Adaptação MySQL |
-| --- | --- |
-| `BIGINT IDENTITY(1,1)` | `BIGINT AUTO_INCREMENT` |
-| `BIT` | `BOOLEAN` |
-| `DATETIME2` + `SYSUTCDATETIME()` | `DATETIME(6)` + `UTC_TIMESTAMP(6)` |
-| Índice filtrado por `WHERE` | coluna gerada armazenada + índice único |
-
-## Convenções confirmadas
-
-- Valores monetários: `DECIMAL(19,2)`.
-- Datas técnicas: UTC.
-- IDs: `BIGINT` auto incrementáveis.
-- Senhas: somente `senha_hash`; nunca senha em texto puro.
-- Controle otimista: campo `versao` em entidades mutáveis.
-- Movimentações são imutáveis; nenhuma operação comum de update ou delete será criada para elas.
-- Agências usadas em histórico são desativadas por `ativo`, não apagadas fisicamente.
+O modelo executável é definido pelas migrations em
+`api-numerario/src/main/resources/db/migration`.
 
 ## Migrations
 
-- `V1__create_schema.sql`: cria tabelas iniciais, constraints, índices e regra de solicitação aberta por agência.
-- `V2__adiciona_direcao_movimentacao.sql`: adiciona direção da movimentação para permitir ajuste de entrada ou saída.
-- `V3__adiciona_controle_tentativas_login.sql`: adiciona contador persistente de falhas e bloqueio temporário de login.
+- `V1__create_schema.sql`: cria todas as tabelas, índices, chaves e restrições.
+- `database/scripts/seed-dados-dev.sql`: popula manualmente a massa
+  determinística exclusiva de desenvolvimento; não faz parte do Flyway.
+
+As duas migrations pressupõem um schema vazio. Não aplique esta nova baseline
+sobre um banco que possua o histórico Flyway antigo.
 
 ## Tabelas
 
 ### `usuario`
 
-Campos principais: `id`, `nome`, `login`, `senha_hash`, `perfil`, `ativo`, `criado_em`, `tentativas_login_falhas`, `bloqueado_ate`.
-
-Regras:
-
-- `login` é único.
-- `perfil` aceita `OPERADOR` ou `GESTOR`.
-- Senha nunca é retornada pela API.
-- Cinco senhas incorretas consecutivas bloqueiam novas autenticações por 15 minutos.
-- Uma autenticação válida zera o contador e o bloqueio; o controle é persistido para sobreviver à reinicialização da API.
+Usuários de perfil `GESTOR` ou `OPERADOR`, com senha BCrypt, ativação e controle
+de tentativas de login.
 
 ### `agencia`
 
-Campos principais: `id`, `codigo`, `nome`, `cidade`, `saldo_atual`, `limite_minimo`, `ativo`, `versao`, `criado_em`, `atualizado_em`.
+Cadastro e posição financeira da agência. Os campos centrais são `codigo`,
+`nome`, `cidade`, `saldo_atual`, `limite_minimo`, `ativo` e `versao`.
 
-Regras:
+O saldo pertence diretamente à agência. Não existe tabela, coluna obrigatória
+ou chave estrangeira de unidade operacional. Por isso o formulário de cadastro
+cria uma agência apenas com os dados que efetivamente exibe.
 
-- `codigo` é único.
-- `saldo_atual` e `limite_minimo` não podem ser negativos.
-- Remoção funcional é desativação lógica por `ativo`.
+Uma agência ativa está em alerta quando `saldo_atual < limite_minimo`.
 
-### `solicitacao_abastecimento`
+### `solicitacao_numerario`
 
-Campos principais: `id`, `agencia_id`, `valor`, `motivo`, `data_desejada`, `status`, `solicitante_id`, `decisor_id`, `justificativa_decisao`, `justificativa_especial`, `data_criacao`, `data_decisao`, `data_atendimento`, `versao`.
+Solicitação de `SUPRIMENTO` ou `RECOLHIMENTO`, ligada diretamente à agência.
+Suporta `PENDENTE`, `APROVADA`, `REJEITADA`, `EM_EXECUCAO`, `CONCLUIDA`,
+`CANCELADA` e `COM_DIVERGENCIA`.
 
-Regras:
+A rota é persistida diretamente pelas colunas opcionais `origem_agencia_id` e
+`destino_agencia_id`. Ao criar um suprimento, o destino é a agência solicitante;
+ao criar um recolhimento, ela é a origem. A programação escolhe a outra agência.
 
-- `valor` deve ser maior que zero.
-- `status` aceita `PENDENTE`, `APROVADA`, `REJEITADA` ou `ATENDIDA`.
-- Transições válidas: `PENDENTE -> APROVADA | REJEITADA` e `APROVADA -> ATENDIDA`.
-- Uma agência só pode ter uma solicitação aberta (`PENDENTE` ou `APROVADA`).
+A coluna gerada `agencia_aberta_id` garante no banco no máximo uma solicitação
+aberta por agência.
+
+### `operacao_numerario`
+
+Execução logística da solicitação. Suporta `PROGRAMADA`, `EM_SEPARACAO`,
+`EM_TRANSITO`, `RECEBIDA`, `CONCILIADA` e `COM_DIVERGENCIA`.
+
+Origem e destino são agências distintas e ficam congeladas na operação por
+`origem_agencia_id` e `destino_agencia_id`. A expedição debita o saldo da origem
+e o recebimento credita o valor efetivamente recebido no destino.
 
 ### `movimentacao`
 
-Campos principais: `id`, `agencia_id`, `solicitacao_id`, `tipo`, `valor`, `saldo_anterior`, `saldo_posterior`, `descricao`, `data_movimento`, `usuario_id`, `idempotency_key`, `entrada`.
+Livro-caixa ligado diretamente à agência, com direção, valor, saldo anterior e
+posterior, usuário, solicitação/operação opcionais e idempotência.
 
-Tipos:
+### `historico_solicitacao_numerario`
 
-- `ABASTECIMENTO`
-- `RECOLHIMENTO`
-- `SAQUE`
-- `DEPOSITO`
-- `AJUSTE`
+Linha do tempo auditável das solicitações e operações.
 
-Regras:
+### `comando_idempotente`
 
-- `valor` deve ser maior que zero.
-- `idempotency_key` evita repetição de operações.
-- `ABASTECIMENTO` é criado pelo atendimento de solicitação.
-- `DEPOSITO` soma saldo.
-- `SAQUE` e `RECOLHIMENTO` subtraem saldo e não podem deixar saldo negativo.
-- `AJUSTE` usa `entrada` para decidir se soma ou subtrai.
+Registro de comandos processados para impedir repetição de efeitos financeiros.
 
-## Índices principais
+## Estruturas removidas
 
-- Agência: busca por ativo e indicadores de alerta.
-- Movimentação: consulta por agência/data e tipo/data.
-- Solicitação: consulta por status/data e agência/status.
-- Solicitação aberta: índice único sobre coluna gerada armazenada, conforme D01.
+O reset não recria `unidade_operacional`, sessões de refresh token nem as
+migrations incrementais legadas V3–V6.

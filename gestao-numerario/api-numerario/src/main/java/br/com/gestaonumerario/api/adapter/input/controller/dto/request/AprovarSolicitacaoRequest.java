@@ -8,4 +8,3 @@ public record AprovarSolicitacaoRequest(
         @Size(max = 500) String justificativaEspecial
 ) {
 }
-

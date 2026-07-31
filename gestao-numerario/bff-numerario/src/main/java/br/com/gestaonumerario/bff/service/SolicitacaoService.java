@@ -7,10 +7,9 @@ import br.com.gestaonumerario.bff.dto.PaginaResponse;
 import br.com.gestaonumerario.bff.dto.RejeitarSolicitacaoRequest;
 import br.com.gestaonumerario.bff.dto.SolicitacaoResponse;
 import br.com.gestaonumerario.bff.dto.SolicitarAbastecimentoRequest;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +24,46 @@ public class SolicitacaoService {
             LocalDate dataInicio,
             LocalDate dataFim,
             int pagina,
-            int tamanho
-    ) {
+            int tamanho) {
         return apiNumerarioClient.listarSolicitacoes(
-                authorization, agenciaId, status, dataInicio, dataFim, pagina, tamanho);
+                authorization,
+                agenciaId,
+                status,
+                dataInicio,
+                dataFim,
+                pagina,
+                tamanho
+        );
     }
 
     public SolicitacaoResponse criar(String authorization, SolicitarAbastecimentoRequest request) {
-        return apiNumerarioClient.criarSolicitacao(authorization, request);
+        return apiNumerarioClient.criarSolicitacao(
+                authorization,
+                request
+        );
     }
 
     public SolicitacaoResponse aprovar(String authorization, Long id, AprovarSolicitacaoRequest request) {
-        return apiNumerarioClient.aprovarSolicitacao(authorization, id, request);
+        return apiNumerarioClient.aprovarSolicitacao(
+                authorization,
+                id,
+                request
+        );
     }
 
     public SolicitacaoResponse rejeitar(String authorization, Long id, RejeitarSolicitacaoRequest request) {
-        return apiNumerarioClient.rejeitarSolicitacao(authorization, id, request);
+        return apiNumerarioClient.rejeitarSolicitacao(
+                authorization,
+                id,
+                request
+        );
     }
 
     public SolicitacaoResponse atender(String authorization, Long id, AtenderSolicitacaoRequest request) {
-        return apiNumerarioClient.atenderSolicitacao(authorization, id, request);
+        return apiNumerarioClient.atenderSolicitacao(
+                authorization,
+                id,
+                request
+        );
     }
 }

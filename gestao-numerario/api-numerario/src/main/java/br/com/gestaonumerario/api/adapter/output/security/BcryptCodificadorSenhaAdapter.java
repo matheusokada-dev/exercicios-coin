@@ -16,8 +16,9 @@ public class BcryptCodificadorSenhaAdapter implements CodificadorSenhaOutputPort
 
     @Override
     public boolean confere(String senha, String senhaHash) {
-        return passwordEncoder.matches(senha, senhaHash);
+        return passwordEncoder.matches(
+                senha,
+                senhaHash
+        );
     }
 }
-
-

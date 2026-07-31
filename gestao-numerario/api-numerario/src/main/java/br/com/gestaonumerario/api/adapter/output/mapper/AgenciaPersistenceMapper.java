@@ -12,8 +12,16 @@ public class AgenciaPersistenceMapper {
             return null;
         }
 
-        return new Agencia(entity.getId(), entity.getCodigo(), entity.getNome(), entity.getCidade(),
-                entity.getSaldoAtual(), entity.getLimiteMinimo(), entity.isAtivo(), entity.getVersao());
+        return new Agencia(
+                entity.getId(),
+                entity.getCodigo(),
+                entity.getNome(),
+                entity.getCidade(),
+                entity.getSaldoAtual(),
+                entity.getLimiteMinimo(),
+                entity.isAtivo(),
+                entity.getVersao()
+        );
     }
 
     public AgenciaEntity toEntity(Agencia domain) {
@@ -21,8 +29,12 @@ public class AgenciaPersistenceMapper {
             return null;
         }
 
-        return new AgenciaEntity(domain.getId(), domain.getCodigo(), domain.getNome(), domain.getCidade(),
-                domain.getSaldoAtual(), domain.getLimiteMinimo(), domain.isAtivo(), domain.getVersao());
+        return new AgenciaEntity(
+                domain.getCodigo(),
+                domain.getNome(),
+                domain.getCidade(),
+                domain.getSaldoAtual(),
+                domain.getLimiteMinimo()
+        );
     }
 }
-

@@ -9,11 +9,14 @@ import br.com.gestaonumerario.api.core.domain.model.command.CriarAgenciaCommand;
 
 public interface AgenciaInputPort {
     Agencia criar(CriarAgenciaCommand command);
+
     Agencia atualizar(AtualizarAgenciaCommand command);
+
     Agencia buscarPorId(Long id);
+
     Pagina<Agencia> listar(FiltroAgencia filtro);
+
     DetalheAgencia detalhar(Long agenciaId);
+
     void desativar(Long agenciaId);
 }
-
-

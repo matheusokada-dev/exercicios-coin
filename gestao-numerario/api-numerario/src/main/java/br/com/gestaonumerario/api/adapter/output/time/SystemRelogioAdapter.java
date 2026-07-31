@@ -1,11 +1,10 @@
 package br.com.gestaonumerario.api.adapter.output.time;
 
 import br.com.gestaonumerario.api.port.output.RelogioOutputPort;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import org.springframework.stereotype.Component;
 
 @Component
 public class SystemRelogioAdapter implements RelogioOutputPort {
@@ -20,5 +19,3 @@ public class SystemRelogioAdapter implements RelogioOutputPort {
         return LocalDate.now(ZoneOffset.UTC);
     }
 }
-
-

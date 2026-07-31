@@ -1,0 +1,153 @@
+<app-page-header title="Solicitações de numerário"
+  description="Suprimento, recolhimento e acompanhamento do fluxo logístico."
+  [backTo]="backTo"
+  [breadcrumbs]="breadcrumbs" />
+
+<section class="filters" aria-label="Filtros de solicitações">
+  <label class="field"><span>Agência</span><select [(ngModel)]="agenciaId">
+    <option value="">Todas as agências</option>
+    @for (agencia of agencias; track agencia.id) {
+      <option [ngValue]="agencia.id">{{ agencia.codigo }} — {{ agencia.nome }}</option>
+    }
+  </select></label>
+  <label class="field"><span>Tipo</span><select [(ngModel)]="tipo">
+    <option value="">Todos</option><option value="SUPRIMENTO">Suprimento</option>
+    <option value="RECOLHIMENTO">Recolhimento</option></select></label>
+  <label class="field"><span>Status</span><select [(ngModel)]="status">
+    <option value="">Todos</option>
+    @for (item of statusDisponiveis; track item) { <option [value]="item">{{ rotuloStatus(item) }}</option> }
+  </select></label>
+  <label class="field"><span>Data inicial</span><input [(ngModel)]="dataInicio" type="date"></label>
+  <label class="field"><span>Data final</span><input [(ngModel)]="dataFim" type="date"></label>
+  <button type="button" (click)="listar()">Pesquisar</button>
+  <button type="button" class="outline" (click)="limpar()">Limpar</button>
+</section>
+
+@if (false) {
+<section class="form-panel">
+  <h2>Nova solicitação</h2>
+  <div class="form">
+    <label class="field"><span>Operação</span><select [(ngModel)]="nova.tipoOperacao">
+      <option value="SUPRIMENTO">Suprimento para agência</option>
+      <option value="RECOLHIMENTO">Recolhimento da agência</option>
+    </select></label>
+    <label class="field"><span>Agência</span><input [(ngModel)]="nova.agenciaId" type="number" min="1"></label>
+    <label class="field"><span>Valor</span><input [(ngModel)]="nova.valor" type="number" min=".01" step=".01"></label>
+    <label class="field field--wide"><span>Motivo</span><input [(ngModel)]="nova.motivo"></label>
+    <label class="field"><span>Data desejada</span><input [(ngModel)]="nova.dataDesejada" type="date"></label>
+    <button type="button" (click)="criar()" [disabled]="salvando">Cadastrar</button>
+  </div>
+</section>
+}
+
+@if (erro) { <app-alert type="error" [message]="erro" /> }
+@if (sucesso) { <app-alert type="success" [message]="sucesso" /> }
+
+@if (carregando) { <p class="empty">Carregando solicitações...</p> }
+@else if (resultado?.itens?.length) {
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Tipo</th><th>Agência origem</th><th>Agência destino</th><th>Valor</th><th>Data desejada</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>@for (s of resultado!.itens; track s.id) {
+      <tr>
+        <td>{{ s.id }}</td><td>{{ s.tipoOperacao === 'SUPRIMENTO' ? 'Suprimento' : 'Recolhimento' }}</td>
+        <td class="code-cell">{{ codigoUnidade(s.origemId) }}</td>
+        <td class="code-cell">{{ codigoUnidade(s.destinoId) }}</td>
+        <td>{{ s.valorSolicitado | currency:'BRL' }}</td>
+        <td>{{ s.dataDesejada | date:'dd/MM/yyyy':'UTC' }}</td>
+        <td><span class="status-badge" [class.status-badge--attention]="s.status==='PENDENTE'||s.status==='COM_DIVERGENCIA'">{{ rotuloStatus(s.status) }}</span></td>
+        <td class="actions"><button type="button" class="outline" (click)="detalhar(s.id)">Detalhar</button></td>
+      </tr>
+    }</tbody>
+  </table></div>
+  <app-pagination
+    [page]="pagina"
+    [pageSize]="tamanho"
+    [totalItems]="resultado!.totalItens"
+    [totalPages]="totalPaginas"
+    (pageChange)="irParaPagina($event)"
+    (pageSizeChange)="alterarTamanho($event)" />
+} @else if (resultado) { <p class="empty">Nenhuma solicitação encontrada.</p> }
+
+<dialog #detalheDialog class="detail-dialog" (close)="fecharDetalhe()">
+@if (detalhe) {
+  <section class="detail-panel">
+    <div class="detail-title"><div><small>Solicitação #{{ detalhe.solicitacao.id }}</small>
+      <h2>{{ detalhe.solicitacao.tipoOperacao === 'SUPRIMENTO' ? 'Suprimento' : 'Recolhimento' }} de {{ detalhe.solicitacao.valorSolicitado | currency:'BRL' }}</h2></div>
+      <button type="button" class="outline" (click)="fecharDetalhe()">Fechar</button></div>
+    <div class="summary-grid">
+      <div><small>Status da solicitação</small><strong>{{ rotuloStatus(detalhe.solicitacao.status) }}</strong></div>
+      <div><small>Origem</small><strong>{{ nomeUnidade(detalhe.solicitacao.origemId) }}</strong></div>
+      <div><small>Destino</small><strong>{{ nomeUnidade(detalhe.solicitacao.destinoId) }}</strong></div>
+      <div><small>Estágio logístico</small><strong>{{ detalhe.operacao ? rotuloOperacao(detalhe.operacao.status) : 'Não programada' }}</strong></div>
+    </div>
+    <div class="actions detail-actions">
+      @if (detalhe.solicitacao.status === 'PENDENTE') {
+        <button (click)="abrirAcao('aprovar')">Aprovar</button><button class="outline" (click)="abrirAcao('rejeitar')">Rejeitar</button>
+        <button class="outline" (click)="abrirAcao('cancelar')">Cancelar</button>
+      }
+      @if (detalhe.solicitacao.status === 'APROVADA') { <button (click)="abrirAcao('programar')">Programar operação</button> }
+      @if (detalhe.operacao?.status === 'PROGRAMADA') {
+        <button class="outline" (click)="executarSimples('separar')">Iniciar separação</button><button (click)="executarSimples('expedir')">Expedir</button>
+      }
+      @if (detalhe.operacao?.status === 'EM_SEPARACAO') { <button (click)="executarSimples('expedir')">Expedir</button> }
+      @if (detalhe.operacao?.status === 'EM_TRANSITO') {
+        <button (click)="abrirAcao('receber')">Confirmar recebimento</button><button class="outline" (click)="abrirAcao('ocorrencia')">Registrar ocorrência</button>
+      }
+      @if (detalhe.operacao?.status === 'COM_DIVERGENCIA') {
+        <button (click)="abrirAcao('conciliar')">Conciliar</button><button class="outline" (click)="abrirAcao('ajustar')">Ajuste financeiro</button>
+      }
+    </div>
+    @if (erroAcao) { <app-alert type="error" [message]="erroAcao" /> }
+    @if (acao && acao !== 'separar' && acao !== 'expedir') {
+      <div class="form action-form">
+        <h3>{{ tituloAcao() }}</h3>
+        @if (acao === 'programar') {
+          <label class="field field--wide"><span>Agência que completa a rota</span><select [(ngModel)]="form.unidadeId" required>
+            <option value="">Selecione</option>@for (u of agenciasParaProgramacao(); track u.id) { <option [ngValue]="u.id">{{ u.codigo }} — {{ u.nome }}</option> }
+          </select></label>
+        }
+        @if (acao === 'receber') {
+          <div class="receiving-summary">
+            <div><small>Valor expedido</small><strong>{{ detalhe.operacao?.valorExpedido | currency:'BRL' }}</strong></div>
+            <div [class.receiving-summary__divergence]="divergenciaPrevista() > 0">
+              <small>Divergência prevista</small><strong>{{ divergenciaPrevista() | currency:'BRL' }}</strong>
+            </div>
+          </div>
+          <label class="field field--wide"><span>Valor recebido</span>
+            <input appCurrencyInput [(ngModel)]="form.valor" inputmode="numeric" required>
+            <small>Se for menor que o valor expedido, a solicitação ficará com divergência.</small>
+          </label>
+        }
+        @if (acao === 'ajustar') {
+          <label class="field"><span>Valor do ajuste</span><input appCurrencyInput [(ngModel)]="form.valor" inputmode="numeric" required></label>
+        }
+        @if (acao === 'ajustar') {
+          <label class="field"><span>Unidade</span><select [(ngModel)]="form.unidadeId" required>@for (u of unidadesDaRota(); track u.id) { <option [ngValue]="u.id">{{ u.nome }}</option> }</select></label>
+          <label class="field"><span>Direção</span><select [(ngModel)]="form.entrada"><option [ngValue]="true">Entrada</option><option [ngValue]="false">Saída</option></select></label>
+        }
+        @if (acao !== 'programar') {
+          <label class="field field--wide"><span>{{ acao === 'ocorrencia' ? 'Descrição' : acao === 'receber' ? 'Justificativa da divergência' : 'Justificativa' }}</span>
+            <textarea [(ngModel)]="form.texto" rows="3" maxlength="500" [required]="acao !== 'receber'"></textarea>
+            @if (acao === 'receber') { <small>Obrigatória quando o valor recebido for menor que o expedido.</small> }
+          </label>
+        }
+        <div class="action-form__actions">
+          <button (click)="solicitarConfirmacao()" [disabled]="salvando">Continuar</button>
+          <button class="outline" (click)="acao='';erroAcao=''">Voltar</button>
+        </div>
+      </div>
+    }
+    <h3>Histórico</h3>
+    <ol class="timeline">@for (h of detalhe.historico; track h.id) {
+      <li><strong>{{ rotuloEvento(h.evento) }}</strong><span>{{ h.dataEvento | date:'dd/MM/yyyy HH:mm' }}</span>@if(h.justificativa){<p>{{h.justificativa}}</p>}</li>
+    }</ol>
+  </section>
+}
+</dialog>
+
+<app-confirmation-dialog #confirmacaoAcao
+  [title]="tituloAcao()"
+  [message]="mensagemConfirmacao()"
+  confirmLabel="Confirmar"
+  [danger]="acaoPerigosa()"
+  (confirmed)="confirmarAcao()" />

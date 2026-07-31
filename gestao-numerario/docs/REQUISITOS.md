@@ -28,6 +28,7 @@ Legenda: `Pendente`, `Em andamento`, `Concluído`. Origem: **Gestor** ou **Guia*
 | RF20 | Livro Caixa por agência e período com download de arquivo Excel | Usuário | Concluído |
 | RF21 | Header autenticado somente com logout; breadcrumbs e Voltar nas telas internas | Usuário | Concluído |
 | RF22 | Padronizar o frontend conforme a documentação Bradesco/Liquid fornecida, distinguindo regra oficial, adaptação Angular e componente ainda sem referência | Usuário | Em andamento |
+| RF23 | Documentar todos os controllers e operações da API e do BFF no padrão `*Api` → `Controller implements`, validando o OpenAPI automaticamente | Usuário | Concluído |
 
 ## Regras de negócio
 
@@ -53,6 +54,33 @@ Legenda: `Pendente`, `Em andamento`, `Concluído`. Origem: **Gestor** ou **Guia*
 
 - Ampliar os testes automatizados dos novos componentes e interceptores globais.
 - Atualizar status para `Concluído` somente após validação funcional ou execução de testes, conforme decisão do usuário.
+
+## Evolução aprovada de solicitações de numerário
+
+As regras-alvo aprovadas em 24/07/2026 estão formalizadas em
+`REGRAS_SOLICITACAO_NUMERARIO.md`. Elas ainda não estão implementadas.
+
+Essa evolução:
+
+- restringe toda a Tesouraria ao perfil `GESTOR`;
+- generaliza a solicitação para `SUPRIMENTO` e `RECOLHIMENTO`;
+- permite que qualquer gestor solicite para qualquer agência;
+- permite aprovação por qualquer gestor, inclusive autoaprovação;
+- remove a justificativa especial acima de R$ 500.000;
+- introduz origem, destino e numerário em trânsito;
+- separa aprovação, programação, expedição, recebimento e conclusão;
+- adiciona cancelamento, ocorrência, divergência e conciliação;
+- mantém somente os perfis `GESTOR` e `OPERADOR`;
+- exige controles compensatórios e histórico imutável.
+
+As regras legadas RN04, RN06, RN07, RN09 e RN10 deverão ser substituídas
+durante a implementação. Até lá, continuam descrevendo o comportamento do
+código atual.
+
+O desenho técnico aprovado para essa evolução está em
+`MODELO_EVOLUCAO_SOLICITACAO_NUMERARIO.md`. Ele define unidade operacional,
+transformação da tabela atual, operação logística única, histórico completo,
+movimentações de trânsito, máquinas de estado separadas e contratos evoluídos da API v1.
 
 ## Regra de atualização
 

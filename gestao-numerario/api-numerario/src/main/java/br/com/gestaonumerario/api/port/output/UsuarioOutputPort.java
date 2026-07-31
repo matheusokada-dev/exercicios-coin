@@ -1,7 +1,6 @@
 package br.com.gestaonumerario.api.port.output;
 
 import br.com.gestaonumerario.api.core.domain.model.Usuario;
-
 import java.util.Optional;
 
 public interface UsuarioOutputPort {
@@ -14,4 +13,3 @@ public interface UsuarioOutputPort {
 
     Usuario salvar(Usuario usuario);
 }
-

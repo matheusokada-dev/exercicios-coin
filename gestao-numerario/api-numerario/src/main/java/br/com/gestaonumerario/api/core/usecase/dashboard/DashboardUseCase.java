@@ -4,6 +4,7 @@ import br.com.gestaonumerario.api.core.domain.model.ResumoDashboard;
 import br.com.gestaonumerario.api.port.input.ConsultarDashboardInputPort;
 import br.com.gestaonumerario.api.port.output.DashboardOutputPort;
 import br.com.gestaonumerario.api.port.output.RelogioOutputPort;
+
 public class DashboardUseCase implements ConsultarDashboardInputPort {
 
     private final DashboardOutputPort dashboardPort;
@@ -19,5 +20,3 @@ public class DashboardUseCase implements ConsultarDashboardInputPort {
         return dashboardPort.consultar(relogioPort.hoje());
     }
 }
-
-

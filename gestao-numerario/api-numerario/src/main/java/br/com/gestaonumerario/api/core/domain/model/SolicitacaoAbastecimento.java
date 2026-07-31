@@ -15,8 +15,7 @@ import java.time.LocalDate;
 
 public class SolicitacaoAbastecimento {
 
-    private static final BigDecimal LIMITE_JUSTIFICATIVA_ESPECIAL =
-            new BigDecimal("500000.00");
+    private static final BigDecimal LIMITE_JUSTIFICATIVA_ESPECIAL = new BigDecimal("500000.00");
 
     private final Long id;
     private final Agencia agencia;
@@ -48,8 +47,7 @@ public class SolicitacaoAbastecimento {
             Instant dataCriacao,
             Instant dataDecisao,
             Instant dataAtendimento,
-            long versao
-    ) {
+            long versao) {
         this.id = id;
         this.agencia = obrigatorio(agencia);
         this.valor = ValorMonetario.exigirPositivo(valor);
@@ -73,8 +71,7 @@ public class SolicitacaoAbastecimento {
             LocalDate dataDesejada,
             Usuario solicitante,
             LocalDate dataReferencia,
-            Instant agora
-    ) {
+            Instant agora) {
         if (dataReferencia == null || agora == null) {
             throw new CampoObrigatorioException();
         }
@@ -115,8 +112,7 @@ public class SolicitacaoAbastecimento {
             Instant dataCriacao,
             Instant dataDecisao,
             Instant dataAtendimento,
-            long versao
-    ) {
+            long versao) {
         return new SolicitacaoAbastecimento(
                 id,
                 agencia,
@@ -135,12 +131,7 @@ public class SolicitacaoAbastecimento {
         );
     }
 
-    public void aprovar(
-            Usuario decisor,
-            String justificativaDecisao,
-            String justificativaEspecial,
-            Instant agora
-    ) {
+    public void aprovar(Usuario decisor, String justificativaDecisao, String justificativaEspecial, Instant agora) {
         validarStatus(StatusSolicitacao.PENDENTE);
         validarGestor(decisor);
         validarNaoAutoAprovacao(decisor);
@@ -159,11 +150,7 @@ public class SolicitacaoAbastecimento {
         this.dataDecisao = obrigatorio(agora);
     }
 
-    public void rejeitar(
-            Usuario decisor,
-            String justificativaDecisao,
-            Instant agora
-    ) {
+    public void rejeitar(Usuario decisor, String justificativaDecisao, Instant agora) {
         validarStatus(StatusSolicitacao.PENDENTE);
         validarGestor(decisor);
 
@@ -196,9 +183,8 @@ public class SolicitacaoAbastecimento {
         Long idSolicitante = solicitante.getId();
         Long idDecisor = decisor.getId();
 
-        boolean mesmoUsuario = idSolicitante != null && idDecisor != null
-                ? idSolicitante.equals(idDecisor)
-                : solicitante == decisor;
+        boolean mesmoUsuario =
+                idSolicitante != null && idDecisor != null ? idSolicitante.equals(idDecisor) : solicitante == decisor;
 
         if (mesmoUsuario) {
             throw new AutoAprovacaoNaoPermitidaException();
@@ -225,18 +211,59 @@ public class SolicitacaoAbastecimento {
         return valor;
     }
 
-    public Long getId() { return id; }
-    public Agencia getAgencia() { return agencia; }
-    public BigDecimal getValor() { return valor; }
-    public String getMotivo() { return motivo; }
-    public LocalDate getDataDesejada() { return dataDesejada; }
-    public Usuario getSolicitante() { return solicitante; }
-    public Instant getDataCriacao() { return dataCriacao; }
-    public long getVersao() { return versao; }
-    public StatusSolicitacao getStatus() { return status; }
-    public Usuario getDecisor() { return decisor; }
-    public String getJustificativaDecisao() { return justificativaDecisao; }
-    public String getJustificativaEspecial() { return justificativaEspecial; }
-    public Instant getDataDecisao() { return dataDecisao; }
-    public Instant getDataAtendimento() { return dataAtendimento; }
+    public Long getId() {
+        return id;
+    }
+
+    public Agencia getAgencia() {
+        return agencia;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public LocalDate getDataDesejada() {
+        return dataDesejada;
+    }
+
+    public Usuario getSolicitante() {
+        return solicitante;
+    }
+
+    public Instant getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public long getVersao() {
+        return versao;
+    }
+
+    public StatusSolicitacao getStatus() {
+        return status;
+    }
+
+    public Usuario getDecisor() {
+        return decisor;
+    }
+
+    public String getJustificativaDecisao() {
+        return justificativaDecisao;
+    }
+
+    public String getJustificativaEspecial() {
+        return justificativaEspecial;
+    }
+
+    public Instant getDataDecisao() {
+        return dataDecisao;
+    }
+
+    public Instant getDataAtendimento() {
+        return dataAtendimento;
+    }
 }

@@ -1,6 +1,7 @@
 package br.com.gestaonumerario.api.core.domain.model;
 
 import br.com.gestaonumerario.api.core.exception.CampoObrigatorioException;
+import br.com.gestaonumerario.api.core.exception.RegraOperacaoNumerarioException;
 import br.com.gestaonumerario.api.core.exception.SaldoInsuficienteException;
 import java.math.BigDecimal;
 
@@ -23,12 +24,20 @@ public class Agencia {
             BigDecimal saldoAtual,
             BigDecimal limiteMinimo,
             boolean ativo,
-            long versao
-    ) {
+            long versao) {
         this.id = id;
-        this.codigo = textoObrigatorio(codigo);
-        this.nome = textoObrigatorio(nome);
-        this.cidade = textoObrigatorio(cidade);
+        this.codigo = textoObrigatorio(
+                codigo,
+                "codigo"
+        );
+        this.nome = textoObrigatorio(
+                nome,
+                "nome"
+        );
+        this.cidade = textoObrigatorio(
+                cidade,
+                "cidade"
+        );
         this.saldoAtual = ValorMonetario.exigirNaoNegativo(saldoAtual);
         this.limiteMinimo = ValorMonetario.exigirNaoNegativo(limiteMinimo);
         this.ativo = ativo;
@@ -48,10 +57,12 @@ public class Agencia {
     }
 
     public void abastecer(BigDecimal valor) {
+        exigirAtiva();
         saldoAtual = saldoAtual.add(ValorMonetario.exigirPositivo(valor));
     }
 
     public void retirar(BigDecimal valor) {
+        exigirAtiva();
         BigDecimal valorRetirada = ValorMonetario.exigirPositivo(valor);
 
         if (saldoAtual.compareTo(valorRetirada) < 0) {
@@ -62,8 +73,15 @@ public class Agencia {
     }
 
     public void atualizarDados(String nome, String cidade, BigDecimal limiteMinimo) {
-        this.nome = textoObrigatorio(nome);
-        this.cidade = textoObrigatorio(cidade);
+        exigirAtiva();
+        this.nome = textoObrigatorio(
+                nome,
+                "nome"
+        );
+        this.cidade = textoObrigatorio(
+                cidade,
+                "cidade"
+        );
         this.limiteMinimo = ValorMonetario.exigirNaoNegativo(limiteMinimo);
     }
 
@@ -75,18 +93,49 @@ public class Agencia {
         ativo = false;
     }
 
-    public Long getId() { return id; }
-    public String getCodigo() { return codigo; }
-    public String getNome() { return nome; }
-    public String getCidade() { return cidade; }
-    public BigDecimal getSaldoAtual() { return saldoAtual; }
-    public BigDecimal getLimiteMinimo() { return limiteMinimo; }
-    public boolean isAtivo() { return ativo; }
-    public long getVersao() { return versao; }
+    public void exigirAtiva() {
+        if (!ativo) {
+            throw new RegraOperacaoNumerarioException(
+                    "A agência está inativa e não pode participar desta operação."
+            );
+        }
+    }
 
-    private static String textoObrigatorio(String valor) {
+    public Long getId() {
+        return id;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public BigDecimal getSaldoAtual() {
+        return saldoAtual;
+    }
+
+    public BigDecimal getLimiteMinimo() {
+        return limiteMinimo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public long getVersao() {
+        return versao;
+    }
+
+    private static String textoObrigatorio(String valor, String campo) {
         if (valor == null || valor.isBlank()) {
-            throw new CampoObrigatorioException();
+            throw new CampoObrigatorioException(campo);
         }
 
         return valor.trim();

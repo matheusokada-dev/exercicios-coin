@@ -1,0 +1,32 @@
+<app-page-header
+  title="Livro Caixa"
+  description="Selecione a agência e o período para gerar o relatório Excel."
+  [breadcrumbs]="breadcrumbs" />
+
+<form class="report-form" (ngSubmit)="gerar()">
+  <label class="field">
+    <span>Agência</span>
+    <select name="agencia" [(ngModel)]="agenciaId" required>
+      <option value="">Selecione</option>
+      @for (agencia of agencias; track agencia.id) {
+        <option [value]="agencia.id">{{ agencia.codigo }} - {{ agencia.nome }}</option>
+      }
+    </select>
+  </label>
+  <label class="field">
+    <span>Data inicial</span>
+    <input name="dataInicio" type="date" [(ngModel)]="dataInicio" required>
+  </label>
+  <label class="field">
+    <span>Data final</span>
+    <input name="dataFim" type="date" [(ngModel)]="dataFim" [max]="hoje" required>
+  </label>
+  <button type="submit" [disabled]="gerando || !agencias.length">
+    <lucide-icon [img]="Download" [size]="18" aria-hidden="true" />
+    {{ gerando ? 'Gerando...' : 'Gerar Excel' }}
+  </button>
+</form>
+
+@if (erro) {
+  <app-alert type="error" [message]="erro" />
+}

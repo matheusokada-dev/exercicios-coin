@@ -20,28 +20,47 @@ public class SolicitacaoAbastecimentoPersistenceMapper {
         }
 
         return SolicitacaoAbastecimento.reconstituir(
-                entity.getId(), agenciaMapper.toDomain(entity.getAgencia()), entity.getValor(), entity.getMotivo(),
-                entity.getDataDesejada(), entity.getStatus(), usuarioMapper.toDomain(entity.getSolicitante()),
-                usuarioMapper.toDomain(entity.getDecisor()), entity.getJustificativaDecisao(),
-                entity.getJustificativaEspecial(), entity.getDataCriacao(), entity.getDataDecisao(),
-                entity.getDataAtendimento(), entity.getVersao());
+                entity.getId(),
+                agenciaMapper.toDomain(entity.getAgencia()),
+                entity.getValor(),
+                entity.getMotivo(),
+                entity.getDataDesejada(),
+                entity.getStatusLegado(),
+                usuarioMapper.toDomain(entity.getSolicitante()),
+                usuarioMapper.toDomain(entity.getDecisor()),
+                entity.getJustificativaDecisao(),
+                entity.getJustificativaEspecial(),
+                entity.getDataCriacao(),
+                entity.getDataDecisao(),
+                entity.getDataAtendimento(),
+                entity.getVersao()
+        );
     }
 
     public SolicitacaoAbastecimentoEntity toEntity(
             SolicitacaoAbastecimento domain,
             AgenciaEntity agencia,
             UsuarioEntity solicitante,
-            UsuarioEntity decisor
-    ) {
+            UsuarioEntity decisor) {
         if (domain == null) {
             return null;
         }
 
         return new SolicitacaoAbastecimentoEntity(
-                domain.getId(), agencia, domain.getValor(), domain.getMotivo(), domain.getDataDesejada(),
-                domain.getStatus(), solicitante, decisor, domain.getJustificativaDecisao(),
-                domain.getJustificativaEspecial(), domain.getDataCriacao(), domain.getDataDecisao(),
-                domain.getDataAtendimento(), domain.getVersao());
+                domain.getId(),
+                agencia,
+                domain.getValor(),
+                domain.getMotivo(),
+                domain.getDataDesejada(),
+                domain.getStatus(),
+                solicitante,
+                decisor,
+                domain.getJustificativaDecisao(),
+                domain.getJustificativaEspecial(),
+                domain.getDataCriacao(),
+                domain.getDataDecisao(),
+                domain.getDataAtendimento(),
+                domain.getVersao()
+        );
     }
 }
-
