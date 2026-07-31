@@ -83,7 +83,6 @@
     <div class="actions detail-actions">
       @if (detalhe.solicitacao.status === 'PENDENTE') {
         <button (click)="abrirAcao('aprovar')">Aprovar</button><button class="outline" (click)="abrirAcao('rejeitar')">Rejeitar</button>
-        <button class="outline" (click)="abrirAcao('cancelar')">Cancelar</button>
       }
       @if (detalhe.solicitacao.status === 'APROVADA') { <button (click)="abrirAcao('programar')">Programar operação</button> }
       @if (detalhe.operacao?.status === 'PROGRAMADA') {

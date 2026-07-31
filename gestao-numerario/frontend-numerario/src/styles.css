@@ -158,6 +158,7 @@ h3 {
 }
 
 .logout-button {
+  margin-left: auto;
   min-height: 36px;
   padding: var(--space-xs) var(--space-sm);
   border: 0;
